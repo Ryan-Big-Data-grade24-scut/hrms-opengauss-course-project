@@ -1,17 +1,56 @@
-# Frontend Skeleton
+# Frontend
 
-当前阶段先冻结页面清单与接口依赖。
+当前前端采用：
 
-建议页面：
+- `Vue 3`
+- `Vite`
+- `Element Plus`
+- `UnoCSS`
+- `Axios`
+- `Vue Router`
 
-- 登录页
-- 后台首页
-- 员工管理页
-- 部门管理页
-- 岗位管理页
-- 请假管理页
-- 审计日志页
+目标是：
 
-联调依据：
+- 全程支持 CLI 启动
+- 快速做出管理系统风格页面
+- 直接对接当前后端接口
 
-- `master/API_SPEC.md`
+## 启动方式
+
+先确保后端已启动在：
+
+```text
+http://127.0.0.1:8080
+```
+
+然后执行：
+
+```powershell
+cd E:\Ufolder\Current\ActionSys\Hgclass\DB\frontend
+npm install
+npm run dev
+```
+
+默认前端开发地址：
+
+```text
+http://127.0.0.1:5173
+```
+
+Vite 已经配置了代理：
+
+- `/api` -> `http://127.0.0.1:8080`
+
+所以前端请求后端时不需要手动改跨域。
+
+## 当前页面
+
+- `/login`
+- `/employees`
+- `/departments`
+- `/leaves`
+- `/profile`
+
+## 演示账号
+
+- `admin / 123456`
