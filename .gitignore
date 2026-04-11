@@ -2,3 +2,5 @@ tmp_docx/
 tmp_requirements/
 research/repos/
 *.log
+__pycache__/
+*.pyc
