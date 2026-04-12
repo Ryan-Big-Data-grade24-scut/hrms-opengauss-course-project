@@ -7,7 +7,6 @@ param(
 
 $ErrorActionPreference = "Stop"
 $RepoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-$SchemaFile = Join-Path $RepoRoot "sql\10_hrms_schema.sql"
 
 Write-Host "Waiting for openGauss service to become ready..."
 $maxAttempts = 24
@@ -35,11 +34,10 @@ if ($exists -match "1") {
     docker exec -e LD_LIBRARY_PATH=$ldPath $ContainerName $gsql -h 127.0.0.1 -p 5432 -d postgres -U $User -W $Password -c "CREATE DATABASE ${DbName};"
 }
 
-Write-Host "Applying schema..."
-docker cp $SchemaFile "${ContainerName}:/tmp/10_hrms_schema.sql"
-docker exec -e LD_LIBRARY_PATH=$ldPath $ContainerName $gsql -h 127.0.0.1 -p 5432 -d ${DbName} -U $User -W $Password -f /tmp/10_hrms_schema.sql
+Write-Host "Applying migrations..."
+& (Join-Path $PSScriptRoot "apply_migrations.ps1") -ContainerName $ContainerName -DbName $DbName -User $User -Password $Password
 
 Write-Host ""
 Write-Host "Done."
 Write-Host "Database: $DbName"
-Write-Host "Schema file: $SchemaFile"
+Write-Host "Migrations dir: $(Join-Path $RepoRoot 'sql\migrations')"

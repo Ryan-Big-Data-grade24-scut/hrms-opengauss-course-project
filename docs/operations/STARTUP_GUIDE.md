@@ -103,7 +103,11 @@ powershell -ExecutionPolicy Bypass -File .\ops\startup\start_stack.ps1
 
 - `ops/db/init_hrms.ps1`
   - 创建 `hrms` 数据库
-  - 导入 `sql/10_hrms_schema.sql`
+  - 执行 `sql/migrations/` 下的版本化迁移脚本
+
+- `ops/db/apply_migrations.ps1`
+  - 按顺序执行 `V1__*.sql`、`V2__*.sql` 等迁移脚本
+  - 维护 `schema_migration_history`
 
 - `ops/db/verify_hrms.ps1`
   - 验证核心表和样例数据
@@ -203,3 +207,17 @@ powershell -ExecutionPolicy Bypass -File .\ops\db\upgrade_to_persistent_containe
 
 - 这是一次“容器重建 + 数据恢复”
 - 建议在确认当前环境可维护时执行
+
+## 8. 当前 migration 结构
+
+当前数据库初始化不再只依赖单一 baseline 文件，而是按下面结构执行：
+
+- `sql/migrations/V1__baseline.sql`
+- `sql/migrations/V2__org_and_job.sql`
+- `sql/migrations/V3__employee_profile_and_history.sql`
+- `sql/migrations/V4__leave_type_and_leave_upgrade.sql`
+
+这意味着：
+
+- 后续表结构升级应继续新增 migration 文件
+- 不建议再把所有变化重新塞回 `sql/10_hrms_schema.sql`
