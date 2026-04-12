@@ -2,10 +2,7 @@
 
 这是一个基于 `openGauss + Python API + Vue 3` 的企业人事管理系统仓库。
 
-这个仓库的目标不是堆很多文档，而是让两类人都能快速接手：
-
-- 你的队友
-- 队友手里的 AI 助手
+这个仓库面向AI开发，关键在于[AGENT.md](AGENT.md)，这是给人类快速上手的指南：
 
 ## 第一次进仓库先看什么
 
@@ -35,14 +32,14 @@
 
 ## 关键目录入口
 
-### 文档和项目状态
+### 文档和项目状态（人类只需要读懂这里就行 剩下的交给AI）
 
 - [docs/HANDBOOK.md](docs/HANDBOOK.md)
 - [docs/RESEARCH_SUMMARY.md](docs/RESEARCH_SUMMARY.md)
 - [master/PROJECT_BRIEF.md](master/PROJECT_BRIEF.md)
 - [master/contracts/openapi.yaml](master/contracts/openapi.yaml)
 
-### 代码层
+### 代码层（负责哪个模块仔细看哪个）
 
 - [backend/README.md](backend/README.md)
 - [frontend/README.md](frontend/README.md)
@@ -52,7 +49,7 @@
 
 ## 最常用命令
 
-一键启动整套环境：
+**一键启动**整套环境：
 
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB
