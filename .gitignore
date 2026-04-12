@@ -6,3 +6,5 @@ __pycache__/
 *.pyc
 master/drafts/
 master/*.local.md
+backups/
+dist/

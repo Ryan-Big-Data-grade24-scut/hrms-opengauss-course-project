@@ -38,7 +38,7 @@ $gsql = "/usr/local/opengauss/bin/gsql"
 $gsDump = "/usr/local/opengauss/bin/gs_dump"
 
 Write-Host "Creating logical backup inside container..."
-docker exec -e LD_LIBRARY_PATH=$ldPath $ContainerName $gsDump -d $DatabaseName -f $containerDump -U omm
+docker exec -e LD_LIBRARY_PATH=$ldPath $ContainerName $gsDump -h 127.0.0.1 -p 5432 -U omm -W $Password -f $containerDump $DatabaseName
 if ($LASTEXITCODE -ne 0) {
     throw "Failed to dump database '$DatabaseName'."
 }
@@ -79,9 +79,18 @@ for ($i = 0; $i -lt 30; $i++) {
 Write-Host "Creating database '$DatabaseName'..."
 docker exec -e LD_LIBRARY_PATH=$ldPath $ContainerName $gsql -d postgres -U omm -W $Password -c "CREATE DATABASE ${DatabaseName};" | Out-Null
 
+for ($i = 0; $i -lt 20; $i++) {
+    try {
+        docker exec -e LD_LIBRARY_PATH=$ldPath $ContainerName $gsql -v ON_ERROR_STOP=1 -h 127.0.0.1 -p 5432 -d $DatabaseName -U omm -W $Password -c "SELECT 1;" | Out-Null
+        if ($LASTEXITCODE -eq 0) { break }
+    } catch {
+    }
+    Start-Sleep -Seconds 2
+}
+
 Write-Host "Restoring logical backup..."
 docker cp $hostDump "${ContainerName}:${containerDump}"
-docker exec -e LD_LIBRARY_PATH=$ldPath $ContainerName $gsql -d $DatabaseName -U omm -W $Password -f $containerDump | Out-Null
+docker exec -e LD_LIBRARY_PATH=$ldPath $ContainerName $gsql -v ON_ERROR_STOP=1 -d $DatabaseName -U omm -W $Password -f $containerDump | Out-Null
 if ($LASTEXITCODE -ne 0) {
     throw "Failed to restore database '$DatabaseName'."
 }
