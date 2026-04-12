@@ -76,6 +76,7 @@
 ### 当前计划区
 
 - [ACTIVE_PLAN.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/ACTIVE_PLAN.md)
+- [CORE_ENTITIES_AND_MODULE_FREEZE.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/plans/CORE_ENTITIES_AND_MODULE_FREEZE.md)
 - [NEXT_PHASE_ROADMAP.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/plans/NEXT_PHASE_ROADMAP.md)
 - [API_OWNER_DELIVERY_TARGET.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/plans/API_OWNER_DELIVERY_TARGET.md)
 

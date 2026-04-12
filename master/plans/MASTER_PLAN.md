@@ -72,11 +72,64 @@
 
 - [HR_DATABASE_MODEL_REFERENCES.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/docs/research/HR_DATABASE_MODEL_REFERENCES.md)
 
-## 4. 当前最现实的下一步
+## 4. 当前主推进顺序
 
-如果只选最值当的动作，顺序应该是：
+结合当前项目状态，后续按下面 4 步推进：
 
-1. 把 `API_SPEC.md` 升级成正式 OpenAPI
-2. 把数据库 schema 拆成版本化迁移脚本
-3. 把员工、请假、审计三块接口做成真正稳定的协作底座
-4. 再决定是否上云、是否做 AI 查询亮点
+1. 冻结主体和模块
+2. 把 SQL 升级成 migration
+3. 给数据库持久化和 dump/restore
+4. 把接口契约升级成 OpenAPI
+
+## 4.1 第一步：冻结主体和模块
+
+目标：
+
+- 先把 HR 的核心主体定住
+- 先把模块边界和功能目标定住
+- 避免后续数据库、前后端并行开发时反复改方向
+
+输出物：
+
+- `master/plans/CORE_ENTITIES_AND_MODULE_FREEZE.md`
+
+## 4.2 第二步：把 SQL 升级成 migration
+
+目标：
+
+- 把当前单一 baseline SQL 升级成版本化迁移结构
+- 为多人协作和后续云端更新做准备
+
+输出物：
+
+- `sql/migrations/`
+- `V1 / V2 / V3 / V4` 迁移脚本
+
+## 4.3 第三步：给数据库持久化和 dump/restore
+
+目标：
+
+- 解决数据如何活下来、如何迁云、如何恢复
+
+输出物：
+
+- 持久化卷方案
+- dump/restore 脚本
+- 云迁移手册
+
+## 4.4 第四步：把接口契约升级成 OpenAPI
+
+目标：
+
+- 让多人协作和 AI 协作都围绕统一契约进行
+
+输出物：
+
+- `openapi.yaml`
+
+## 5. 当前最现实的第一批执行动作
+
+1. 先完成主体与模块冻结
+2. 再把 migration 目录结构和 V1/V2 草案落地
+3. 再把数据库持久化卷和备份恢复流程固定
+4. 最后升级 OpenAPI 并驱动接口改造
