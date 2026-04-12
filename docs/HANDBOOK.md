@@ -204,7 +204,7 @@
 ### 一键启动
 
 ```powershell
-cd E:\Ufolder\Current\ActionSys\Hgclass\DB
+cd <仓库根目录>
 powershell -ExecutionPolicy Bypass -File .\ops\startup\start_stack.ps1
 ```
 
@@ -227,7 +227,7 @@ powershell -ExecutionPolicy Bypass -File .\ops\startup\start_stack.ps1
 ### 分步启动
 
 ```powershell
-cd E:\Ufolder\Current\ActionSys\Hgclass\DB
+cd <仓库根目录>
 powershell -ExecutionPolicy Bypass -File .\ops\startup\00_start_docker.ps1
 powershell -ExecutionPolicy Bypass -File .\ops\startup\01_start_db.ps1
 powershell -ExecutionPolicy Bypass -File .\ops\startup\02_start_backend.ps1
@@ -250,7 +250,7 @@ powershell -ExecutionPolicy Bypass -File .\ops\startup\03_start_frontend.ps1
 ### 第一步：测数据库
 
 ```powershell
-cd E:\Ufolder\Current\ActionSys\Hgclass\DB
+cd <仓库根目录>
 powershell -ExecutionPolicy Bypass -File .\ops\db\verify_hrms.ps1
 ```
 
@@ -263,7 +263,7 @@ powershell -ExecutionPolicy Bypass -File .\ops\db\verify_hrms.ps1
 ### 第二步：测后端
 
 ```powershell
-cd E:\Ufolder\Current\ActionSys\Hgclass\DB
+cd <仓库根目录>
 powershell -ExecutionPolicy Bypass -File .\ops\backend\smoke_test.ps1
 ```
 
@@ -309,7 +309,7 @@ select employee_no, full_name, employment_status from employee;
 ### 备份
 
 ```powershell
-cd E:\Ufolder\Current\ActionSys\Hgclass\DB
+cd <仓库根目录>
 powershell -ExecutionPolicy Bypass -File .\ops\db\backup_hrms.ps1
 ```
 
@@ -321,7 +321,7 @@ powershell -ExecutionPolicy Bypass -File .\ops\db\backup_hrms.ps1
 ### 恢复
 
 ```powershell
-cd E:\Ufolder\Current\ActionSys\Hgclass\DB
+cd <仓库根目录>
 powershell -ExecutionPolicy Bypass -File .\ops\db\restore_hrms.ps1 -BackupFile .\backups\你的备份.sql
 ```
 
@@ -338,7 +338,7 @@ powershell -ExecutionPolicy Bypass -File .\ops\db\restore_hrms.ps1 -BackupFile .
 ## 怎么打包成发布包
 
 ```powershell
-cd E:\Ufolder\Current\ActionSys\Hgclass\DB
+cd <仓库根目录>
 powershell -ExecutionPolicy Bypass -File .\ops\deploy\build_release_bundle.ps1
 ```
 

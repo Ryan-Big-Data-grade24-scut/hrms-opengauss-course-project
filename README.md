@@ -52,28 +52,27 @@
 **一键启动**整套环境：
 
 ```powershell
-cd E:\Ufolder\Current\ActionSys\Hgclass\DB
+cd <仓库根目录>
 powershell -ExecutionPolicy Bypass -File .\ops\startup\start_stack.ps1
 ```
 
 检查数据库是不是正常：
 
 ```powershell
-cd E:\Ufolder\Current\ActionSys\Hgclass\DB
+cd <仓库根目录>
 powershell -ExecutionPolicy Bypass -File .\ops\db\verify_hrms.ps1
 ```
 
 检查后端是不是正常：
 
 ```powershell
-cd E:\Ufolder\Current\ActionSys\Hgclass\DB
+cd <仓库根目录>
 powershell -ExecutionPolicy Bypass -File .\ops\backend\smoke_test.ps1
 ```
 
 构建发布包：
 
 ```powershell
-cd E:\Ufolder\Current\ActionSys\Hgclass\DB
+cd <仓库根目录>
 powershell -ExecutionPolicy Bypass -File .\ops\deploy\build_release_bundle.ps1
 ```
-

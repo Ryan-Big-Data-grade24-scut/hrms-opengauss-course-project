@@ -103,7 +103,7 @@
 然后执行：
 
 ```powershell
-cd E:\Ufolder\Current\ActionSys\Hgclass\DB\frontend
+cd <仓库根目录>\frontend
 npm install
 npm run dev
 ```
