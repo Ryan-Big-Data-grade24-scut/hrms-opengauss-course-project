@@ -50,7 +50,7 @@ powershell -ExecutionPolicy Bypass -File .\ops\backend\start_backend.ps1
 默认服务地址：
 
 ```text
-http://127.0.0.1:8080
+http://127.0.0.1:18080
 ```
 
 演示账号：
@@ -144,7 +144,7 @@ $login.data.token
 
 ```powershell
 $login = Invoke-RestMethod -Method Post `
-  -Uri "http://127.0.0.1:8080/api/auth/login" `
+  -Uri "http://127.0.0.1:18080/api/auth/login" `
   -ContentType "application/json" `
   -Body '{"username":"admin","password":"123456"}'
 ```
@@ -177,7 +177,7 @@ $headers = @{
 
 ```powershell
 Invoke-RestMethod -Method Get `
-  -Uri "http://127.0.0.1:8080/api/auth/profile" `
+  -Uri "http://127.0.0.1:18080/api/auth/profile" `
   -Headers $headers | ConvertTo-Json -Depth 6
 ```
 
@@ -191,7 +191,7 @@ Invoke-RestMethod -Method Get `
 
 ```powershell
 Invoke-RestMethod -Method Get `
-  -Uri "http://127.0.0.1:8080/api/employees?page=1&page_size=10" `
+  -Uri "http://127.0.0.1:18080/api/employees?page=1&page_size=10" `
   -Headers $headers | ConvertTo-Json -Depth 6
 ```
 
@@ -212,7 +212,7 @@ Invoke-RestMethod -Method Get `
 
 ```powershell
 Invoke-RestMethod -Method Get `
-  -Uri "http://127.0.0.1:8080/api/departments" `
+  -Uri "http://127.0.0.1:18080/api/departments" `
   -Headers $headers | ConvertTo-Json -Depth 6
 ```
 
@@ -225,7 +225,7 @@ Invoke-RestMethod -Method Get `
 
 ```powershell
 Invoke-RestMethod -Method Get `
-  -Uri "http://127.0.0.1:8080/api/positions" `
+  -Uri "http://127.0.0.1:18080/api/positions" `
   -Headers $headers | ConvertTo-Json -Depth 6
 ```
 
@@ -233,7 +233,7 @@ Invoke-RestMethod -Method Get `
 
 ```powershell
 Invoke-RestMethod -Method Get `
-  -Uri "http://127.0.0.1:8080/api/leaves?page=1&page_size=10" `
+  -Uri "http://127.0.0.1:18080/api/leaves?page=1&page_size=10" `
   -Headers $headers | ConvertTo-Json -Depth 6
 ```
 
@@ -267,7 +267,7 @@ $createBody = @{
 
 ```powershell
 $created = Invoke-RestMethod -Method Post `
-  -Uri "http://127.0.0.1:8080/api/employees" `
+  -Uri "http://127.0.0.1:18080/api/employees" `
   -Headers $headers `
   -ContentType "application/json" `
   -Body $createBody
@@ -300,7 +300,7 @@ $updateBody = @{
 
 ```powershell
 Invoke-RestMethod -Method Put `
-  -Uri "http://127.0.0.1:8080/api/employees/$employeeId" `
+  -Uri "http://127.0.0.1:18080/api/employees/$employeeId" `
   -Headers $headers `
   -ContentType "application/json" `
   -Body $updateBody | ConvertTo-Json -Depth 6
@@ -315,7 +315,7 @@ Invoke-RestMethod -Method Put `
 
 ```powershell
 Invoke-RestMethod -Method Delete `
-  -Uri "http://127.0.0.1:8080/api/employees/$employeeId" `
+  -Uri "http://127.0.0.1:18080/api/employees/$employeeId" `
   -Headers $headers | ConvertTo-Json -Depth 6
 ```
 
@@ -328,7 +328,7 @@ Invoke-RestMethod -Method Delete `
 
 ```powershell
 Invoke-RestMethod -Method Get `
-  -Uri "http://127.0.0.1:8080/api/audits?page=1&page_size=10" `
+  -Uri "http://127.0.0.1:18080/api/audits?page=1&page_size=10" `
   -Headers $headers | ConvertTo-Json -Depth 6
 ```
 
@@ -379,7 +379,7 @@ admin / 123456
 
 ```powershell
 $login = Invoke-RestMethod -Method Post `
-  -Uri "http://127.0.0.1:8080/api/auth/login" `
+  -Uri "http://127.0.0.1:18080/api/auth/login" `
   -ContentType "application/json" `
   -Body '{"username":"admin","password":"123456"}'
 
@@ -395,10 +395,10 @@ $headers = @{ Authorization = "Bearer $token" }
 Get-Process python
 ```
 
-或者检查 8080 端口：
+或者检查 18080 端口：
 
 ```powershell
-Get-NetTCPConnection -LocalPort 8080 -State Listen
+Get-NetTCPConnection -LocalPort 18080 -State Listen
 ```
 
 ### 10.4 怎么停掉后端

@@ -22,6 +22,19 @@
 
 ### 方式 A：按步骤启动
 
+#### 第零步：确保 Docker Desktop 可用
+
+```powershell
+cd E:\Ufolder\Current\ActionSys\Hgclass\DB
+powershell -ExecutionPolicy Bypass -File .\ops\startup\00_start_docker.ps1
+```
+
+这一步会：
+
+- 检查 Docker Engine 是否已经可用
+- 如果没有可用，就尝试启动 Docker Desktop
+- 等待到 Docker Engine 真正 ready
+
 #### 第一步：启动数据库并初始化
 
 ```powershell
@@ -47,7 +60,7 @@ powershell -ExecutionPolicy Bypass -File .\ops\startup\02_start_backend.ps1
 默认后端地址：
 
 ```text
-http://127.0.0.1:8080
+http://127.0.0.1:18080
 ```
 
 #### 第三步：启动前端
@@ -80,6 +93,10 @@ powershell -ExecutionPolicy Bypass -File .\ops\startup\start_stack.ps1
 ## 3. 单独脚本说明
 
 ### 数据库
+
+- `ops/startup/00_start_docker.ps1`
+  - 启动 Docker Desktop
+  - 等待 Docker Engine 可用
 
 - `ops/db/start_opengauss.ps1`
   - 启动 openGauss 容器
@@ -155,6 +172,7 @@ docker stop opengauss-hrms
 
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB
+powershell -ExecutionPolicy Bypass -File .\ops\startup\00_start_docker.ps1
 powershell -ExecutionPolicy Bypass -File .\ops\startup\01_start_db.ps1
 powershell -ExecutionPolicy Bypass -File .\ops\startup\02_start_backend.ps1
 powershell -ExecutionPolicy Bypass -File .\ops\startup\03_start_frontend.ps1

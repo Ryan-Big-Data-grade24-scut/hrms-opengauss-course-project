@@ -1,6 +1,6 @@
 param(
     [string]$ContainerName = "opengauss-hrms",
-    [string]$Image = "opengauss/opengauss:6.0.0-RC1",
+    [string]$Image = "opengauss/opengauss:latest",
     [string]$Password = "OpenGauss123!",
     [int]$Port = 5432
 )
@@ -9,12 +9,18 @@ $ErrorActionPreference = "Stop"
 
 Write-Host "Checking Docker..."
 docker version | Out-Null
+if ($LASTEXITCODE -ne 0) {
+    throw "Docker Engine is unavailable. Start Docker Desktop first."
+}
 
 $existing = docker ps -a --filter "name=^${ContainerName}$" --format "{{.Names}}"
 if ($existing) {
     Write-Host "Container '$ContainerName' already exists."
     Write-Host "Starting existing container..."
     docker start $ContainerName | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to start container '$ContainerName'."
+    }
 } else {
     Write-Host "Creating container '$ContainerName' from image '$Image'..."
     docker run --name $ContainerName `
@@ -24,6 +30,9 @@ if ($existing) {
         -e GS_NODENAME=gaussdb `
         -p ${Port}:5432 `
         $Image | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to create container '$ContainerName'."
+    }
 }
 
 Write-Host ""

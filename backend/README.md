@@ -69,7 +69,7 @@ powershell -ExecutionPolicy Bypass -File .\ops\backend\start_backend.ps1
 
 默认监听：
 
-- `http://127.0.0.1:8080`
+- `http://127.0.0.1:18080`
 
 ## 演示账号
 

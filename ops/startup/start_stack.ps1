@@ -1,8 +1,10 @@
 $RepoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 Write-Host "Step 1/3: prepare database..."
+& (Join-Path $RepoRoot "ops\startup\00_start_docker.ps1")
 & (Join-Path $RepoRoot "ops\db\start_opengauss.ps1")
 & (Join-Path $RepoRoot "ops\db\init_hrms.ps1")
+& (Join-Path $RepoRoot "ops\db\verify_hrms.ps1")
 
 Write-Host ""
 Write-Host "Step 2/3: start backend in a new window..."
@@ -15,5 +17,5 @@ Start-Process powershell -ArgumentList "-NoExit", "-ExecutionPolicy", "Bypass", 
 
 Write-Host ""
 Write-Host "Stack launch requested."
-Write-Host "Backend: http://127.0.0.1:8080"
+Write-Host "Backend: http://127.0.0.1:18080"
 Write-Host "Frontend: http://127.0.0.1:5173"
