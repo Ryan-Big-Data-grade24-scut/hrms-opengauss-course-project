@@ -58,7 +58,8 @@
 
 - [AGENT.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/AGENT.md)
 - [ACTIVE_PLAN.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/ACTIVE_PLAN.md)
-- [PROJECT_ROADMAP.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/PROJECT_ROADMAP.md)
+- [MASTER_PLAN.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/plans/MASTER_PLAN.md)
+- [WORK_REVIEW.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/plans/WORK_REVIEW.md)
 - [API_SPEC.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/API_SPEC.md)
 - [DATABASE_SPEC.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/DATABASE_SPEC.md)
 
@@ -78,6 +79,7 @@
 ### 启动与操作手册
 
 - [STARTUP_GUIDE.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/docs/operations/STARTUP_GUIDE.md)
+- [TESTING_GUIDE.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/docs/operations/TESTING_GUIDE.md)
 
 ### 下一阶段路线图
 

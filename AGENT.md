@@ -1,91 +1,112 @@
 # DB Course Project AGENT
 
-本工作区只做一件事：把这次数据库课程设计收敛成一个可交付、可演示、可复现、对 AI 协作友好的 `openGauss` 项目。
+这是当前工作区的总规则文件。仓库目标不是只写出一套能跑的课设代码，而是把它整理成：
+
+- 对课程交付友好
+- 对多人协作友好
+- 对 AI 接手友好
+- 对 CLI 操作友好
+
+的工程工作区。
 
 ## 当前边界
 
-- 这里优先处理课程要求、技术落地、数据库设计、前后端实现与演示材料
-- 同学群聊、灵感讨论、竞品类比只能作参考，不能直接当硬依据
-- 课程正式要求的第一来源是：
-  - `docs/course_requirements/Database Course Design Requirements.docx`
-- `docs/` 只存：
+- 所有正式约束优先以课程要求为准  
+  入口：`docs/course_requirements/Database Course Design Requirements.docx`
+
+- `docs/` 只放正式文档资产：
   - 课程要求
   - 调研资产
   - 操作手册
-- `master/` 只存：
-  - 计划
-  - 草稿
-  - 规范草案
-  - 讨论中的阶段性设计
-- 自动化脚本统一沉淀到 `ops/`
 
-## 当前目标
+- `master/` 只放计划与冻结稿：
+  - 当前计划
+  - 路线图
+  - 职责定义
+  - 模块冻结稿
+  - 阶段回顾
 
-1. 锁定课程硬要求与提交物
-2. 维持并完善 `openGauss` 课设主线
-3. 保持数据库、后端、前端三层都可启动、可验证
-4. 让项目尽可能通过 CLI 工具完成开发、启动、测试
-5. 在主系统稳定的前提下，再推进亮点扩展
-6. 让接口层、数据库层、前端层之间的协作边界足够清晰，适合 AI 和多人并行开发
+- `master/drafts/` 是本地草稿区，默认被 `.gitignore` 忽略
 
-## 当前硬约束
+- `ops/` 只放 CLI 脚本：
+  - 启动
+  - 验证
+  - 备份恢复
+  - 打包
 
-- 一切以 `docs/course_requirements/Database Course Design Requirements.docx` 为准
-- 必须基于 `openGauss`
-- 不默认把“华为云”理解成必须上云部署
-- 先保证可演示闭环，再做 AI / 备份恢复等增强项
-- 文档目录只认 `docs/`
-- 计划目录只认 `master/`
-- 脚本目录只认 `ops/`
-- `master/drafts/` 用于本地草稿，默认不纳入版本控制
-- 尽可能优先使用 CLI 工具完成开发、启动、调试、验证
+## 当前原则
+
+1. 先确认课程硬约束，再决定技术方案。
+2. `openGauss` 是当前项目数据库底座。
+3. 优先建设“可演示闭环”，再考虑 AI、备份增强、云端增强。
+4. 默认优先使用 CLI 完成开发、启动、验证和打包。
+5. 所有正式操作说明都沉淀到 `docs/operations/`。
+6. 所有共享计划和冻结内容都沉淀到 `master/plans/`。
+
+## 当前工程状态
+
+当前仓库已经具备：
+
+- openGauss 容器化数据库
+- migration 版本化结构
+- 命名卷持久化
+- backup / restore
+- Python 后端 API
+- Vue 3 前端控制台
+- release bundle 构建基座
+
+当前还缺：
+
+- 正式 `OpenAPI` 契约
+- 新主体模型对应的后端/前端升级
+
+## 目录口径
+
+- `docs/course_requirements/`
+  - 课程要求与配套材料
+
+- `docs/course_materials/`
+  - 组内已有原始材料
+
+- `docs/research/`
+  - 调研沉淀与参考仓库
+
+- `docs/operations/`
+  - 启动、测试、部署、架构说明
+
+- `master/plans/`
+  - 总计划、当前计划、冻结稿、回顾
+
+- `sql/migrations/`
+  - 版本化数据库迁移
+
+- `backend/`
+  - 后端实现
+
+- `frontend/`
+  - 前端实现
+
+- `deploy/`
+  - 轻量 deployment 基座
+
+## 重要入口
+
+- 总 README：`README.md`
+- 总计划：`master/plans/MASTER_PLAN.md`
+- 当前阶段：`master/ACTIVE_PLAN.md`
+- 工作回顾：`master/plans/WORK_REVIEW.md`
+- 启动手册：`docs/operations/STARTUP_GUIDE.md`
+- 详细测试手册：`docs/operations/TESTING_GUIDE.md`
+
+## 安全与环境约束
+
 - 不得为了修 Docker 随意执行全局 `wsl --shutdown`
-- 将 `WSL` 视为高敏运行面；除非用户明确允许，否则不要关闭或重置
+- 默认把 `WSL` 视为高敏运行面
+- 只有在用户明确允许，或已确认不会影响重要任务时，才可以关闭或重置 WSL
 
-## 当前判断
+## 工作方式
 
-- 当前最稳主线是：`企业人力资源管理系统（openGauss）`
-- 当前最稳亮点方向是：
-  - `备份恢复`
-  - `审计分析`
-  - `AI 查询助手`
-- 当前最适合的开发路径是：
-  - `本地 Docker + openGauss + CLI`
-  - `Python 后端`
-  - `Vue 3 + Vite` 前端
-- 如果评估云端部署，也应优先选择：
-  - CLI 友好
-  - 文档清晰
-  - 低成本或免费
-  - 能支撑数据库和 AI 助手稳定在线
-
-## 来源对象
-
-- 课程正式要求：
-  - `E:\Ufolder\Current\ActionSys\Hgclass\DB\docs\course_requirements\Database Course Design Requirements.docx`
-- 课程配套材料：
-  - `E:\Ufolder\Current\ActionSys\Hgclass\DB\docs\course_requirements`
-- 组内已有项目输入：
-  - `E:\Ufolder\Current\ActionSys\Hgclass\DB\docs\course_materials\project_inputs`
-- 研究与资料沉淀：
-  - `E:\Ufolder\Current\ActionSys\Hgclass\DB\docs\research`
-- 项目计划与草稿：
-  - `E:\Ufolder\Current\ActionSys\Hgclass\DB\master`
-
-## 产物优先级
-
-- `master/`：计划、路线图、规范草案、讨论稿
-- `sql/`：数据库 schema、样例查询、初始化 SQL
-- `backend/`：后端实现
-- `frontend/`：前端实现
-- `ops/`：启动、验证、联调脚本
-- `docs/`：课程材料、研究资料、操作手册
-
-## 执行顺序
-
-1. 先确认课程要求和当前目标是否一致
-2. 再确认数据库、后端、前端是否都能启动
-3. 然后在 `master/` 里冻结计划、边界和模块职责
-4. 再推进最小可演示闭环
-5. 再完善模块和页面
-6. 最后增加亮点功能与交付材料
+- 能脚本化的动作尽量脚本化
+- 能 CLI 完成的动作，不优先依赖手工点界面
+- 新的流程说明优先补到已有手册体系，而不是散落在新文件里
+- 旧阶段文档如果已被新结构覆盖，应合并回顾后及时清理

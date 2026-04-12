@@ -18,6 +18,13 @@
 - 前端脚本：`ops/frontend`
 - 总启动入口：`ops/startup`
 
+### 当前推荐手册
+
+- 启动与运行：`docs/operations/STARTUP_GUIDE.md`
+- 详细测试：`docs/operations/TESTING_GUIDE.md`
+- 部署基座：`docs/operations/DEPLOYMENT_BASE_GUIDE.md`
+- 架构说明：`docs/operations/STACK_DETAILED_EXPLANATION.md`
+
 ## 2. 推荐启动顺序
 
 ### 方式 A：按步骤启动
@@ -46,6 +53,7 @@ powershell -ExecutionPolicy Bypass -File .\ops\startup\01_start_db.ps1
 
 - 启动 openGauss 容器
 - 初始化 `hrms` 数据库
+- 执行 `sql/migrations/` 下的版本化迁移脚本
 - 执行验证 SQL
 
 #### 第二步：启动后端
@@ -139,6 +147,10 @@ powershell -ExecutionPolicy Bypass -File .\ops\db\verify_hrms.ps1
 powershell -ExecutionPolicy Bypass -File .\ops\backend\smoke_test.ps1
 ```
 
+如果要做完整回归，而不是只看最小联调，继续读：
+
+- [TESTING_GUIDE.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/docs/operations/TESTING_GUIDE.md)
+
 ### 验证前端
 
 浏览器打开：
@@ -188,7 +200,7 @@ powershell -ExecutionPolicy Bypass -File .\ops\startup\03_start_frontend.ps1
 
 - `opengauss-hrms-data`
 
-如果你已经有一个历史容器，而且它**没有挂载卷**，可以使用下面的迁移脚本把当前数据库迁移到持久化容器：
+如果你已经有一个历史容器，而且它没有挂载卷，可以用下面的迁移脚本把当前数据库迁移到持久化容器：
 
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB
@@ -202,11 +214,6 @@ powershell -ExecutionPolicy Bypass -File .\ops\db\upgrade_to_persistent_containe
 3. 停掉并删除旧容器
 4. 用命名卷重建新容器
 5. 把逻辑备份恢复进去
-
-说明：
-
-- 这是一次“容器重建 + 数据恢复”
-- 建议在确认当前环境可维护时执行
 
 ## 8. 当前 migration 结构
 

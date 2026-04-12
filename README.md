@@ -1,99 +1,110 @@
 # DB Course Project
 
-这是一个面向 **AI 协作开发** 的数据库课程项目工作区。
+这是一个 `openGauss + Python API + Vue 3` 的课程项目工作区，当前目标是把它整理成一套：
 
-核心目标不是只存代码，而是让 AI 和人都能在这个仓库里快速搞清楚：
+- 对课程交付友好
+- 对多人协作友好
+- 对 AI 接手友好
+- 对 CLI 操作友好
 
-- 课程要求是什么
-- 当前系统做到哪了
-- 数据库、后端、前端怎么启动
-- 计划和草稿放在哪里
-- 下一步最值得做什么
+的企业人力资源管理系统仓库。
 
-## 项目定位
+## 仓库定位
 
 当前主线是：
 
 - `基于 openGauss 的企业人力资源管理系统`
 
-当前工程已经具备：
+当前已经具备的底座：
 
-- openGauss 数据库基线
+- openGauss 容器化数据库
+- 版本化 migration
+- 数据库持久化卷
+- backup / restore
 - Python 后端 API
 - Vue 3 前端控制台
-- 启动脚本和操作手册
+- 一键启动与发布打包脚本
 
-## 工作方式
+## 协作原则
 
-这个仓库强调两件事：
+先看这两个入口：
 
-1. `AGENT.md` 优先  
-   这是工作区的总规则文件，AI 与人工协作时都应优先参考。
-2. `CLI First`  
-   尽可能通过命令行完成：
-   - 启动数据库
-   - 启动后端
-   - 启动前端
-   - 运行验证脚本
-   - 做日常开发与调试
+1. [AGENT.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/AGENT.md)  
+   仓库规则、目录边界、CLI-first 原则都在这里。
 
-## 目录说明
+2. [master/plans/MASTER_PLAN.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/plans/MASTER_PLAN.md)  
+   当前的总计划、阶段顺序和下一步都从这里进入。
 
-- `AGENT.md`
-  - 工作区规则与执行边界
+## 目录结构
 
 - `docs/`
-  - 只放正式文档资产
-  - 包括课程要求、调研资产、操作手册
+  - 正式文档资产
+  - 包括课程要求、调研资料、操作手册
 
 - `master/`
-  - 只放计划、路线图、规范草案、阶段草稿
-  - `master/drafts/` 为本地草稿区，默认忽略
+  - 计划、冻结稿、阶段回顾
+  - `master/drafts/` 默认忽略，不进版本控制
 
 - `ops/`
-  - 所有自动化脚本统一入口
-  - 包括数据库、后端、前端和整套启动脚本
+  - CLI 脚本
+  - 包括启动、验证、备份恢复、打包
 
 - `sql/`
-  - 数据库 schema 与样例查询
+  - migration 与数据库脚本
 
 - `backend/`
   - 后端服务实现
 
 - `frontend/`
-  - 前端界面实现
+  - 前端控制台实现
 
-## 最常用入口
+- `deploy/`
+  - 轻量 deployment 基座和环境模板
+
+## 推荐入口
 
 ### 操作手册
 
 - [STARTUP_GUIDE.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/docs/operations/STARTUP_GUIDE.md)
+- [TESTING_GUIDE.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/docs/operations/TESTING_GUIDE.md)
+- [DEPLOYMENT_BASE_GUIDE.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/docs/operations/DEPLOYMENT_BASE_GUIDE.md)
+- [STACK_DETAILED_EXPLANATION.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/docs/operations/STACK_DETAILED_EXPLANATION.md)
 
-### 课程材料索引
+### 课程材料
 
 - [MATERIALS_INDEX.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/docs/course_materials/MATERIALS_INDEX.md)
 
-### 当前计划区
+### 当前计划
 
+- [MASTER_PLAN.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/plans/MASTER_PLAN.md)
 - [ACTIVE_PLAN.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/ACTIVE_PLAN.md)
 - [CORE_ENTITIES_AND_MODULE_FREEZE.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/plans/CORE_ENTITIES_AND_MODULE_FREEZE.md)
-- [NEXT_PHASE_ROADMAP.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/plans/NEXT_PHASE_ROADMAP.md)
-- [API_OWNER_DELIVERY_TARGET.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/plans/API_OWNER_DELIVERY_TARGET.md)
+- [WORK_REVIEW.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/plans/WORK_REVIEW.md)
 
-## CLI 启动
+## CLI 常用命令
 
-按步骤启动：
+### 一键拉起整套环境
 
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB
+powershell -ExecutionPolicy Bypass -File .\ops\startup\start_stack.ps1
+```
+
+### 分步启动
+
+```powershell
+cd E:\Ufolder\Current\ActionSys\Hgclass\DB
+powershell -ExecutionPolicy Bypass -File .\ops\startup\00_start_docker.ps1
 powershell -ExecutionPolicy Bypass -File .\ops\startup\01_start_db.ps1
 powershell -ExecutionPolicy Bypass -File .\ops\startup\02_start_backend.ps1
 powershell -ExecutionPolicy Bypass -File .\ops\startup\03_start_frontend.ps1
 ```
 
-一键启动：
+### 关键验证
 
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB
-powershell -ExecutionPolicy Bypass -File .\ops\startup\start_stack.ps1
+powershell -ExecutionPolicy Bypass -File .\ops\db\verify_hrms.ps1
+powershell -ExecutionPolicy Bypass -File .\ops\backend\smoke_test.ps1
+powershell -ExecutionPolicy Bypass -File .\ops\deploy\build_release_bundle.ps1
 ```
