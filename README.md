@@ -80,6 +80,7 @@
 - [ACTIVE_PLAN.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/ACTIVE_PLAN.md)
 - [CORE_ENTITIES_AND_MODULE_FREEZE.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/plans/CORE_ENTITIES_AND_MODULE_FREEZE.md)
 - [WORK_REVIEW.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/plans/WORK_REVIEW.md)
+- [openapi.yaml](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
 
 ## CLI 常用命令
 

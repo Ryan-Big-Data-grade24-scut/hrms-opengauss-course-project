@@ -1,0 +1,697 @@
+openapi: 3.1.0
+info:
+  title: HRMS API
+  version: 0.2.0
+  summary: Shared API contract for current and planned HRMS resources
+  description: |
+    This contract freezes both currently implemented APIs and next-wave APIs
+    introduced by the upgraded HR data model.
+servers:
+  - url: http://127.0.0.1:18080
+    description: Local backend
+security:
+  - bearerAuth: []
+tags:
+  - { name: Auth }
+  - { name: Users }
+  - { name: Roles }
+  - { name: Locations }
+  - { name: Departments }
+  - { name: Jobs }
+  - { name: Positions }
+  - { name: Employees }
+  - { name: Employee Profiles }
+  - { name: Employee Job History }
+  - { name: Leave Types }
+  - { name: Leaves }
+  - { name: Audits }
+  - { name: Backups }
+paths:
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      summary: Login
+      x-runtime-status: implemented
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/auth/profile:
+    get:
+      tags: [Auth]
+      summary: Get current user profile
+      x-runtime-status: implemented
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout
+      x-runtime-status: implemented
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/users:
+    get:
+      tags: [Users]
+      summary: List users
+      x-runtime-status: implemented
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - { name: username, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: integer } }
+      responses:
+        '200': { $ref: '#/components/responses/PageEnvelope' }
+    post:
+      tags: [Users]
+      summary: Create user
+      x-runtime-status: implemented
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserUpsertRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/users/{user_id}:
+    parameters:
+      - $ref: '#/components/parameters/UserId'
+    get:
+      tags: [Users]
+      summary: Get user detail
+      x-runtime-status: planned
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+    put:
+      tags: [Users]
+      summary: Update user
+      x-runtime-status: implemented
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserUpsertRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+    delete:
+      tags: [Users]
+      summary: Delete user
+      x-runtime-status: implemented
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/users/{user_id}/roles:
+    put:
+      tags: [Roles]
+      summary: Replace user roles
+      x-runtime-status: implemented
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role_ids:
+                  type: array
+                  items: { type: integer }
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/roles:
+    get:
+      tags: [Roles]
+      summary: List roles
+      x-runtime-status: implemented
+      responses:
+        '200': { $ref: '#/components/responses/ListEnvelope' }
+  /api/locations:
+    get:
+      tags: [Locations]
+      summary: List locations
+      x-runtime-status: planned
+      responses:
+        '200': { $ref: '#/components/responses/ListEnvelope' }
+    post:
+      tags: [Locations]
+      summary: Create location
+      x-runtime-status: planned
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LocationRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/locations/{location_id}:
+    parameters:
+      - $ref: '#/components/parameters/LocationId'
+    get:
+      tags: [Locations]
+      summary: Get location detail
+      x-runtime-status: planned
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+    put:
+      tags: [Locations]
+      summary: Update location
+      x-runtime-status: planned
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LocationRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+    delete:
+      tags: [Locations]
+      summary: Delete location
+      x-runtime-status: planned
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/departments:
+    get:
+      tags: [Departments]
+      summary: List departments
+      x-runtime-status: implemented
+      responses:
+        '200': { $ref: '#/components/responses/ListEnvelope' }
+    post:
+      tags: [Departments]
+      summary: Create department
+      x-runtime-status: implemented
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DepartmentRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/departments/{department_id}:
+    parameters:
+      - $ref: '#/components/parameters/DepartmentId'
+    get:
+      tags: [Departments]
+      summary: Get department detail
+      x-runtime-status: planned
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+    put:
+      tags: [Departments]
+      summary: Update department
+      x-runtime-status: implemented
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DepartmentRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+    delete:
+      tags: [Departments]
+      summary: Delete department
+      x-runtime-status: implemented
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/jobs:
+    get:
+      tags: [Jobs]
+      summary: List jobs
+      x-runtime-status: planned
+      responses:
+        '200': { $ref: '#/components/responses/ListEnvelope' }
+    post:
+      tags: [Jobs]
+      summary: Create job
+      x-runtime-status: planned
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/JobRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/jobs/{job_id}:
+    parameters:
+      - $ref: '#/components/parameters/JobId'
+    get:
+      tags: [Jobs]
+      summary: Get job detail
+      x-runtime-status: planned
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+    put:
+      tags: [Jobs]
+      summary: Update job
+      x-runtime-status: planned
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/JobRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+    delete:
+      tags: [Jobs]
+      summary: Delete job
+      x-runtime-status: planned
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/positions:
+    get:
+      tags: [Positions]
+      summary: List positions
+      x-runtime-status: implemented
+      responses:
+        '200': { $ref: '#/components/responses/ListEnvelope' }
+    post:
+      tags: [Positions]
+      summary: Create position
+      x-runtime-status: implemented
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PositionRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/positions/{position_id}:
+    parameters:
+      - $ref: '#/components/parameters/PositionId'
+    get:
+      tags: [Positions]
+      summary: Get position detail
+      x-runtime-status: planned
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+    put:
+      tags: [Positions]
+      summary: Update position
+      x-runtime-status: implemented
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PositionRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+    delete:
+      tags: [Positions]
+      summary: Delete position
+      x-runtime-status: implemented
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/employees:
+    get:
+      tags: [Employees]
+      summary: List employees
+      x-runtime-status: implemented
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - { name: keyword, in: query, schema: { type: string } }
+        - { name: department_id, in: query, schema: { type: integer } }
+        - { name: position_id, in: query, schema: { type: integer } }
+        - { name: employment_status, in: query, schema: { type: string } }
+        - { name: hire_date_start, in: query, schema: { type: string, format: date } }
+        - { name: hire_date_end, in: query, schema: { type: string, format: date } }
+      responses:
+        '200': { $ref: '#/components/responses/PageEnvelope' }
+    post:
+      tags: [Employees]
+      summary: Create employee
+      x-runtime-status: implemented
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EmployeeRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/employees/{employee_id}:
+    parameters:
+      - $ref: '#/components/parameters/EmployeeId'
+    get:
+      tags: [Employees]
+      summary: Get employee detail
+      x-runtime-status: implemented
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+    put:
+      tags: [Employees]
+      summary: Update employee
+      x-runtime-status: implemented
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EmployeeRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+    delete:
+      tags: [Employees]
+      summary: Delete employee
+      x-runtime-status: implemented
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/employees/{employee_id}/profile:
+    parameters:
+      - $ref: '#/components/parameters/EmployeeId'
+    get:
+      tags: [Employee Profiles]
+      summary: Get employee profile
+      x-runtime-status: planned
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+    put:
+      tags: [Employee Profiles]
+      summary: Update employee profile
+      x-runtime-status: planned
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EmployeeProfileRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/employees/{employee_id}/job-history:
+    parameters:
+      - $ref: '#/components/parameters/EmployeeId'
+    get:
+      tags: [Employee Job History]
+      summary: List employee job history
+      x-runtime-status: planned
+      responses:
+        '200': { $ref: '#/components/responses/ListEnvelope' }
+    post:
+      tags: [Employee Job History]
+      summary: Create employee job history record
+      x-runtime-status: planned
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EmployeeJobHistoryRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/leave-types:
+    get:
+      tags: [Leave Types]
+      summary: List leave types
+      x-runtime-status: planned
+      responses:
+        '200': { $ref: '#/components/responses/ListEnvelope' }
+    post:
+      tags: [Leave Types]
+      summary: Create leave type
+      x-runtime-status: planned
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LeaveTypeRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/leave-types/{leave_type_id}:
+    parameters:
+      - $ref: '#/components/parameters/LeaveTypeId'
+    get:
+      tags: [Leave Types]
+      summary: Get leave type detail
+      x-runtime-status: planned
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+    put:
+      tags: [Leave Types]
+      summary: Update leave type
+      x-runtime-status: planned
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LeaveTypeRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+    delete:
+      tags: [Leave Types]
+      summary: Delete leave type
+      x-runtime-status: planned
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/leaves:
+    get:
+      tags: [Leaves]
+      summary: List leave requests
+      x-runtime-status: implemented
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - { name: employee_id, in: query, schema: { type: integer } }
+        - { name: approval_status, in: query, schema: { type: string } }
+        - { name: start_date, in: query, schema: { type: string, format: date } }
+        - { name: end_date, in: query, schema: { type: string, format: date } }
+      responses:
+        '200': { $ref: '#/components/responses/PageEnvelope' }
+    post:
+      tags: [Leaves]
+      summary: Create leave request
+      x-runtime-status: implemented
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LeaveRequestBody' }
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/leaves/{leave_id}:
+    parameters:
+      - $ref: '#/components/parameters/LeaveId'
+    get:
+      tags: [Leaves]
+      summary: Get leave detail
+      x-runtime-status: planned
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/leaves/{leave_id}/approve:
+    parameters:
+      - $ref: '#/components/parameters/LeaveId'
+    put:
+      tags: [Leaves]
+      summary: Approve leave
+      x-runtime-status: implemented
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LeaveApprovalRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/leaves/{leave_id}/reject:
+    parameters:
+      - $ref: '#/components/parameters/LeaveId'
+    put:
+      tags: [Leaves]
+      summary: Reject leave
+      x-runtime-status: implemented
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LeaveApprovalRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/audits:
+    get:
+      tags: [Audits]
+      summary: List audit logs
+      x-runtime-status: implemented
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - { name: username, in: query, schema: { type: string } }
+        - { name: action_type, in: query, schema: { type: string } }
+        - { name: target_type, in: query, schema: { type: string } }
+        - { name: start_time, in: query, schema: { type: string, format: date-time } }
+        - { name: end_time, in: query, schema: { type: string, format: date-time } }
+      responses:
+        '200': { $ref: '#/components/responses/PageEnvelope' }
+  /api/backups:
+    get:
+      tags: [Backups]
+      summary: List backups
+      x-runtime-status: implemented
+      responses:
+        '200': { $ref: '#/components/responses/ListEnvelope' }
+    post:
+      tags: [Backups]
+      summary: Trigger backup
+      x-runtime-status: implemented
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+  /api/restores:
+    post:
+      tags: [Backups]
+      summary: Trigger restore
+      x-runtime-status: implemented
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200': { $ref: '#/components/responses/ObjectEnvelope' }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: token
+  parameters:
+    Page:
+      name: page
+      in: query
+      schema: { type: integer, minimum: 1, default: 1 }
+    PageSize:
+      name: page_size
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 10 }
+    UserId:
+      name: user_id
+      in: path
+      required: true
+      schema: { type: integer }
+    DepartmentId:
+      name: department_id
+      in: path
+      required: true
+      schema: { type: integer }
+    PositionId:
+      name: position_id
+      in: path
+      required: true
+      schema: { type: integer }
+    EmployeeId:
+      name: employee_id
+      in: path
+      required: true
+      schema: { type: integer }
+    LeaveId:
+      name: leave_id
+      in: path
+      required: true
+      schema: { type: integer }
+    LocationId:
+      name: location_id
+      in: path
+      required: true
+      schema: { type: integer }
+    JobId:
+      name: job_id
+      in: path
+      required: true
+      schema: { type: integer }
+    LeaveTypeId:
+      name: leave_type_id
+      in: path
+      required: true
+      schema: { type: integer }
+  responses:
+    ObjectEnvelope:
+      description: Standard object response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/StandardResponse'
+    ListEnvelope:
+      description: Standard list response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ListResponse'
+    PageEnvelope:
+      description: Standard paged response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PageResponse'
+  schemas:
+    StandardResponse:
+      type: object
+      properties:
+        code: { type: integer, default: 0 }
+        message: { type: string, default: ok }
+        data:
+          type: object
+          additionalProperties: true
+    ListResponse:
+      type: object
+      properties:
+        code: { type: integer, default: 0 }
+        message: { type: string, default: ok }
+        data:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+    PageResponse:
+      type: object
+      properties:
+        code: { type: integer, default: 0 }
+        message: { type: string, default: ok }
+        data:
+          type: object
+          properties:
+            list:
+              type: array
+              items:
+                type: object
+                additionalProperties: true
+            total: { type: integer }
+            page: { type: integer }
+            page_size: { type: integer }
+    LoginRequest:
+      type: object
+      properties:
+        username: { type: string }
+        password: { type: string }
+      required: [username, password]
+    UserUpsertRequest:
+      type: object
+      additionalProperties: true
+    LocationRequest:
+      type: object
+      additionalProperties: true
+    DepartmentRequest:
+      type: object
+      additionalProperties: true
+    JobRequest:
+      type: object
+      additionalProperties: true
+    PositionRequest:
+      type: object
+      additionalProperties: true
+    EmployeeRequest:
+      type: object
+      additionalProperties: true
+    EmployeeProfileRequest:
+      type: object
+      additionalProperties: true
+    EmployeeJobHistoryRequest:
+      type: object
+      additionalProperties: true
+    LeaveTypeRequest:
+      type: object
+      additionalProperties: true
+    LeaveRequestBody:
+      type: object
+      additionalProperties: true
+    LeaveApprovalRequest:
+      type: object
+      additionalProperties: true

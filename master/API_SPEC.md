@@ -1,5 +1,16 @@
 # API Spec
 
+这份文档现在保留为“人话版接口说明”。
+
+正式共享契约已经升级到：
+
+- [openapi.yaml](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
+
+使用原则：
+
+- `master/API_SPEC.md`：适合快速讨论、中文说明、接口总览
+- `master/contracts/openapi.yaml`：适合前后端协作、AI 辅助开发、后续代码生成
+
 ## 统一约定
 
 ### Base

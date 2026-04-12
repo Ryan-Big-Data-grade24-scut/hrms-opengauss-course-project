@@ -42,6 +42,7 @@
 4. 默认优先使用 CLI 完成开发、启动、验证和打包。
 5. 所有正式操作说明都沉淀到 `docs/operations/`。
 6. 所有共享计划和冻结内容都沉淀到 `master/plans/`。
+7. 所有共享接口契约都沉淀到 `master/contracts/`。
 
 ## 当前工程状态
 
@@ -57,7 +58,7 @@
 
 当前还缺：
 
-- 正式 `OpenAPI` 契约
+- 更细的 `OpenAPI` schema 约束和示例
 - 新主体模型对应的后端/前端升级
 
 ## 目录口径
@@ -77,6 +78,10 @@
 - `master/plans/`
   - 总计划、当前计划、冻结稿、回顾
 
+- `master/contracts/`
+  - 共享契约
+  - 当前主要用于 `openapi.yaml`
+
 - `sql/migrations/`
   - 版本化数据库迁移
 
@@ -95,6 +100,7 @@
 - 总计划：`master/plans/MASTER_PLAN.md`
 - 当前阶段：`master/ACTIVE_PLAN.md`
 - 工作回顾：`master/plans/WORK_REVIEW.md`
+- OpenAPI 契约：`master/contracts/openapi.yaml`
 - 启动手册：`docs/operations/STARTUP_GUIDE.md`
 - 详细测试手册：`docs/operations/TESTING_GUIDE.md`
 

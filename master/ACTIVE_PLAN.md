@@ -57,7 +57,7 @@
 
 ### 4. 把接口契约升级成 OpenAPI
 
-状态：`当前主任务`
+状态：`第一版已完成，后续进入迭代`
 
 目标：
 
@@ -67,14 +67,15 @@
 对应文档：
 
 - `master/API_SPEC.md`
+- `master/contracts/openapi.yaml`
 
 ## 当前最优先任务
 
 ### A. 先做 OpenAPI 契约
 
-1. 把 `API_SPEC.md` 升级成 `openapi.yaml`
-2. 明确每个资源的 request/response schema
-3. 固定错误码、分页、筛选和权限头
+1. 已完成第一版 `openapi.yaml`
+2. 已区分 `implemented` 和 `planned` 接口
+3. 下一步继续细化 request/response schema 和字段约束
 
 ### B. 再做接口与新数据模型对齐
 
