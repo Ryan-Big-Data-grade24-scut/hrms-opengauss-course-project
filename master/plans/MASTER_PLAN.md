@@ -60,6 +60,10 @@
 4. 先做评分核心项
 5. 最后再决定是否上云和是否做亮点扩展
 
+## 3.1 当前需要特别关注的数据库真相
+
+- [DATABASE_EVOLUTION_AND_DEPLOYMENT_TRUTH.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/plans/DATABASE_EVOLUTION_AND_DEPLOYMENT_TRUTH.md)
+
 ## 4. 当前最现实的下一步
 
 如果只选最值当的动作，顺序应该是：
