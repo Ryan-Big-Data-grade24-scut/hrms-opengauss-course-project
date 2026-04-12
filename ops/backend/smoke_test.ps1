@@ -7,6 +7,15 @@ $loginBody = @{
     password = "123456"
 } | ConvertTo-Json
 
+try {
+    Invoke-WebRequest -Uri "$BaseUrl/api/auth/login" -Method Get -UseBasicParsing -TimeoutSec 3 | Out-Null
+} catch {
+    if (-not $_.Exception.Response) {
+        Write-Error "Backend is not reachable at $BaseUrl. Start the backend first."
+        exit 1
+    }
+}
+
 $login = Invoke-RestMethod -Method Post -Uri "$BaseUrl/api/auth/login" -ContentType "application/json" -Body $loginBody
 $token = $login.data.token
 

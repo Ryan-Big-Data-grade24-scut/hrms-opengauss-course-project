@@ -22,15 +22,15 @@
 
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB
-powershell -ExecutionPolicy Bypass -File .\scripts\start_opengauss.ps1 -Image opengauss/opengauss:latest
-powershell -ExecutionPolicy Bypass -File .\scripts\init_hrms.ps1
+powershell -ExecutionPolicy Bypass -File .\ops\db\start_opengauss.ps1 -Image opengauss/opengauss:latest
+powershell -ExecutionPolicy Bypass -File .\ops\db\init_hrms.ps1
 ```
 
 检查数据库是否正常：
 
 ```powershell
 docker ps --filter "name=^opengauss-hrms$"
-powershell -ExecutionPolicy Bypass -File .\scripts\verify_hrms.ps1
+powershell -ExecutionPolicy Bypass -File .\ops\db\verify_hrms.ps1
 ```
 
 正常情况下你会看到：
@@ -44,7 +44,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\verify_hrms.ps1
 
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB
-powershell -ExecutionPolicy Bypass -File .\backend\scripts\start_backend.ps1
+powershell -ExecutionPolicy Bypass -File .\ops\backend\start_backend.ps1
 ```
 
 默认服务地址：
@@ -65,7 +65,7 @@ admin / 123456
 
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB
-powershell -ExecutionPolicy Bypass -File .\backend\scripts\smoke_test.ps1
+powershell -ExecutionPolicy Bypass -File .\ops\backend\smoke_test.ps1
 ```
 
 正常输出类似：
@@ -415,9 +415,9 @@ Get-Process python | Stop-Process -Force
 
 如果你是第一次测，建议按这个顺序来：
 
-1. `verify_hrms.ps1`
-2. `start_backend.ps1`
-3. `smoke_test.ps1`
+1. `ops/db/verify_hrms.ps1`
+2. `ops/backend/start_backend.ps1`
+3. `ops/backend/smoke_test.ps1`
 4. 手动登录拿 token
 5. 查员工/部门/请假
 6. 新增员工
@@ -427,7 +427,7 @@ Get-Process python | Stop-Process -Force
 
 ## 12. 相关文件
 
-- [start_backend.ps1](E:/Ufolder/Current/ActionSys/Hgclass/DB/backend/scripts/start_backend.ps1)
-- [smoke_test.ps1](E:/Ufolder/Current/ActionSys/Hgclass/DB/backend/scripts/smoke_test.ps1)
-- [verify_hrms.ps1](E:/Ufolder/Current/ActionSys/Hgclass/DB/scripts/verify_hrms.ps1)
+- [start_backend.ps1](E:/Ufolder/Current/ActionSys/Hgclass/DB/ops/backend/start_backend.ps1)
+- [smoke_test.ps1](E:/Ufolder/Current/ActionSys/Hgclass/DB/ops/backend/smoke_test.ps1)
+- [verify_hrms.ps1](E:/Ufolder/Current/ActionSys/Hgclass/DB/ops/db/verify_hrms.ps1)
 - [README.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/backend/README.md)

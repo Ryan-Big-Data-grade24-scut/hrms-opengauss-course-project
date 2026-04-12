@@ -7,6 +7,19 @@ $password = "OpenGauss123!"
 
 Write-Host "Verifying hrms database..."
 
+try {
+    docker version | Out-Null
+} catch {
+    Write-Error "Docker is not available. Start Docker Desktop first."
+    exit 1
+}
+
+$exists = docker ps --filter "name=^${container}$" --format "{{.Names}}"
+if (-not $exists) {
+    Write-Error "Container '$container' is not running. Start the database first."
+    exit 1
+}
+
 docker exec -e LD_LIBRARY_PATH=$lib $container $gsql -h 127.0.0.1 -p 5432 -d hrms -U omm -W $password -c "select count(*) as users from sys_user;"
 docker exec -e LD_LIBRARY_PATH=$lib $container $gsql -h 127.0.0.1 -p 5432 -d hrms -U omm -W $password -c "select count(*) as departments from department;"
 docker exec -e LD_LIBRARY_PATH=$lib $container $gsql -h 127.0.0.1 -p 5432 -d hrms -U omm -W $password -c "select count(*) as employees from employee;"

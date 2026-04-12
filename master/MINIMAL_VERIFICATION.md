@@ -37,13 +37,13 @@
 ### 启动数据库
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\start_opengauss.ps1 -Image opengauss/opengauss:latest
+powershell -ExecutionPolicy Bypass -File .\ops\db\start_opengauss.ps1 -Image opengauss/opengauss:latest
 ```
 
 ### 初始化数据库
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\init_hrms.ps1
+powershell -ExecutionPolicy Bypass -File .\ops\db\init_hrms.ps1
 ```
 
 ### 连库
@@ -55,7 +55,7 @@ docker exec -e LD_LIBRARY_PATH=/usr/local/opengauss/lib -it opengauss-hrms /usr/
 ### 跑验证脚本
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\verify_hrms.ps1
+powershell -ExecutionPolicy Bypass -File .\ops\db\verify_hrms.ps1
 ```
 
 ## 当前成功标准

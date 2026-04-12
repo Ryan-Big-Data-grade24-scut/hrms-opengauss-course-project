@@ -50,8 +50,8 @@
 - `src/server.py`：路由和 HTTP 处理
 - `src/common/`：响应、鉴权、数据库命令执行
 - `src/services/`：各模块业务逻辑
-- `scripts/start_backend.ps1`：启动脚本
-- `scripts/smoke_test.ps1`：最小联调脚本
+- `../ops/backend/start_backend.ps1`：启动脚本
+- `../ops/backend/smoke_test.ps1`：最小联调脚本
 
 ## 启动方式
 
@@ -64,7 +64,7 @@
 然后在仓库根目录执行：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\backend\scripts\start_backend.ps1
+powershell -ExecutionPolicy Bypass -File .\ops\backend\start_backend.ps1
 ```
 
 默认监听：
@@ -86,7 +86,7 @@ powershell -ExecutionPolicy Bypass -File .\backend\scripts\start_backend.ps1
 服务启动后可执行：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\backend\scripts\smoke_test.ps1
+powershell -ExecutionPolicy Bypass -File .\ops\backend\smoke_test.ps1
 ```
 
 它会依次验证：
