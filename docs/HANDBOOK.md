@@ -216,6 +216,14 @@ powershell -ExecutionPolicy Bypass -File .\ops\startup\start_stack.ps1
 4. 启动后端
 5. 启动前端
 
+如果这台机器还没装 Docker，一键启动会直接停下来，并明确告诉你：
+
+- 这个项目依赖 Docker Desktop
+- 推荐安装地址
+- 如果机器支持 `winget`，也会告诉你安装命令
+
+也就是说，新队友即使第一次接触这个仓库，也不会一上来就只看到一堆看不懂的报错。
+
 ### 分步启动
 
 ```powershell
