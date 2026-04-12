@@ -77,7 +77,7 @@ docker exec -e LD_LIBRARY_PATH=/usr/local/opengauss/lib -it opengauss-hrms /usr/
 进去后执行：
 
 ```sql
-select version, description, status from schema_migration_history order by applied_at;
+select version, filename, applied_at from schema_migration_history order by applied_at;
 ```
 
 这一步在干什么：
@@ -119,6 +119,7 @@ powershell -ExecutionPolicy Bypass -File .\ops\db\restore_hrms.ps1 -BackupFile .
 注意：
 
 - 这是恢复动作，会覆盖当前 `hrms`
+- 当前恢复脚本会先清空目标库里的 `public` schema，再导入备份
 - 跑完后建议立刻再执行一次 `verify_hrms.ps1`
 
 ## 7. 启动后端
