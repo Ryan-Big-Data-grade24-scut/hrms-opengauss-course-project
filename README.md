@@ -7,6 +7,7 @@
 - 课程要求是什么
 - 当前系统做到哪了
 - 数据库、后端、前端怎么启动
+- 计划和草稿放在哪里
 - 下一步最值得做什么
 
 ## 项目定位
@@ -28,7 +29,6 @@
 
 1. `AGENT.md` 优先  
    这是工作区的总规则文件，AI 与人工协作时都应优先参考。
-
 2. `CLI First`  
    尽可能通过命令行完成：
    - 启动数据库
@@ -43,8 +43,12 @@
   - 工作区规则与执行边界
 
 - `docs/`
-  - 所有文档统一入口
-  - 包括课程要求、项目输入材料、研究资料、操作手册、路线图
+  - 只放正式文档资产
+  - 包括课程要求、调研资产、操作手册
+
+- `master/`
+  - 只放计划、路线图、规范草案、阶段草稿
+  - `master/drafts/` 为本地草稿区，默认忽略
 
 - `ops/`
   - 所有自动化脚本统一入口
@@ -59,9 +63,6 @@
 - `frontend/`
   - 前端界面实现
 
-- `master/`
-  - 规划、规范、阶段产物
-
 ## 最常用入口
 
 ### 操作手册
@@ -72,9 +73,11 @@
 
 - [MATERIALS_INDEX.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/docs/course_materials/MATERIALS_INDEX.md)
 
-### 下一阶段路线图
+### 当前计划区
 
-- [NEXT_PHASE_ROADMAP.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/docs/roadmaps/NEXT_PHASE_ROADMAP.md)
+- [ACTIVE_PLAN.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/ACTIVE_PLAN.md)
+- [NEXT_PHASE_ROADMAP.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/plans/NEXT_PHASE_ROADMAP.md)
+- [API_OWNER_DELIVERY_TARGET.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/plans/API_OWNER_DELIVERY_TARGET.md)
 
 ## CLI 启动
 

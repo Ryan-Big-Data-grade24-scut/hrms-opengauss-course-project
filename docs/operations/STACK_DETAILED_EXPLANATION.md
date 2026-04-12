@@ -283,7 +283,7 @@ Vite 已经配置代理：
 - `docs/course_materials`
 - `docs/research`
 - `docs/operations`
-- `docs/roadmaps`
+- `master/plans`
 
 这样任何人进仓库都知道：
 

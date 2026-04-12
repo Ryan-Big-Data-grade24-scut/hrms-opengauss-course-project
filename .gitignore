@@ -4,3 +4,5 @@ docs/research/repos/
 *.log
 __pycache__/
 *.pyc
+master/drafts/
+master/*.local.md
