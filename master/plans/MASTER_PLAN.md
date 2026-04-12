@@ -64,6 +64,14 @@
 
 - [DATABASE_EVOLUTION_AND_DEPLOYMENT_TRUTH.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/plans/DATABASE_EVOLUTION_AND_DEPLOYMENT_TRUTH.md)
 
+## 3.2 当前需要特别关注的下一次结构升级
+
+- [NEXT_MIGRATION_V2_SCHEMA.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/master/plans/NEXT_MIGRATION_V2_SCHEMA.md)
+
+## 3.3 当前需要特别关注的企业 HR 建模参考
+
+- [HR_DATABASE_MODEL_REFERENCES.md](E:/Ufolder/Current/ActionSys/Hgclass/DB/docs/research/HR_DATABASE_MODEL_REFERENCES.md)
+
 ## 4. 当前最现实的下一步
 
 如果只选最值当的动作，顺序应该是：

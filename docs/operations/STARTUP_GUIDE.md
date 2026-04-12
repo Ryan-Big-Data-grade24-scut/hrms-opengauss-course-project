@@ -177,3 +177,29 @@ powershell -ExecutionPolicy Bypass -File .\ops\startup\01_start_db.ps1
 powershell -ExecutionPolicy Bypass -File .\ops\startup\02_start_backend.ps1
 powershell -ExecutionPolicy Bypass -File .\ops\startup\03_start_frontend.ps1
 ```
+
+## 7. 数据库持久化升级
+
+新环境首次创建 openGauss 容器时，`ops/db/start_opengauss.ps1` 会默认使用命名卷：
+
+- `opengauss-hrms-data`
+
+如果你已经有一个历史容器，而且它**没有挂载卷**，可以使用下面的迁移脚本把当前数据库迁移到持久化容器：
+
+```powershell
+cd E:\Ufolder\Current\ActionSys\Hgclass\DB
+powershell -ExecutionPolicy Bypass -File .\ops\db\upgrade_to_persistent_container.ps1
+```
+
+这个脚本会：
+
+1. 先逻辑导出当前 `hrms`
+2. 把导出文件保存到仓库 `backups/`
+3. 停掉并删除旧容器
+4. 用命名卷重建新容器
+5. 把逻辑备份恢复进去
+
+说明：
+
+- 这是一次“容器重建 + 数据恢复”
+- 建议在确认当前环境可维护时执行
