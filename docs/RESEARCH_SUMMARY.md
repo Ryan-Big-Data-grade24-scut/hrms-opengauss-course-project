@@ -1,4 +1,4 @@
-# 调研总结
+﻿# 调研总结
 
 ## 这份文档是干什么的
 
@@ -24,7 +24,7 @@
 
 课程原始材料都保留在：
 
-- [docs/course_requirements](/e:/Ufolder/Current/ActionSys/Hgclass/DB/docs/course_requirements)
+- [docs/course_requirements](course_requirements)
 
 ## 结论 2：企业级 HR 数据库不能只有员工、部门、岗位
 
@@ -133,8 +133,8 @@
 
 它们主要放在：
 
-- [docs/research/docs](/e:/Ufolder/Current/ActionSys/Hgclass/DB/docs/research/docs)
-- [docs/research/repos](/e:/Ufolder/Current/ActionSys/Hgclass/DB/docs/research/repos)
+- [docs/research/docs](research/docs)
+- [docs/research/repos](research/repos)
 
 这些资料适合：
 
@@ -144,7 +144,8 @@
 
 ## 推荐阅读顺序
 
-1. [docs/HANDBOOK.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/docs/HANDBOOK.md)
-2. [master/PROJECT_BRIEF.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/PROJECT_BRIEF.md)
-3. [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
+1. [docs/HANDBOOK.md](HANDBOOK.md)
+2. [master/PROJECT_BRIEF.md](../master/PROJECT_BRIEF.md)
+3. [master/contracts/openapi.yaml](../master/contracts/openapi.yaml)
 4. 需要深挖时再看原始参考资料
+

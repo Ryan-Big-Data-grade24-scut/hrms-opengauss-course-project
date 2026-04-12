@@ -1,4 +1,4 @@
-# 后端说明
+﻿# 后端说明
 
 ## 这部分是干什么的
 
@@ -119,7 +119,7 @@
 
 统一看这里：
 
-- [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
+- [master/contracts/openapi.yaml](../master/contracts/openapi.yaml)
 
 ## 接口开发时最重要的三件事
 
@@ -169,3 +169,4 @@ powershell -ExecutionPolicy Bypass -File .\ops\backend\smoke_test.ps1
 
 - 它们已经在接口总说明里冻结了
 - 也和升级后的企业 HR 数据结构一致
+

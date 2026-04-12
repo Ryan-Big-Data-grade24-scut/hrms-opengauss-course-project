@@ -1,4 +1,4 @@
-# 数据库说明
+﻿# 数据库说明
 
 ## 这部分是干什么的
 
@@ -107,8 +107,9 @@
 
 最常用的是：
 
-- [ops/db/apply_migrations.ps1](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/db/apply_migrations.ps1)
-- [ops/db/init_hrms.ps1](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/db/init_hrms.ps1)
-- [ops/db/verify_hrms.ps1](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/db/verify_hrms.ps1)
-- [ops/db/backup_hrms.ps1](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/db/backup_hrms.ps1)
-- [ops/db/restore_hrms.ps1](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/db/restore_hrms.ps1)
+- [ops/db/apply_migrations.ps1](../ops/db/apply_migrations.ps1)
+- [ops/db/init_hrms.ps1](../ops/db/init_hrms.ps1)
+- [ops/db/verify_hrms.ps1](../ops/db/verify_hrms.ps1)
+- [ops/db/backup_hrms.ps1](../ops/db/backup_hrms.ps1)
+- [ops/db/restore_hrms.ps1](../ops/db/restore_hrms.ps1)
+

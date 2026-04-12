@@ -1,4 +1,4 @@
-# 仓库协作规则
+﻿# 仓库协作规则
 
 ## 这个文件是干什么的
 
@@ -26,7 +26,7 @@
 
 主入口是：
 
-- [docs/HANDBOOK.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/docs/HANDBOOK.md)
+- [docs/HANDBOOK.md](docs/HANDBOOK.md)
 
 ### `master/`
 
@@ -39,8 +39,8 @@
 
 主入口是：
 
-- [master/PROJECT_BRIEF.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/PROJECT_BRIEF.md)
-- [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
+- [master/PROJECT_BRIEF.md](master/PROJECT_BRIEF.md)
+- [master/contracts/openapi.yaml](master/contracts/openapi.yaml)
 
 以后不要再恢复一堆分散的计划文档，除非真的有非常强的必要。
 
@@ -83,3 +83,4 @@
 - 能用命令行做的就尽量别靠手工点界面
 - 文档如果过时了，就把有用内容合并回主文档，再删掉旧文档
 - 一切以“队友能看懂、AI 能接手”为优先目标
+

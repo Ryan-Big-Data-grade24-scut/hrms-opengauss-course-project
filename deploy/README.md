@@ -1,4 +1,4 @@
-# 部署说明
+﻿# 部署说明
 
 ## 这个目录是干什么的
 
@@ -33,9 +33,9 @@
 
 ## 相关脚本
 
-- [ops/deploy/build_release_bundle.ps1](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/deploy/build_release_bundle.ps1)
-- [ops/db/backup_hrms.ps1](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/db/backup_hrms.ps1)
-- [ops/db/restore_hrms.ps1](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/db/restore_hrms.ps1)
+- [ops/deploy/build_release_bundle.ps1](../ops/deploy/build_release_bundle.ps1)
+- [ops/db/backup_hrms.ps1](../ops/db/backup_hrms.ps1)
+- [ops/db/restore_hrms.ps1](../ops/db/restore_hrms.ps1)
 
 ## 这部分现在主要服务什么流程
 
@@ -65,4 +65,5 @@
 
 更完整的整体说明统一看：
 
-- [docs/HANDBOOK.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/docs/HANDBOOK.md)
+- [docs/HANDBOOK.md](../docs/HANDBOOK.md)
+

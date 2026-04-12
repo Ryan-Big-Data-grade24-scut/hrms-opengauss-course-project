@@ -1,4 +1,4 @@
-# 前端说明
+﻿# 前端说明
 
 ## 这部分是干什么的
 
@@ -65,7 +65,7 @@
 
 统一看：
 
-- [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
+- [master/contracts/openapi.yaml](../master/contracts/openapi.yaml)
 
 这里要重点看：
 
@@ -122,3 +122,4 @@ npm run dev
 4. 更完整的员工资料页
 
 这样最容易把现在的后端和新的人事主体接起来。
+

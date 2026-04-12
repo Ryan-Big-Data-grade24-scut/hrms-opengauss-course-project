@@ -1,4 +1,4 @@
-# 项目总手册
+﻿# 项目总手册
 
 ## 这是什么
 
@@ -35,8 +35,8 @@
 
 后端入口在：
 
-- [backend/app.py](/e:/Ufolder/Current/ActionSys/Hgclass/DB/backend/app.py)
-- [backend/src/server.py](/e:/Ufolder/Current/ActionSys/Hgclass/DB/backend/src/server.py)
+- [backend/app.py](../backend/app.py)
+- [backend/src/server.py](../backend/src/server.py)
 
 已经能跑的模块有：
 
@@ -52,8 +52,8 @@
 
 前端入口在：
 
-- [frontend/src/main.js](/e:/Ufolder/Current/ActionSys/Hgclass/DB/frontend/src/main.js)
-- [frontend/src/router/index.js](/e:/Ufolder/Current/ActionSys/Hgclass/DB/frontend/src/router/index.js)
+- [frontend/src/main.js](../frontend/src/main.js)
+- [frontend/src/router/index.js](../frontend/src/router/index.js)
 
 当前已经有页面：
 
@@ -67,7 +67,7 @@
 
 统一看：
 
-- [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
+- [master/contracts/openapi.yaml](../master/contracts/openapi.yaml)
 
 它的作用就是：
 
@@ -354,25 +354,26 @@ powershell -ExecutionPolicy Bypass -File .\ops\deploy\build_release_bundle.ps1
 
 ### 想继续看项目现状和下一步
 
-- [master/PROJECT_BRIEF.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/PROJECT_BRIEF.md)
+- [master/PROJECT_BRIEF.md](../master/PROJECT_BRIEF.md)
 
 ### 想看接口
 
-- [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
+- [master/contracts/openapi.yaml](../master/contracts/openapi.yaml)
 
 ### 想做后端
 
-- [backend/README.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/backend/README.md)
+- [backend/README.md](../backend/README.md)
 
 ### 想做前端
 
-- [frontend/README.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/frontend/README.md)
+- [frontend/README.md](../frontend/README.md)
 
 ### 想改数据库
 
-- [sql/README.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/sql/README.md)
+- [sql/README.md](../sql/README.md)
 
 ### 想看基础服务和脚本
 
-- [ops/README.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/README.md)
-- [deploy/README.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/deploy/README.md)
+- [ops/README.md](../ops/README.md)
+- [deploy/README.md](../deploy/README.md)
+

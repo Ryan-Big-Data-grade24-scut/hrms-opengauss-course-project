@@ -1,4 +1,4 @@
-# 项目简报
+﻿# 项目简报
 
 ## 这份文档是给谁看的
 
@@ -173,5 +173,6 @@
 
 ## 最重要的入口
 
-- [docs/HANDBOOK.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/docs/HANDBOOK.md)
-- [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
+- [docs/HANDBOOK.md](../docs/HANDBOOK.md)
+- [master/contracts/openapi.yaml](contracts/openapi.yaml)
+
