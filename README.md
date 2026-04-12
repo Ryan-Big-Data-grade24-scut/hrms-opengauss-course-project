@@ -1,74 +1,72 @@
-# DB Course Project
+# 数据库课程项目
 
-这是一个 `openGauss + Python API + Vue 3` 的课程项目仓库，目标是把它做成一个：
+这是一个基于 `openGauss + Python API + Vue 3` 的企业人事管理系统仓库。
 
-- 队友看得懂
-- AI 接得上
-- CLI 能完整驱动
-- 可以继续扩展成正式 HR 系统
+这个仓库的目标不是堆很多文档，而是让两类人都能快速接手：
 
-的工作区。
+- 你的队友
+- 队友手里的 AI 助手
 
-## 先看哪几个文件
+## 第一次进仓库先看什么
 
-如果你是第一次进入这个仓库，按这个顺序看：
+按这个顺序看就够了：
 
 1. [docs/HANDBOOK.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/docs/HANDBOOK.md)
 2. [master/PROJECT_BRIEF.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/PROJECT_BRIEF.md)
 3. [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
 4. [AGENT.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/AGENT.md)
 
-这四个文件已经足够让人和 AI 快速知道：
+看完这四个，基本就能知道：
 
-- 现在有什么
-- 怎么启动和测试
-- 当前架构长什么样
-- 后面该往哪扩
+- 现在已经做到了哪一步
+- 怎么把整套东西跑起来
+- 后面应该继续做什么
+- 接口和模块是怎么分的
 
-## 现在已经有了什么
+## 现在仓库里已经有了什么
 
-- 持久化的 `openGauss` 数据库
-- 版本化 schema migration
-- backup / restore 脚本
-- 可运行的 Python 后端
-- 可运行的 Vue 前端
-- 初版 OpenAPI 契约
-- release bundle 构建脚本
+- 一个能跑的 `openGauss` 数据库
+- 一套按顺序升级数据库的 SQL 脚本
+- 数据备份和恢复脚本
+- 一个能跑的 Python 后端
+- 一个能跑的 Vue 前端
+- 一份接口总说明 `openapi.yaml`
+- 一套命令行启动、测试、打包脚本
 
-## 目录口径
+## 目录是怎么分工的
 
 - `docs/`
-  - 只放人看的正式文档和原始材料归档
+  - 放人看的文档和原始材料归档
 - `master/`
-  - 只放当前项目简报和共享契约
+  - 放项目现状说明和共享接口契约
 - `ops/`
-  - 只放 CLI 脚本
+  - 放命令行脚本
 - `sql/`
-  - 只放数据库相关脚本，特别是 migrations
+  - 放数据库脚本，尤其是迁移脚本
 - `backend/`
-  - 后端实现
+  - 放后端代码
 - `frontend/`
-  - 前端实现
+  - 放前端代码
 - `deploy/`
-  - 部署模板和发布基座
+  - 放部署模板和发布相关东西
 
-## 常用命令
+## 最常用命令
 
-一键启动：
+一键启动整套环境：
 
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB
 powershell -ExecutionPolicy Bypass -File .\ops\startup\start_stack.ps1
 ```
 
-数据库验证：
+检查数据库是不是正常：
 
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB
 powershell -ExecutionPolicy Bypass -File .\ops\db\verify_hrms.ps1
 ```
 
-后端 smoke test：
+检查后端是不是正常：
 
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB

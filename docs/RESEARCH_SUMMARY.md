@@ -1,41 +1,50 @@
-# Research Summary
+# 调研总结
 
-## Why this repository looks the way it does
+## 这份文档是干什么的
 
-We researched three things:
+这份文档不是操作手册。
 
-1. course constraints
-2. HR database modeling references
-3. practical engineering patterns for a small multi-person team
+它主要回答：
 
-## Course-level conclusion
+- 我们为什么这样设计
+- 我们之前查过什么
+- 为什么最后选了现在这套方案
 
-The hard requirement is to build on `openGauss`.
+## 结论 1：课程硬要求是 `openGauss`
 
-What we did not find in the formal course requirement:
+我们反复核过后，比较稳的结论是：
 
-- no clear statement that deployment must be on Huawei Cloud
+- 课程明确要求基于 `openGauss`
+- 没看到正式要求里明确写“必须上华为云”
 
-So the practical strategy is:
+所以最现实的路线是：
 
-- develop locally with Docker + openGauss
-- keep cloud deployment as an optional shared runtime
+- 本地先用 Docker 跑 `openGauss`
+- 云端部署作为后续可选增强
 
-Raw course files are kept in:
+课程原始材料都保留在：
 
 - [docs/course_requirements](/e:/Ufolder/Current/ActionSys/Hgclass/DB/docs/course_requirements)
 
-## HR database modeling conclusion
+## 结论 2：企业级 HR 数据库不能只有员工、部门、岗位
 
-A toy HR schema is not enough. Mature HR systems usually include:
+如果只做：
 
-- organization structures
-- job catalogs
-- employee profile extensions
-- job history
-- leave types and leave workflow
+- 员工
+- 部门
+- 岗位
 
-That is why our next-generation schema includes:
+那更像课堂演示，不像正式企业系统。
+
+更成熟的人事系统一般还会有：
+
+- 地点
+- 职位类型
+- 员工扩展资料
+- 任职历史
+- 请假类型
+
+所以我们后面才会补这些主体：
 
 - `location`
 - `job`
@@ -43,61 +52,99 @@ That is why our next-generation schema includes:
 - `employee_job_history`
 - `leave_type`
 
-Reference assets are archived in:
+## 结论 3：多人协作不能只靠 git
+
+真实项目里要分清 4 件事：
+
+### 1. git 管代码
+
+主要管：
+
+- 前端代码
+- 后端代码
+- 脚本
+- 文档
+
+### 2. migration 管数据库结构
+
+你可以把它理解成：
+
+- 数据库不是一次建完就永远不变
+- 后面要加表、加字段、加索引
+- 所以要按顺序记录“数据库怎么升级”
+
+### 3. backup / restore 管数据库内容
+
+这个管的是：
+
+- 演示数据
+- 备份数据
+- 恢复数据
+- 本地迁到云端时的数据搬运
+
+### 4. deployment 管运行环境
+
+这个管的是：
+
+- 怎么启动服务
+- 怎么打包
+- 怎么把东西搬到另一台机器
+
+## 结论 4：备份功能不用做得太重
+
+对你们现在这个项目来说，备份恢复不是主业务。
+
+所以我们只保留最基础的能力：
+
+- 一个备份脚本
+- 一个恢复脚本
+- 后端里保留预留接口
+- 文档里写清楚怎么做
+
+这样已经够：
+
+- 课程演示
+- 数据恢复
+- 本地迁移到云端
+
+没必要现在就做成一个很复杂的备份平台。
+
+## 结论 5：当前工程底座已经够继续扩展
+
+现在这套仓库已经有：
+
+- 数据库
+- 后端
+- 前端
+- 脚本
+- 接口总说明
+
+所以后面真正该做的不是推倒重来，而是：
+
+1. 继续补更像企业的人事主体
+2. 补这些主体对应的接口
+3. 补前端页面
+
+## 原始参考资料还在不在
+
+都还在。
+
+只是现在不把它们当“主入口文档”了。
+
+它们主要放在：
 
 - [docs/research/docs](/e:/Ufolder/Current/ActionSys/Hgclass/DB/docs/research/docs)
 - [docs/research/repos](/e:/Ufolder/Current/ActionSys/Hgclass/DB/docs/research/repos)
 
-## Engineering conclusion
+这些资料适合：
 
-For this project scale, the useful engineering baseline is:
+- 需要查来源时再看
+- 需要参考成熟仓库时再看
+- 需要继续做深一点设计时再看
 
-- git manages code
-- migrations manage DB structure
-- backup/restore manages DB data
-- CLI scripts manage startup and release
-- OpenAPI manages the API contract
-
-This is enough to support:
-
-- teamwork
-- AI-assisted development
-- local development
-- later migration to a cloud VM
-
-## Why backup is kept minimal
-
-Backup is not the main business module.
-
-We keep only:
-
-- backup script
-- restore script
-- reserved backend endpoints
-- documentation
-
-That gives us enough for:
-
-- demos
-- migration
-- recovery drills
-
-without turning the project into a full backup product.
-
-## What research remains useful
-
-The raw downloaded assets are intentionally still kept.
-
-They are not the first docs teammates should read, but they are useful when someone needs:
-
-- source references
-- example repos
-- official `openGauss` docs
-- modeling inspiration
-
-## Recommended reading order
+## 推荐阅读顺序
 
 1. [docs/HANDBOOK.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/docs/HANDBOOK.md)
 2. [master/PROJECT_BRIEF.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/PROJECT_BRIEF.md)
 3. [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
-4. raw assets only if deeper context is needed
+4. 需要深挖时再看原始参考资料

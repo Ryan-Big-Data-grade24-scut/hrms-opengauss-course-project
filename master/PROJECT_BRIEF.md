@@ -1,121 +1,168 @@
-# Project Brief
+# 项目简报
 
-## Goal
+## 这个文档是给谁看的
 
-Build a course-ready HR management system on `openGauss` that is:
+这份文档主要给两类人看：
 
-- understandable to teammates
-- friendly to AI-assisted development
-- runnable from CLI
-- easy to extend without breaking the base
+- 新加入的队友
+- 新接手的 AI
 
-## Current state
+它的目标不是讲所有细节，而是用最短时间说清：
 
-### Already implemented
+- 项目现在做到哪了
+- 各模块是谁来接着做最顺
+- 下一步最值得做什么
 
-- persistent `openGauss` database in Docker
-- versioned migrations
-- backup and restore scripts
-- Python backend with working APIs
-- Vue frontend with working demo pages
-- release bundle builder
-- first OpenAPI contract draft
+## 项目目标
 
-### Backend features that already run
+做一个基于 `openGauss` 的企业人事管理系统，要求：
 
-- auth login/profile/logout
-- user CRUD
-- role list and role assignment
-- department CRUD
-- position CRUD
-- employee CRUD and list/detail
-- leave list/create/approve/reject
-- audit list
+- 课程可以交付
+- 小组可以分工
+- 后续可以继续扩展
+- AI 能快速接手
 
-### Contract-first planned resources
+## 当前已经完成的部分
 
-These are already defined in `openapi.yaml` but not fully implemented yet:
+### 数据库
 
-- locations
-- jobs
-- leave types
-- employee profile
-- employee job history
-- some missing detail endpoints
+已经有：
 
-## Architecture
+- 能跑的 `openGauss`
+- 数据不会轻易丢的容器方案
+- 一套按顺序升级数据库结构的脚本
+- 备份和恢复脚本
 
-### Database
+### 后端
 
-- authoritative schema location:
-  - [sql/migrations](/e:/Ufolder/Current/ActionSys/Hgclass/DB/sql/migrations)
-- migration runner:
-  - [ops/db/apply_migrations.ps1](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/db/apply_migrations.ps1)
+已经能跑的功能有：
 
-### Backend
+- 登录 / 个人信息 / 登出
+- 用户管理
+- 角色分配
+- 部门管理
+- 岗位管理
+- 员工管理
+- 请假管理
+- 审计日志查询
 
-- HTTP entry:
-  - [backend/app.py](/e:/Ufolder/Current/ActionSys/Hgclass/DB/backend/app.py)
-- routing:
-  - [backend/src/server.py](/e:/Ufolder/Current/ActionSys/Hgclass/DB/backend/src/server.py)
-- business modules:
-  - [backend/src/services](/e:/Ufolder/Current/ActionSys/Hgclass/DB/backend/src/services)
+### 前端
 
-### Frontend
+已经有页面：
 
-- router:
-  - [frontend/src/router/index.js](/e:/Ufolder/Current/ActionSys/Hgclass/DB/frontend/src/router/index.js)
-- views:
-  - [frontend/src/views](/e:/Ufolder/Current/ActionSys/Hgclass/DB/frontend/src/views)
+- 登录页
+- 员工页
+- 部门页
+- 请假页
+- 个人信息页
 
-### Operations
+### 接口总说明
 
-- startup:
-  - [ops/startup](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/startup)
-- DB scripts:
-  - [ops/db](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/db)
-- backend test:
-  - [ops/backend/smoke_test.ps1](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/backend/smoke_test.ps1)
-- release bundle:
-  - [ops/deploy/build_release_bundle.ps1](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/deploy/build_release_bundle.ps1)
+已经有：
 
-## Team-facing module split
+- [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
 
-### Infrastructure and API owner
+里面已经把：
 
-Should own:
+- 已经做好的接口
+- 先定义但还没实现的接口
 
-- schema evolution
-- migrations
-- OpenAPI contract
-- DB scripts
-- shared backend API patterns
+区分清楚了。
 
-This role should not keep owning every business feature forever.
-Its job is to make the base stable so others can build on top.
+## 当前架构怎么理解
 
-### Business backend contributors
+### 数据库层
 
-Should own concrete modules after the contract is frozen:
+负责：
 
-- employee extensions
-- leave workflow
-- job and location resources
-- profile and history resources
+- 存数据
+- 维护表结构
+- 让后端能查到业务数据
 
-### Frontend contributors
+最重要的位置：
 
-Should build against `openapi.yaml` and current implemented endpoints, then add support for newly implemented resources.
+- [sql/migrations](/e:/Ufolder/Current/ActionSys/Hgclass/DB/sql/migrations)
 
-## What teammates should do next
+### 后端层
 
-### Highest priority
+负责：
 
-1. implement planned backend resources from the OpenAPI contract
-2. extend frontend pages to match the upgraded HR model
-3. enrich seed data and demo workflows
+- 提供接口
+- 处理登录和权限
+- 连接数据库
+- 返回前端需要的数据
 
-### Practical next backend slices
+最重要的位置：
+
+- [backend/app.py](/e:/Ufolder/Current/ActionSys/Hgclass/DB/backend/app.py)
+- [backend/src/server.py](/e:/Ufolder/Current/ActionSys/Hgclass/DB/backend/src/server.py)
+- [backend/src/services](/e:/Ufolder/Current/ActionSys/Hgclass/DB/backend/src/services)
+
+### 前端层
+
+负责：
+
+- 展示页面
+- 调接口
+- 让老师能看到完整操作流程
+
+最重要的位置：
+
+- [frontend/src/router/index.js](/e:/Ufolder/Current/ActionSys/Hgclass/DB/frontend/src/router/index.js)
+- [frontend/src/views](/e:/Ufolder/Current/ActionSys/Hgclass/DB/frontend/src/views)
+
+### 运维脚本层
+
+负责：
+
+- 启动项目
+- 检查项目
+- 备份恢复
+- 打包发布
+
+最重要的位置：
+
+- [ops/startup](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/startup)
+- [ops/db](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/db)
+- [ops/backend](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/backend)
+- [ops/deploy](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/deploy)
+
+## 推荐分工
+
+### 基础设施 / 接口负责人
+
+建议负责：
+
+- 数据库结构继续升级
+- 迁移脚本
+- 共享接口契约
+- 数据库脚本
+- 后端接口骨架
+
+这个角色最重要的任务不是永远亲自写所有业务，而是：
+
+- 把底座搭稳
+- 让别人能接着写
+
+### 业务后端同学
+
+建议接着做：
+
+- `location`
+- `job`
+- `leave_type`
+- `employee_profile`
+- `employee_job_history`
+
+### 前端同学
+
+建议按 `openapi.yaml` 和当前后端已实现接口继续做页面和联调。
+
+## 当前最值得做的下一步
+
+### 后端优先
+
+优先补这些资源：
 
 - `locations`
 - `jobs`
@@ -123,21 +170,30 @@ Should build against `openapi.yaml` and current implemented endpoints, then add 
 - `employee profile`
 - `employee job history`
 
-### Practical next frontend slices
+### 前端优先
 
-- organization management page
-- leave approval actions
-- audit page
-- forms for richer employee data
+优先补这些页面或能力：
 
-## Rules for future changes
+- 组织管理页
+- 请假审批动作
+- 审计页
+- 更完整的员工资料表单
 
-1. New API resources must be added to `openapi.yaml` first.
-2. DB structure changes must go into `sql/migrations/`.
-3. Startup, backup, restore, and release changes must go through `ops/`.
-4. Avoid creating scattered planning docs again. Keep current state here unless a document truly needs to exist on its own.
+### 数据优先
 
-## The two most important files after this one
+优先补：
+
+- 更真实的种子数据
+- 更完整的人事字段
+
+## 后续规则
+
+1. 新接口先写进 `openapi.yaml`
+2. 新数据库结构先写成 migration
+3. 启动、备份、恢复、打包的改动统一进 `ops/`
+4. 不要再把计划拆成一堆零散文档
+
+## 最重要的两个入口
 
 - [docs/HANDBOOK.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/docs/HANDBOOK.md)
 - [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)

@@ -1,158 +1,150 @@
-# Project Handbook
+# 项目总手册
 
-## This repository in one sentence
+## 这是什么
 
-This is a course project workspace for an `openGauss`-based HR management system with:
+这是本仓库最重要的说明文档。
 
-- a persistent database
-- a runnable Python backend API
-- a runnable Vue frontend
-- CLI-first startup, testing, backup, restore, and release scripts
+如果队友只想看一份文档，那就看这份。
 
-If a teammate only reads one document, read this one first.
+这份手册主要回答 4 个问题：
 
-## What already exists
+1. 这个项目现在做成什么样了
+2. 怎么把它跑起来
+3. 怎么检查它有没有跑通
+4. 后面应该从哪里接着做
 
-### Database
+## 现在已经有什么
 
-- Database name: `hrms`
-- Runtime: `openGauss` in Docker
-- Persistence: named volume `opengauss-hrms-data`
-- Schema is versioned through `sql/migrations/`
-- Current migrations:
-  - `V1__baseline.sql`
-  - `V2__org_and_job.sql`
-  - `V3__employee_profile_and_history.sql`
-  - `V4__leave_type_and_leave_upgrade.sql`
+### 数据库
 
-The current schema already includes:
+- 数据库名字：`hrms`
+- 用的是：Docker 里的 `openGauss`
+- 数据不会随着简单重启就消失
+- 数据库结构不是靠一个大 SQL 文件乱跑，而是按顺序升级
 
-- auth and RBAC tables
-- department / position / employee
-- location / job
-- employee profile
-- employee job history
-- leave type / leave request
-- audit log
+这里的“按顺序升级”你可以简单理解成：
 
-### Backend
+- 第一版先建最基础的表
+- 后面需要新表、新字段时，再补第二版、第三版
+- 这样大家不会互相覆盖数据库结构
 
-Backend entry:
+当前已经有这些升级脚本：
+
+- `V1__baseline.sql`
+- `V2__org_and_job.sql`
+- `V3__employee_profile_and_history.sql`
+- `V4__leave_type_and_leave_upgrade.sql`
+
+### 后端
+
+后端入口在：
 
 - [backend/app.py](/e:/Ufolder/Current/ActionSys/Hgclass/DB/backend/app.py)
 - [backend/src/server.py](/e:/Ufolder/Current/ActionSys/Hgclass/DB/backend/src/server.py)
 
-Already implemented modules:
+已经能跑的模块有：
 
-- auth
-- users and roles
-- departments
-- positions
-- employees
-- leaves
-- audits
-- backup/restore placeholders
+- 登录与身份认证
+- 用户和角色
+- 部门
+- 岗位
+- 员工
+- 请假
+- 审计日志
 
-### Frontend
+### 前端
 
-Frontend entry:
+前端入口在：
 
 - [frontend/src/main.js](/e:/Ufolder/Current/ActionSys/Hgclass/DB/frontend/src/main.js)
 - [frontend/src/router/index.js](/e:/Ufolder/Current/ActionSys/Hgclass/DB/frontend/src/router/index.js)
 
-Current pages:
+现在已经有页面：
 
-- login
-- employees
-- departments
-- leaves
-- profile
+- 登录页
+- 员工页
+- 部门页
+- 请假页
+- 个人信息页
 
-### Contracts and release
+### 接口说明
 
-- Shared API contract: [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
-- Release bundle builder: [ops/deploy/build_release_bundle.ps1](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/deploy/build_release_bundle.ps1)
+接口总说明在：
 
-## Folder guide
+- [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
+
+它的作用很简单：
+
+- 告诉大家现在有哪些接口
+- 哪些接口已经做了
+- 哪些接口只是先定好，后面再做
+
+## 目录怎么理解
 
 ### `docs/`
 
-Only keep human-facing docs and raw input assets here.
+这是资料区。
 
-- `HANDBOOK.md`: the main manual
-- `RESEARCH_SUMMARY.md`: what we researched and what we decided
-- `course_requirements/`: official course files
-- `course_materials/project_inputs/`: group-provided raw materials
-- `research/docs/`: downloaded reference pages
-- `research/repos/`: downloaded reference repos
+里面放：
+
+- 总手册
+- 调研总结
+- 老师给的要求
+- 你们组自己原来的文档
+- 下载下来的参考材料
 
 ### `master/`
 
-Only keep the current project brief and shared contracts here.
+这是项目当前状态区。
 
-- `PROJECT_BRIEF.md`: plain-language current state, architecture, next steps
-- `contracts/openapi.yaml`: the API contract
+里面只放：
+
+- 一份项目简报
+- 一份共享接口契约
 
 ### `sql/`
 
-- `migrations/`: versioned schema changes
-- legacy SQL files may still exist for reference, but migrations are authoritative
+这是数据库脚本区。
+
+最重要的是：
+
+- `sql/migrations/`
+
+这里放的是数据库一步一步升级的脚本。
 
 ### `ops/`
 
-CLI-first operational scripts.
+这是命令行脚本区。
 
-- `startup/`: start Docker, DB, backend, frontend
-- `db/`: init, migrate, verify, backup, restore
-- `backend/`: backend start and smoke test
-- `deploy/`: release bundle build
+里面分成：
 
-## Architecture in plain language
+- `startup/`：启动相关
+- `db/`：数据库相关
+- `backend/`：后端启动和测试
+- `deploy/`：打包发布
 
-The stack has 4 practical layers:
+## 怎么启动项目
 
-1. Database layer
-   - `openGauss`
-   - stores HR data
-   - evolves through migrations
+所有命令都从仓库根目录执行。
 
-2. API layer
-   - Python backend
-   - exposes `/api/...`
-   - handles auth, validation, DB calls, audit writes
-
-3. UI layer
-   - Vue 3 frontend
-   - calls backend APIs
-   - gives a usable demo interface
-
-4. Operations layer
-   - PowerShell scripts
-   - starts services
-   - verifies the stack
-   - backs up data
-   - builds a release bundle
-
-## How to start the project
-
-Run everything from the repository root.
-
-### One-command startup
+### 一键启动
 
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB
 powershell -ExecutionPolicy Bypass -File .\ops\startup\start_stack.ps1
 ```
 
-What this does:
+这个命令会依次做这些事：
 
-1. starts Docker Desktop if needed
-2. starts or creates the `openGauss` container
-3. ensures `hrms` exists and applies migrations
-4. starts the backend on `http://127.0.0.1:18080`
-5. starts the frontend on `http://127.0.0.1:5173`
+1. 检查并拉起 Docker
+2. 启动数据库容器
+3. 确保数据库存在，并补上该执行的数据库升级脚本
+4. 启动后端
+5. 启动前端
 
-### Step-by-step startup
+### 分步启动
+
+如果你想看每一步在干什么，就按下面来：
 
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB
@@ -162,56 +154,59 @@ powershell -ExecutionPolicy Bypass -File .\ops\startup\02_start_backend.ps1
 powershell -ExecutionPolicy Bypass -File .\ops\startup\03_start_frontend.ps1
 ```
 
-What each step means:
+每一步的意思是：
 
 - `00_start_docker.ps1`
-  - makes sure Docker Desktop and its engine are alive
+  - 先把 Docker 这个容器运行环境拉起来
 - `01_start_db.ps1`
-  - prepares the `openGauss` container and applies migrations
+  - 把 `openGauss` 数据库跑起来，并把数据库结构补到最新
 - `02_start_backend.ps1`
-  - launches the Python API server
+  - 启动 Python 后端接口服务
 - `03_start_frontend.ps1`
-  - launches the Vite frontend dev server
+  - 启动前端页面
 
-## How to test the project
+## 怎么测试项目
 
-### 1. Verify the database
+### 1. 先测数据库
 
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB
 powershell -ExecutionPolicy Bypass -File .\ops\db\verify_hrms.ps1
 ```
 
-This checks that:
+这个动作是在确认：
 
-- the DB is reachable
-- core tables exist
-- seed data still exists
+- 数据库连得上
+- 关键表还在
+- 基础演示数据还在
 
-### 2. Smoke test the backend
+### 2. 再测后端
 
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB
 powershell -ExecutionPolicy Bypass -File .\ops\backend\smoke_test.ps1
 ```
 
-This script:
+这个脚本会自动做这些事：
 
-1. logs in as `admin`
-2. gets a token
-3. requests employee data
-4. requests department data
-5. requests leave data
+1. 用演示账号登录
+2. 拿到 token
+3. 查员工列表
+4. 查部门列表
+5. 查请假列表
 
-If it passes, the backend and DB are talking correctly.
+如果这个脚本通过，就说明：
 
-### 3. Manual DB inspection
+- 后端正常
+- 后端和数据库是通的
+
+### 3. 手动看数据库
 
 ```powershell
 docker exec -e LD_LIBRARY_PATH=/usr/local/opengauss/lib -it opengauss-hrms /usr/local/opengauss/bin/gsql -h 127.0.0.1 -p 5432 -d hrms -U omm -W OpenGauss123!
 ```
 
-Inside `gsql`, useful commands:
+进去之后可以先执行：
 
 ```sql
 \dt
@@ -220,59 +215,76 @@ select employee_no, full_name, employment_status from employee;
 \q
 ```
 
-What this means:
+这些命令分别在看：
 
-- `\dt`: list tables
-- `schema_migration_history`: show which migrations ran
-- employee query: quick business-data sanity check
+- `\dt`
+  - 当前数据库里有哪些表
+- `schema_migration_history`
+  - 数据库结构已经升级到了哪几步
+- 员工查询
+  - 当前业务数据是不是正常
 
-## Backup and restore
+## 怎么备份和恢复数据
 
-### Backup
+### 备份
 
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB
 powershell -ExecutionPolicy Bypass -File .\ops\db\backup_hrms.ps1
 ```
 
-This exports the current database to `backups/`.
+意思是：
 
-### Restore
+- 把当前数据库导出来
+- 存到 `backups/` 目录里
+
+### 恢复
 
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB
-powershell -ExecutionPolicy Bypass -File .\ops\db\restore_hrms.ps1 -BackupFile .\backups\your_backup.sql
+powershell -ExecutionPolicy Bypass -File .\ops\db\restore_hrms.ps1 -BackupFile .\backups\你的备份.sql
 ```
 
-Important behavior:
+恢复时脚本会先做一件重要的事：
 
-- restore clears the `public` schema first
-- then replays the backup SQL
-- this avoids "table already exists" errors
+- 先把数据库里旧的业务表清掉
+- 再把备份重新导进去
 
-## Release bundle
+这样做的目的就是避免：
+
+- “表已经存在”
+- “恢复到一半报错”
+
+## 怎么打包成发布包
 
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB
 powershell -ExecutionPolicy Bypass -File .\ops\deploy\build_release_bundle.ps1
 ```
 
-This builds `dist/release_bundle`, which is a deployment package, not a development workspace.
+这个命令会生成：
 
-## Accounts and default addresses
+- `dist/release_bundle`
 
-- backend: `http://127.0.0.1:18080`
-- frontend: `http://127.0.0.1:5173`
-- demo account: `admin / 123456`
-- DB user: `omm / OpenGauss123!`
+你可以把它理解成：
 
-## What to read next
+- 这不是开发区
+- 这是拿去部署、迁移、拷走的发布包
 
-- For current project status and next tasks:
+## 现在默认地址和账号
+
+- 后端地址：`http://127.0.0.1:18080`
+- 前端地址：`http://127.0.0.1:5173`
+- 演示账号：`admin / 123456`
+- 数据库账号：`omm / OpenGauss123!`
+
+## 下一步看什么
+
+- 想知道项目当前做到了哪一步、接下来干什么：
   - [master/PROJECT_BRIEF.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/PROJECT_BRIEF.md)
-- For API definitions:
+- 想知道接口有哪些：
   - [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
-- For backend details:
+- 想看后端模块说明：
   - [backend/README.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/backend/README.md)
-- For frontend details:
+- 想看前端模块说明：
   - [frontend/README.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/frontend/README.md)
