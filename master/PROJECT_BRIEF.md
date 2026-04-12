@@ -1,6 +1,6 @@
 # 项目简报
 
-## 这个文档是给谁看的
+## 这份文档是给谁看的
 
 这份文档主要给两类人看：
 
@@ -10,7 +10,8 @@
 它的目标不是讲所有细节，而是用最短时间说清：
 
 - 项目现在做到哪了
-- 各模块是谁来接着做最顺
+- 各层架构现在是什么样
+- 模块还有哪些没做
 - 下一步最值得做什么
 
 ## 项目目标
@@ -24,16 +25,24 @@
 
 ## 当前已经完成的部分
 
-### 数据库
+### 文档层
+
+已经整理成：
+
+- 一份总手册
+- 一份调研总结
+- 一份项目简报
+- 一份接口总说明
+
+### 数据库层
 
 已经有：
 
 - 能跑的 `openGauss`
-- 数据不会轻易丢的容器方案
-- 一套按顺序升级数据库结构的脚本
+- 一套按顺序升级数据库结构的迁移脚本
 - 备份和恢复脚本
 
-### 后端
+### 后端层
 
 已经能跑的功能有：
 
@@ -46,7 +55,7 @@
 - 请假管理
 - 审计日志查询
 
-### 前端
+### 前端层
 
 已经有页面：
 
@@ -56,76 +65,50 @@
 - 请假页
 - 个人信息页
 
-### 接口总说明
+### 基础服务层
 
 已经有：
 
-- [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
+- Docker 启动流程
+- 数据库初始化和验证脚本
+- 后端 smoke test
+- 发布包构建脚本
 
-里面已经把：
+## 当前分层架构
 
-- 已经做好的接口
-- 先定义但还没实现的接口
+### 第 1 层：文档层 `docs/`
 
-区分清楚了。
+给人看。
 
-## 当前架构怎么理解
+### 第 2 层：AI 工作区 / 项目状态层 `master/`
 
-### 数据库层
+给队友和 AI 快速接手。
 
-负责：
+### 第 3 层：前端层 `frontend/`
 
-- 存数据
-- 维护表结构
-- 让后端能查到业务数据
+负责页面和交互。
 
-最重要的位置：
+### 第 4 层：后端层 `backend/`
 
-- [sql/migrations](/e:/Ufolder/Current/ActionSys/Hgclass/DB/sql/migrations)
+负责接请求、查数据库、回数据。
 
-### 后端层
+### 第 5 层：数据库层 `sql/`
 
-负责：
+负责主体、业务域、表结构、字段和升级脚本。
 
-- 提供接口
-- 处理登录和权限
-- 连接数据库
-- 返回前端需要的数据
+### 第 6 层：基础服务层 `ops/ + deploy/`
 
-最重要的位置：
+负责让整套系统能真正跑起来、备份、恢复和打包。
 
-- [backend/app.py](/e:/Ufolder/Current/ActionSys/Hgclass/DB/backend/app.py)
-- [backend/src/server.py](/e:/Ufolder/Current/ActionSys/Hgclass/DB/backend/src/server.py)
-- [backend/src/services](/e:/Ufolder/Current/ActionSys/Hgclass/DB/backend/src/services)
+## 当前还没完成的重点模块
 
-### 前端层
+这些在接口总说明里已经先定下来了，但代码还没完全做：
 
-负责：
-
-- 展示页面
-- 调接口
-- 让老师能看到完整操作流程
-
-最重要的位置：
-
-- [frontend/src/router/index.js](/e:/Ufolder/Current/ActionSys/Hgclass/DB/frontend/src/router/index.js)
-- [frontend/src/views](/e:/Ufolder/Current/ActionSys/Hgclass/DB/frontend/src/views)
-
-### 运维脚本层
-
-负责：
-
-- 启动项目
-- 检查项目
-- 备份恢复
-- 打包发布
-
-最重要的位置：
-
-- [ops/startup](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/startup)
-- [ops/db](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/db)
-- [ops/backend](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/backend)
-- [ops/deploy](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/deploy)
+- `locations`
+- `jobs`
+- `leave-types`
+- `employee profile`
+- `employee job history`
 
 ## 推荐分工
 
@@ -138,11 +121,6 @@
 - 共享接口契约
 - 数据库脚本
 - 后端接口骨架
-
-这个角色最重要的任务不是永远亲自写所有业务，而是：
-
-- 把底座搭稳
-- 让别人能接着写
 
 ### 业务后端同学
 
@@ -164,20 +142,20 @@
 
 优先补这些资源：
 
-- `locations`
-- `jobs`
-- `leave-types`
-- `employee profile`
-- `employee job history`
+1. `locations`
+2. `jobs`
+3. `leave-types`
+4. `employee profile`
+5. `employee job history`
 
 ### 前端优先
 
 优先补这些页面或能力：
 
-- 组织管理页
-- 请假审批动作
-- 审计页
-- 更完整的员工资料表单
+1. 组织管理页
+2. 请假审批动作
+3. 审计页
+4. 更完整的员工资料页
 
 ### 数据优先
 
@@ -193,7 +171,7 @@
 3. 启动、备份、恢复、打包的改动统一进 `ops/`
 4. 不要再把计划拆成一堆零散文档
 
-## 最重要的两个入口
+## 最重要的入口
 
 - [docs/HANDBOOK.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/docs/HANDBOOK.md)
 - [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)

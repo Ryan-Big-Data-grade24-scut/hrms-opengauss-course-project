@@ -4,31 +4,27 @@
 
 这是本仓库最重要的说明文档。
 
-如果队友只想看一份文档，那就看这份。
+如果队友只看一份文档，就看这份。
 
-这份手册主要回答 4 个问题：
+这份文档的目标不是炫术语，而是用人话讲清楚：
 
 1. 这个项目现在做成什么样了
-2. 怎么把它跑起来
-3. 怎么检查它有没有跑通
-4. 后面应该从哪里接着做
+2. 整个仓库分成哪几层
+3. 每一层分别负责什么
+4. 怎么启动、测试、备份、恢复
+5. 队友接下来应该从哪里继续做
 
 ## 现在已经有什么
 
 ### 数据库
 
 - 数据库名字：`hrms`
-- 用的是：Docker 里的 `openGauss`
-- 数据不会随着简单重启就消失
-- 数据库结构不是靠一个大 SQL 文件乱跑，而是按顺序升级
+- 数据库软件：`openGauss`
+- 运行方式：放在 Docker 容器里
+- 数据不会因为简单重启就消失
+- 数据库结构不是靠一个大 SQL 文件反复乱跑，而是按顺序一步步升级
 
-这里的“按顺序升级”你可以简单理解成：
-
-- 第一版先建最基础的表
-- 后面需要新表、新字段时，再补第二版、第三版
-- 这样大家不会互相覆盖数据库结构
-
-当前已经有这些升级脚本：
+当前已经有这些数据库升级脚本：
 
 - `V1__baseline.sql`
 - `V2__org_and_job.sql`
@@ -59,7 +55,7 @@
 - [frontend/src/main.js](/e:/Ufolder/Current/ActionSys/Hgclass/DB/frontend/src/main.js)
 - [frontend/src/router/index.js](/e:/Ufolder/Current/ActionSys/Hgclass/DB/frontend/src/router/index.js)
 
-现在已经有页面：
+当前已经有页面：
 
 - 登录页
 - 员工页
@@ -67,61 +63,139 @@
 - 请假页
 - 个人信息页
 
-### 接口说明
+### 接口总说明
 
-接口总说明在：
+统一看：
 
 - [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
 
-它的作用很简单：
+它的作用就是：
 
 - 告诉大家现在有哪些接口
 - 哪些接口已经做了
-- 哪些接口只是先定好，后面再做
+- 哪些接口只是先定好，后面再实现
+
+## 仓库一共分哪几层
+
+这部分很重要。你可以把整个项目理解成 6 层。
+
+### 第 1 层：文档层 `docs/`
+
+这是“资料区”。
+
+主要放：
+
+- 总手册
+- 调研总结
+- 课程原始要求
+- 小组已有原始材料
+- 下载下来的参考资料
+
+这一层是给人看的。
+
+### 第 2 层：AI 工作区 / 项目状态层 `master/`
+
+这是“当前状态区”。
+
+主要放：
+
+- 一份项目简报
+- 一份共享接口契约
+
+这一层的作用是让：
+
+- 队友快速知道现在做到哪
+- AI 快速知道系统边界和接口边界
+
+### 第 3 层：前端层 `frontend/`
+
+这是“页面层”。
+
+它的任务很简单：
+
+- 把后端接口展示成能点、能看、能演示的页面
+
+前端开发时最重要的两件事：
+
+1. 看清楚 `openapi.yaml` 里的请求和返回
+2. 明确现在已经有的模块、还没做的模块
+
+### 第 4 层：后端层 `backend/`
+
+这是“接口层”。
+
+你可以把它理解成：
+
+- 前端发请求过来
+- 后端接住
+- 后端去查数据库
+- 再把结果整理后返回给前端
+
+所以后端本质上就是：
+
+- 接收前端请求
+- 组织 SQL 或调用数据库逻辑
+- 返回 JSON
+
+### 第 5 层：数据库设计层 `sql/`
+
+这是“数据结构层”。
+
+这里主要有两件事：
+
+1. 数据库表结构本身
+2. 数据库结构怎么一步一步升级
+
+你可以把它理解成：
+
+- 表和字段长什么样
+- 哪些主体属于哪个业务域
+- 以后加字段、加表时怎么安全升级
+
+### 第 6 层：基础服务层 `ops/ + deploy/ + Docker`
+
+这是“运行环境层”。
+
+它主要负责：
+
+- Docker 怎么起
+- 数据库怎么起
+- 后端怎么起
+- 前端怎么起
+- 怎么备份恢复
+- 怎么打成发布包
+
+这一层不直接实现业务，但没有它，整套系统跑不起来。
 
 ## 目录怎么理解
 
 ### `docs/`
 
-这是资料区。
-
-里面放：
-
-- 总手册
-- 调研总结
-- 老师给的要求
-- 你们组自己原来的文档
-- 下载下来的参考材料
+放人看的资料。
 
 ### `master/`
 
-这是项目当前状态区。
+放项目现状和共享接口说明。
 
-里面只放：
+### `frontend/`
 
-- 一份项目简报
-- 一份共享接口契约
+放前端页面代码。
+
+### `backend/`
+
+放后端接口代码。
 
 ### `sql/`
 
-这是数据库脚本区。
-
-最重要的是：
-
-- `sql/migrations/`
-
-这里放的是数据库一步一步升级的脚本。
+放数据库结构和迁移脚本。
 
 ### `ops/`
 
-这是命令行脚本区。
+放命令行脚本。
 
-里面分成：
+### `deploy/`
 
-- `startup/`：启动相关
-- `db/`：数据库相关
-- `backend/`：后端启动和测试
-- `deploy/`：打包发布
+放部署模板和发布相关内容。
 
 ## 怎么启动项目
 
@@ -144,8 +218,6 @@ powershell -ExecutionPolicy Bypass -File .\ops\startup\start_stack.ps1
 
 ### 分步启动
 
-如果你想看每一步在干什么，就按下面来：
-
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB
 powershell -ExecutionPolicy Bypass -File .\ops\startup\00_start_docker.ps1
@@ -154,10 +226,10 @@ powershell -ExecutionPolicy Bypass -File .\ops\startup\02_start_backend.ps1
 powershell -ExecutionPolicy Bypass -File .\ops\startup\03_start_frontend.ps1
 ```
 
-每一步的意思是：
+每一步的意思：
 
 - `00_start_docker.ps1`
-  - 先把 Docker 这个容器运行环境拉起来
+  - 先把 Docker 这个运行环境拉起来
 - `01_start_db.ps1`
   - 把 `openGauss` 数据库跑起来，并把数据库结构补到最新
 - `02_start_backend.ps1`
@@ -167,27 +239,27 @@ powershell -ExecutionPolicy Bypass -File .\ops\startup\03_start_frontend.ps1
 
 ## 怎么测试项目
 
-### 1. 先测数据库
+### 第一步：测数据库
 
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB
 powershell -ExecutionPolicy Bypass -File .\ops\db\verify_hrms.ps1
 ```
 
-这个动作是在确认：
+这一步是在确认：
 
 - 数据库连得上
 - 关键表还在
 - 基础演示数据还在
 
-### 2. 再测后端
+### 第二步：测后端
 
 ```powershell
 cd E:\Ufolder\Current\ActionSys\Hgclass\DB
 powershell -ExecutionPolicy Bypass -File .\ops\backend\smoke_test.ps1
 ```
 
-这个脚本会自动做这些事：
+这个脚本会自动做：
 
 1. 用演示账号登录
 2. 拿到 token
@@ -195,18 +267,18 @@ powershell -ExecutionPolicy Bypass -File .\ops\backend\smoke_test.ps1
 4. 查部门列表
 5. 查请假列表
 
-如果这个脚本通过，就说明：
+如果通过，就说明：
 
 - 后端正常
 - 后端和数据库是通的
 
-### 3. 手动看数据库
+### 第三步：手动看数据库
 
 ```powershell
 docker exec -e LD_LIBRARY_PATH=/usr/local/opengauss/lib -it opengauss-hrms /usr/local/opengauss/bin/gsql -h 127.0.0.1 -p 5432 -d hrms -U omm -W OpenGauss123!
 ```
 
-进去之后可以先执行：
+进去后先执行：
 
 ```sql
 \dt
@@ -233,7 +305,7 @@ cd E:\Ufolder\Current\ActionSys\Hgclass\DB
 powershell -ExecutionPolicy Bypass -File .\ops\db\backup_hrms.ps1
 ```
 
-意思是：
+意思就是：
 
 - 把当前数据库导出来
 - 存到 `backups/` 目录里
@@ -245,15 +317,15 @@ cd E:\Ufolder\Current\ActionSys\Hgclass\DB
 powershell -ExecutionPolicy Bypass -File .\ops\db\restore_hrms.ps1 -BackupFile .\backups\你的备份.sql
 ```
 
-恢复时脚本会先做一件重要的事：
+恢复时脚本会先做一件关键的事：
 
 - 先把数据库里旧的业务表清掉
 - 再把备份重新导进去
 
-这样做的目的就是避免：
+这样做是为了避免：
 
-- “表已经存在”
-- “恢复到一半报错”
+- 表已经存在
+- 恢复到一半报错
 
 ## 怎么打包成发布包
 
@@ -262,7 +334,7 @@ cd E:\Ufolder\Current\ActionSys\Hgclass\DB
 powershell -ExecutionPolicy Bypass -File .\ops\deploy\build_release_bundle.ps1
 ```
 
-这个命令会生成：
+它会生成：
 
 - `dist/release_bundle`
 
@@ -271,20 +343,36 @@ powershell -ExecutionPolicy Bypass -File .\ops\deploy\build_release_bundle.ps1
 - 这不是开发区
 - 这是拿去部署、迁移、拷走的发布包
 
-## 现在默认地址和账号
+## 默认地址和账号
 
-- 后端地址：`http://127.0.0.1:18080`
-- 前端地址：`http://127.0.0.1:5173`
+- 后端：`http://127.0.0.1:18080`
+- 前端：`http://127.0.0.1:5173`
 - 演示账号：`admin / 123456`
 - 数据库账号：`omm / OpenGauss123!`
 
-## 下一步看什么
+## 不同角色下一步看什么
 
-- 想知道项目当前做到了哪一步、接下来干什么：
-  - [master/PROJECT_BRIEF.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/PROJECT_BRIEF.md)
-- 想知道接口有哪些：
-  - [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
-- 想看后端模块说明：
-  - [backend/README.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/backend/README.md)
-- 想看前端模块说明：
-  - [frontend/README.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/frontend/README.md)
+### 想继续看项目现状和下一步
+
+- [master/PROJECT_BRIEF.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/PROJECT_BRIEF.md)
+
+### 想看接口
+
+- [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
+
+### 想做后端
+
+- [backend/README.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/backend/README.md)
+
+### 想做前端
+
+- [frontend/README.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/frontend/README.md)
+
+### 想改数据库
+
+- [sql/README.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/sql/README.md)
+
+### 想看基础服务和脚本
+
+- [ops/README.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/README.md)
+- [deploy/README.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/deploy/README.md)

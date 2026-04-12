@@ -18,37 +18,37 @@
 
 看完这四个，基本就能知道：
 
-- 现在已经做到了哪一步
+- 现在已经有什么
 - 怎么把整套东西跑起来
+- 当前架构分成哪几层
 - 后面应该继续做什么
-- 接口和模块是怎么分的
 
 ## 现在仓库里已经有了什么
 
 - 一个能跑的 `openGauss` 数据库
-- 一套按顺序升级数据库的 SQL 脚本
+- 一套按顺序升级数据库的脚本
 - 数据备份和恢复脚本
 - 一个能跑的 Python 后端
 - 一个能跑的 Vue 前端
 - 一份接口总说明 `openapi.yaml`
 - 一套命令行启动、测试、打包脚本
 
-## 目录是怎么分工的
+## 关键目录入口
 
-- `docs/`
-  - 放人看的文档和原始材料归档
-- `master/`
-  - 放项目现状说明和共享接口契约
-- `ops/`
-  - 放命令行脚本
-- `sql/`
-  - 放数据库脚本，尤其是迁移脚本
-- `backend/`
-  - 放后端代码
-- `frontend/`
-  - 放前端代码
-- `deploy/`
-  - 放部署模板和发布相关东西
+### 文档和项目状态
+
+- [docs/HANDBOOK.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/docs/HANDBOOK.md)
+- [docs/RESEARCH_SUMMARY.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/docs/RESEARCH_SUMMARY.md)
+- [master/PROJECT_BRIEF.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/PROJECT_BRIEF.md)
+- [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
+
+### 代码层
+
+- [backend/README.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/backend/README.md)
+- [frontend/README.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/frontend/README.md)
+- [sql/README.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/sql/README.md)
+- [ops/README.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/ops/README.md)
+- [deploy/README.md](/e:/Ufolder/Current/ActionSys/Hgclass/DB/deploy/README.md)
 
 ## 最常用命令
 
