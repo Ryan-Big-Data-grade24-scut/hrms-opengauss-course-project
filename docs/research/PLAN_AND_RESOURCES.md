@@ -2,7 +2,7 @@
 
 ## 1. 基于现有背景的判断
 
-结合你们的聊天记录、老师要求和现有 `Backup_Recovery_System_Architecture.md`，我建议把主线定成：
+结合你们的聊天记录、老师要求和现有 `docs/course_materials/project_inputs/Backup_Recovery_System_Architecture.md`，我建议把主线定成：
 
 **主线基本盘：企业人力资源管理系统（openGauss 版）**
 
@@ -234,7 +234,7 @@ D. 测试、文档、备份恢复亮点模块
 
 ### 5.1 官方文档下载目录
 
-路径：`research/docs`
+路径：`docs/research/docs`
 
 已下载成功：
 
@@ -251,7 +251,7 @@ D. 测试、文档、备份恢复亮点模块
 
 ### 5.2 本地已拉取仓库
 
-路径：`research/repos`
+路径：`docs/research/repos`
 
 已拉取：
 

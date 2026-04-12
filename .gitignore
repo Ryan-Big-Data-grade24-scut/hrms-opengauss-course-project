@@ -1,6 +1,6 @@
 tmp_docx/
 tmp_requirements/
-research/repos/
+docs/research/repos/
 *.log
 __pycache__/
 *.pyc

@@ -40,11 +40,11 @@
 
 位于：
 
-- [course_requirements](E:/Ufolder/Current/ActionSys/Hgclass/DB/course_requirements)
+- [course_requirements](E:/Ufolder/Current/ActionSys/Hgclass/DB/docs/course_requirements)
 
 其中最关键的是：
 
-- [Database Course Design Requirements.docx](E:/Ufolder/Current/ActionSys/Hgclass/DB/course_requirements/Database%20Course%20Design%20Requirements.docx)
+- [Database Course Design Requirements.docx](E:/Ufolder/Current/ActionSys/Hgclass/DB/docs/course_requirements/Database%20Course%20Design%20Requirements.docx)
 
 它决定了：
 

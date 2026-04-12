@@ -1,65 +1,72 @@
-# DB 课设总接管 AGENT
+# DB Course Project AGENT
 
-本工作区只做一件事：把这次数据库课程设计从“同学讨论里的模糊方向”，收束成一个能按要求交付的 openGauss 项目。
+本工作区只做一件事：把这次数据库课程设计收敛成一个可交付、可演示、可复现的 `openGauss` 项目。
 
 ## 当前边界
 
-- 这里优先处理课程要求、技术落地、数据库设计与最小实现
-- 同学群聊、灵感讨论、公司产品类比都只作为参考，不作为硬依据
-- `course_requirements/` 是本轮判定要求的第一来源
-- 本工作区是当前唯一主落点，所有新结论优先沉淀到这里
+- 这里优先处理课程要求、技术落地、数据库设计、前后端实现与演示材料
+- 同学群聊、灵感讨论、竞品类比只能作参考，不能直接当硬依据
+- 课程正式要求的第一来源是：
+  - `docs/course_requirements/Database Course Design Requirements.docx`
+- 文档统一沉淀到 `docs/`
+- 自动化脚本统一沉淀到 `ops/`
 
 ## 当前目标
 
-1. 锁定课程硬要求与非硬要求
-2. 锁定项目主线与技术边界
-3. 跑通 openGauss 本地环境
-4. 建出最小可交付数据库
-5. 逐步补齐后端、前端、文档与演示材料
+1. 锁定课程硬要求与提交物
+2. 维持并完善 `openGauss` 课设主线
+3. 保持数据库、后端、前端三层都可启动、可验证
+4. 让项目尽可能通过 CLI 工具完成开发、启动、测试
+5. 在主系统稳定的前提下，再推进亮点扩展
 
 ## 当前硬约束
 
-- 一切以 `course_requirements/Database Course Design Requirements.docx` 为准
-- 先确认“必须交什么”，再扩展亮点
+- 一切以 `docs/course_requirements/Database Course Design Requirements.docx` 为准
 - 必须基于 `openGauss`
-- 不能把“华为云”默认等同于“必须上云部署”
-- 先做可演示闭环，再做 AI/备份恢复等增强项
-- 新增脚本、SQL、计划文档优先放在本工作区
+- 不默认把“华为云”理解成必须上云部署
+- 先保证可演示闭环，再做 AI / 备份恢复等增强项
+- 文档目录只认 `docs/`
+- 脚本目录只认 `ops/`
+- 尽可能优先使用 CLI 工具完成开发、启动、调试、验证
 - 不得为了修 Docker 随意执行全局 `wsl --shutdown`
-- 将 `WSL` 视为高敏运行面，默认假设其中可能有重要任务在运行
-- 只有在用户明确允许，或已经确认不会影响重要任务时，才可关闭或重置 WSL
+- 将 `WSL` 视为高敏运行面；除非用户明确允许，否则不要关闭或重置
 
 ## 当前判断
 
 - 当前最稳主线是：`企业人力资源管理系统（openGauss）`
-- 当前最稳亮点是：`备份恢复 / 审计 / AI 查询助手` 三选一或分阶段加入
-- 当前最适合的环境路径是：`本地 Docker + openGauss + CLI`
+- 当前最稳亮点方向是：
+  - `备份恢复`
+  - `审计分析`
+  - `AI 查询助手`
+- 当前最适合的开发路径是：
+  - `本地 Docker + openGauss + CLI`
+  - `Python 后端`
+  - `Vue 3 + Vite` 前端
 
 ## 来源对象
 
 - 课程正式要求：
-  - `E:\Ufolder\Current\ActionSys\Hgclass\DB\course_requirements\Database Course Design Requirements.docx`
-- 课程配套资料：
-  - `E:\Ufolder\Current\ActionSys\Hgclass\DB\course_requirements`
-- 当前背景记录：
-  - `E:\Ufolder\Current\ActionSys\Hgclass\DB\memory.md`
-  - `E:\Ufolder\Current\ActionSys\Hgclass\DB\企业人力管理系统.docx`
-  - `E:\Ufolder\Current\ActionSys\Hgclass\DB\Backup_Recovery_System_Architecture.md`
-- 当前研究与沉淀：
-  - `E:\Ufolder\Current\ActionSys\Hgclass\DB\research`
+  - `E:\Ufolder\Current\ActionSys\Hgclass\DB\docs\course_requirements\Database Course Design Requirements.docx`
+- 课程配套材料：
+  - `E:\Ufolder\Current\ActionSys\Hgclass\DB\docs\course_requirements`
+- 组内已有项目输入：
+  - `E:\Ufolder\Current\ActionSys\Hgclass\DB\docs\course_materials\project_inputs`
+- 研究与资料沉淀：
+  - `E:\Ufolder\Current\ActionSys\Hgclass\DB\docs\research`
 
-## 本轮产物优先级
+## 产物优先级
 
-- `master/`：总计划、步骤清单、需求判定、任务推进记录
-- `sql/`：建库 SQL、初始化数据、查询样例
-- `scripts/`：环境启动、数据库初始化、备份恢复脚本
-- `research/`：官方资料、参考仓库、检索结论
-- 根目录：项目级规则文件与核心说明
+- `master/`：计划、规范、路线图、说明
+- `sql/`：数据库 schema、样例查询、初始化 SQL
+- `backend/`：后端实现
+- `frontend/`：前端实现
+- `ops/`：启动、验证、联调脚本
+- `docs/`：课程材料、研究资料、操作手册、路线图
 
-## 当前执行顺序
+## 执行顺序
 
-1. 先把课程要求翻译成“必须做 / 可选做 / 不要求做”
-2. 再把项目主线收束成最小可交付方案
-3. 然后跑通 openGauss 与最小建库
-4. 再推进后端接口、前端页面、查询与权限
-5. 最后加亮点模块与收尾材料
+1. 先确认课程要求和当前目标是否一致
+2. 再确认数据库、后端、前端是否都能启动
+3. 然后推进最小可演示闭环
+4. 再完善模块和页面
+5. 最后增加亮点功能与交付材料
