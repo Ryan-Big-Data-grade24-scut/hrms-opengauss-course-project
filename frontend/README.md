@@ -1,6 +1,6 @@
 # Frontend
 
-当前前端采用：
+## Stack
 
 - `Vue 3`
 - `Vite`
@@ -9,41 +9,11 @@
 - `Axios`
 - `Vue Router`
 
-目标是：
+## Purpose
 
-- 全程支持 CLI 启动
-- 快速做出管理系统风格页面
-- 直接对接当前后端接口
+The frontend is a lightweight admin console for demoing the HR system.
 
-## 启动方式
-
-先确保后端已启动在：
-
-```text
-http://127.0.0.1:18080
-```
-
-然后执行：
-
-```powershell
-cd E:\Ufolder\Current\ActionSys\Hgclass\DB\frontend
-npm install
-npm run dev
-```
-
-默认前端开发地址：
-
-```text
-http://127.0.0.1:5173
-```
-
-Vite 已经配置了代理：
-
-- `/api` -> `http://127.0.0.1:18080`
-
-所以前端请求后端时不需要手动改跨域。
-
-## 当前页面
+Current pages:
 
 - `/login`
 - `/employees`
@@ -51,6 +21,34 @@ Vite 已经配置了代理：
 - `/leaves`
 - `/profile`
 
-## 演示账号
+## How to run
 
-- `admin / 123456`
+Make sure the backend is already running on:
+
+- `http://127.0.0.1:18080`
+
+Then run:
+
+```powershell
+cd E:\Ufolder\Current\ActionSys\Hgclass\DB\frontend
+npm install
+npm run dev
+```
+
+Frontend address:
+
+- `http://127.0.0.1:5173`
+
+## API behavior
+
+Vite already proxies:
+
+- `/api` -> `http://127.0.0.1:18080`
+
+So frontend code can call `/api/...` directly during development.
+
+## Contract source
+
+The shared API definition is:
+
+- [master/contracts/openapi.yaml](/e:/Ufolder/Current/ActionSys/Hgclass/DB/master/contracts/openapi.yaml)
