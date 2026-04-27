@@ -96,6 +96,15 @@ powershell -ExecutionPolicy Bypass -File .\ops\db\restore_hrms.ps1 -BackupFile .
 powershell -ExecutionPolicy Bypass -File .\ops\deploy\build_release_bundle.ps1
 ```
 
+### 生产环境启动前端（Nginx 静态托管）
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\ops\frontend\start_frontend_nginx.ps1
+```
+
+> **注意**：`ops\frontend\start_frontend.ps1` 启动的是 `npm run dev`（Vite dev server），仅用于本地开发。
+> 生产或演示环境请使用上面的 Nginx 方案。
+
 ## 这层和业务代码的关系
 
 可以这样理解：

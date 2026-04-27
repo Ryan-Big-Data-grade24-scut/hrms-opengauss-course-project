@@ -14,10 +14,12 @@
 
 - `env/backend.env.example`
 - `env/frontend.env.example`
+- `nginx/nginx.conf`
 
 这些文件的作用就是：
 
 - 告诉你后端和前端运行时可能需要哪些配置
+- `nginx/nginx.conf` 是生产环境 Nginx 配置模板，用于静态托管前端构建产物并反向代理后端 API
 
 ## 这个目录和 `ops/` 是什么关系
 
@@ -62,6 +64,18 @@
 - 能迁移
 - 能恢复
 - 能在另一台机器跑起来
+
+## Nginx 静态托管
+
+生产环境推荐用 Nginx 托管构建后的前端，而不是跑 `npm run dev`。
+
+流程：
+
+1. 运行 `ops\deploy\build_release_bundle.ps1` 生成 `dist\release_bundle\frontend_dist`
+2. 运行 `ops\frontend\start_frontend_nginx.ps1` 启动 Nginx（自动使用 `deploy\nginx\nginx.conf` 模板）
+3. Nginx 监听 `http://127.0.0.1:80`，同时反向代理 `/api` 到后端 `http://127.0.0.1:18080`
+
+`npm run dev`（Vite dev server）仅用于本地开发，不应在生产或演示环境直接暴露。
 
 更完整的整体说明统一看：
 
