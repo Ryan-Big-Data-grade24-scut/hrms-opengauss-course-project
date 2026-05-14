@@ -49,6 +49,27 @@
 
 ## 最常用命令
 
+**Linux EC2 已部署宿主启动网页服务**：
+
+```bash
+cd <仓库根目录>
+bash ./start_ec2_web.sh
+```
+
+**Linux EC2 停掉网页服务**：
+
+```bash
+cd <仓库根目录>
+bash ./stop_ec2_web.sh
+```
+
+**Linux EC2 从零部署网页环境**：
+
+```bash
+cd <仓库根目录>
+bash ./ops/ec2/deploy_ec2.sh
+```
+
 **一键启动**整套环境：
 
 ```powershell

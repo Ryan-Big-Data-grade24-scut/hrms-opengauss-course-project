@@ -9,9 +9,22 @@ class DatabaseError(RuntimeError):
     pass
 
 
+def _docker_command():
+    direct = ["docker"]
+    sudo_direct = ["sudo", "-n", "docker"]
+
+    if subprocess.run(direct + ["info"], capture_output=True).returncode == 0:
+        return direct
+
+    if subprocess.run(sudo_direct + ["info"], capture_output=True).returncode == 0:
+        return sudo_direct
+
+    return direct
+
+
 def _gsql_command(sql):
     return [
-        "docker",
+        *_docker_command(),
         "exec",
         "-e",
         "LD_LIBRARY_PATH=/usr/local/opengauss/lib",
