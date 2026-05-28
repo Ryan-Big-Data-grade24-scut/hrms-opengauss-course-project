@@ -80,3 +80,116 @@ export async function fetchLeaves(params) {
 export async function fetchAudits(params) {
   return http.get('/audits', { params })
 }
+
+// ---- Department CRUD ----
+export async function createDepartment(payload) {
+  return http.post('/departments', payload)
+}
+export async function updateDepartment(id, payload) {
+  return http.put(`/departments/${id}`, payload)
+}
+export async function deleteDepartment(id) {
+  return http.delete(`/departments/${id}`)
+}
+
+// ---- Position CRUD ----
+export async function createPosition(payload) {
+  return http.post('/positions', payload)
+}
+export async function updatePosition(id, payload) {
+  return http.put(`/positions/${id}`, payload)
+}
+export async function deletePosition(id) {
+  return http.delete(`/positions/${id}`)
+}
+
+// ---- Leave approve/reject/create ----
+export async function approveLeave(id, payload) {
+  return http.put(`/leaves/${id}/approve`, payload)
+}
+export async function rejectLeave(id, payload) {
+  return http.put(`/leaves/${id}/reject`, payload)
+}
+export async function createLeave(payload) {
+  return http.post('/leaves', payload)
+}
+
+// ---- Location CRUD ----
+export async function fetchLocations() {
+  return http.get('/locations')
+}
+export async function createLocation(payload) {
+  return http.post('/locations', payload)
+}
+export async function updateLocation(id, payload) {
+  return http.put(`/locations/${id}`, payload)
+}
+export async function deleteLocation(id) {
+  return http.delete(`/locations/${id}`)
+}
+
+// ---- Job CRUD ----
+export async function fetchJobs() {
+  return http.get('/jobs')
+}
+export async function createJob(payload) {
+  return http.post('/jobs', payload)
+}
+export async function updateJob(id, payload) {
+  return http.put(`/jobs/${id}`, payload)
+}
+export async function deleteJob(id) {
+  return http.delete(`/jobs/${id}`)
+}
+
+// ---- Leave Type CRUD ----
+export async function fetchLeaveTypes() {
+  return http.get('/leave-types')
+}
+export async function createLeaveType(payload) {
+  return http.post('/leave-types', payload)
+}
+export async function updateLeaveType(id, payload) {
+  return http.put(`/leave-types/${id}`, payload)
+}
+export async function deleteLeaveType(id) {
+  return http.delete(`/leave-types/${id}`)
+}
+
+// ---- Employee Profile ----
+export async function fetchEmployeeProfile(employeeId) {
+  return http.get(`/employees/${employeeId}/profile`)
+}
+export async function updateEmployeeProfile(employeeId, payload) {
+  return http.put(`/employees/${employeeId}/profile`, payload)
+}
+
+// ---- Employee Job History ----
+export async function fetchEmployeeJobHistory(employeeId) {
+  return http.get(`/employees/${employeeId}/job-history`)
+}
+export async function createEmployeeJobHistory(employeeId, payload) {
+  return http.post(`/employees/${employeeId}/job-history`, payload)
+}
+
+// ---- User management (admin) ----
+export async function fetchUsers(params) {
+  return http.get('/users', { params })
+}
+export async function createUser(payload) {
+  return http.post('/users', payload)
+}
+export async function updateUser(userId, payload) {
+  return http.put(`/users/${userId}`, payload)
+}
+export async function deleteUser(userId) {
+  return http.delete(`/users/${userId}`)
+}
+
+// ---- Roles ----
+export async function fetchRoles() {
+  return http.get('/roles')
+}
+export async function replaceUserRoles(userId, payload) {
+  return http.put(`/users/${userId}/roles`, payload)
+}

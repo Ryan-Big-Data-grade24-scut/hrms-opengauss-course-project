@@ -77,7 +77,11 @@ const profile = computed(() => getProfileCache())
 const navItems = [
   { to: '/employees', label: '员工管理' },
   { to: '/departments', label: '部门岗位' },
+  { to: '/locations', label: '办公地点' },
+  { to: '/jobs', label: '职务管理' },
   { to: '/leaves', label: '请假审批' },
+  { to: '/users', label: '用户管理' },
+  { to: '/audits', label: '审计日志' },
   { to: '/profile', label: '个人中心' },
 ]
 
