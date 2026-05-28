@@ -1,7 +1,9 @@
 import hashlib
+import json
 import secrets
-import threading
 from datetime import datetime, timedelta
+
+from src.common.db import execute, json_object_query, query_scalar, sql_literal
 
 
 def hash_password(password):
@@ -19,33 +21,39 @@ def verify_password(raw_password, stored_hash):
     return raw_password == stored_hash
 
 
-class TokenStore:
-    def __init__(self):
-        self._tokens = {}
-        self._lock = threading.Lock()
-
-    def create(self, profile, ttl_hours=12):
-        token = secrets.token_hex(24)
-        expires_at = datetime.utcnow() + timedelta(hours=ttl_hours)
-        with self._lock:
-            self._tokens[token] = {"profile": profile, "expires_at": expires_at}
-        return token
-
-    def get(self, token):
-        if not token:
-            return None
-        with self._lock:
-            item = self._tokens.get(token)
-            if not item:
-                return None
-            if item["expires_at"] < datetime.utcnow():
-                self._tokens.pop(token, None)
-                return None
-            return item["profile"]
-
-    def delete(self, token):
-        with self._lock:
-            self._tokens.pop(token, None)
+def create_token(profile, ttl_hours=12):
+    token = secrets.token_hex(24)
+    expires_at = datetime.utcnow() + timedelta(hours=ttl_hours)
+    execute(
+        f"""
+        INSERT INTO auth_token (token, user_id, profile_json, expires_at)
+        VALUES (
+            {sql_literal(token)},
+            {int(profile['user_id'])},
+            {sql_literal(json.dumps(profile))},
+            {sql_literal(expires_at.isoformat())}
+        );
+        """
+    )
+    return token
 
 
-TOKENS = TokenStore()
+def get_profile(token):
+    if not token:
+        return None
+    row = json_object_query(
+        f"""
+        SELECT profile_json, expires_at FROM auth_token WHERE token = {sql_literal(token)}
+        """
+    )
+    if not row:
+        return None
+    expires_at = datetime.fromisoformat(row["expires_at"])
+    if expires_at < datetime.utcnow():
+        execute(f"DELETE FROM auth_token WHERE token = {sql_literal(token)};")
+        return None
+    return json.loads(row["profile_json"])
+
+
+def delete_token(token):
+    execute(f"DELETE FROM auth_token WHERE token = {sql_literal(token)};")

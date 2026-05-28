@@ -1,5 +1,5 @@
 from src.common.db import bootstrap_rbac, json_object_query, sql_literal
-from src.common.security import TOKENS, verify_password
+from src.common.security import create_token, delete_token, get_profile, verify_password
 
 
 def _profile_sql(username):
@@ -48,13 +48,13 @@ def login(username, password):
     if not verify_password(password, profile["password_hash"]):
         return None
     profile.pop("password_hash", None)
-    token = TOKENS.create(profile)
+    token = create_token(profile)
     return {"token": token, "profile": profile}
 
 
 def get_profile(token):
-    return TOKENS.get(token)
+    return get_profile(token)
 
 
 def logout(token):
-    TOKENS.delete(token)
+    delete_token(token)

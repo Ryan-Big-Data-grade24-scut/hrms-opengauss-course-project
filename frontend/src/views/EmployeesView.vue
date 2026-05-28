@@ -64,11 +64,14 @@
           <el-table-column prop="employment_type" label="雇佣类型" min-width="120" />
           <el-table-column prop="phone" label="电话" min-width="140" />
           <el-table-column prop="employment_status" label="状态" min-width="110" />
-          <el-table-column label="操作" width="180" fixed="right">
+          <el-table-column label="操作" width="240" fixed="right">
             <template #default="{ row }">
               <div class="flex gap-2">
                 <button class="rounded-full bg-[#d9e2ec] px-3 py-1 text-xs font-semibold text-[#102a43]" @click="openEdit(row)">
                   编辑
+                </button>
+                <button class="rounded-full bg-[#e0f2fe] px-3 py-1 text-xs font-semibold text-[#0284c7]" @click="openStatusDialog(row)">
+                  状态变更
                 </button>
                 <button class="rounded-full bg-[#fbdada] px-3 py-1 text-xs font-semibold text-[#b93737]" @click="handleDelete(row)">
                   删除
@@ -154,6 +157,26 @@
         </button>
       </template>
     </el-dialog>
+
+    <!-- Status Change Dialog -->
+    <el-dialog v-model="statusDialogVisible" title="状态变更" width="400px">
+      <p class="mb-3 text-sm text-[#486581]">员工: {{ statusTarget?.full_name }}</p>
+      <el-select v-model="newStatus" placeholder="选择新状态" class="w-full">
+        <el-option label="在职 (active)" value="active" />
+        <el-option label="试用 (probation)" value="probation" />
+        <el-option label="调动 (transferred)" value="transferred" />
+        <el-option label="离职 (resigned)" value="resigned" />
+        <el-option label="退休 (retired)" value="retired" />
+      </el-select>
+      <template #footer>
+        <button class="rounded-full border border-[#bcccdc] px-4 py-2 text-sm font-semibold text-[#486581]" @click="statusDialogVisible = false">
+          取消
+        </button>
+        <button class="ml-3 rounded-full bg-[#102a43] px-4 py-2 text-sm font-semibold text-white" @click="submitStatusChange">
+          确认变更
+        </button>
+      </template>
+    </el-dialog>
   </section>
 </template>
 
@@ -168,6 +191,7 @@ import {
   fetchEmployees,
   fetchPositions,
   updateEmployee,
+  updateEmployeeStatus,
 } from '../api/http'
 
 const emit = defineEmits(['update-title'])
@@ -181,6 +205,10 @@ const departments = ref([])
 const positions = ref([])
 const dialogVisible = ref(false)
 const editingId = ref(null)
+
+const statusDialogVisible = ref(false)
+const statusTarget = ref(null)
+const newStatus = ref('')
 
 const filters = reactive({
   keyword: '',
@@ -326,6 +354,23 @@ async function handleDelete(row) {
     if (error !== 'cancel') {
       ElMessage.error(error.message || '删除失败')
     }
+  }
+}
+
+function openStatusDialog(row) {
+  statusTarget.value = row
+  newStatus.value = row.employment_status
+  statusDialogVisible.value = true
+}
+
+async function submitStatusChange() {
+  try {
+    await updateEmployeeStatus(statusTarget.value.employee_id, newStatus.value)
+    ElMessage.success('状态已变更')
+    statusDialogVisible.value = false
+    await loadEmployees()
+  } catch (error) {
+    ElMessage.error(error.message || '变更失败')
   }
 }
 

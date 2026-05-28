@@ -19,6 +19,13 @@
         <el-table-column prop="department_code" label="编码" width="100" />
         <el-table-column prop="location_name" label="办公地点" width="130" />
         <el-table-column prop="manager_name" label="负责人" width="100" />
+        <el-table-column label="编制/实际" width="100">
+          <template #default="{ row }">
+            <span :class="{ 'text-red-600 font-bold': row.headcount && row.actual_headcount > row.headcount }">
+              {{ row.headcount ?? '-' }} / {{ row.actual_headcount ?? 0 }}
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column label="状态" width="80">
           <template #default="{ row }">
             <el-tag :type="row.status === 1 ? 'success' : 'danger'" size="small">
@@ -55,7 +62,13 @@
           <el-table-column prop="position_code" label="编码" width="100" />
           <el-table-column prop="department_name" label="部门" width="100" />
           <el-table-column prop="level_name" label="职级" width="80" />
-          <el-table-column prop="headcount" label="编制" width="60" />
+          <el-table-column label="编制/实际" width="100">
+            <template #default="{ row }">
+              <span :class="{ 'text-yellow-300 font-bold': row.headcount && row.actual_headcount > row.headcount }">
+                {{ row.headcount ?? '-' }} / {{ row.actual_headcount ?? 0 }}
+              </span>
+            </template>
+          </el-table-column>
           <el-table-column label="状态" width="70">
             <template #default="{ row }">
               <el-tag :type="row.status === 1 ? 'success' : 'danger'" size="small">

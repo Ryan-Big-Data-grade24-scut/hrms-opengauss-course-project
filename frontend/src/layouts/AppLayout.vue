@@ -15,10 +15,13 @@
             v-for="item in navItems"
             :key="item.to"
             :to="item.to"
-            class="rounded-2xl px-4 py-3 text-sm font-medium text-white/78 transition hover:bg-white/10 hover:text-white"
+            class="relative rounded-2xl px-4 py-3 text-sm font-medium text-white/78 transition hover:bg-white/10 hover:text-white"
             active-class="bg-[#f0b429] text-[#102a43] hover:bg-[#f0b429]"
           >
             {{ item.label }}
+            <span v-if="item.badge && item.badge > 0" class="absolute right-3 top-2 rounded-full bg-[#d64545] px-1.5 py-0.5 text-[10px] font-bold text-white">
+              {{ item.badge }}
+            </span>
           </RouterLink>
         </nav>
 
@@ -63,27 +66,31 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 
-import { logout } from '../api/http'
+import { logout, fetchPendingLeaves } from '../api/http'
 import { clearSession, getProfileCache } from '../services/session'
 
 const router = useRouter()
-const pageTitle = ref('员工总览')
+const pageTitle = ref('数据概览')
 const profile = computed(() => getProfileCache())
+const pendingBadge = ref(0)
 
-const navItems = [
+const navItems = computed(() => [
+  { to: '/', label: '数据概览' },
   { to: '/employees', label: '员工管理' },
   { to: '/departments', label: '部门岗位' },
+  { to: '/org-chart', label: '组织架构' },
+  { to: '/directory', label: '组织通讯录' },
   { to: '/locations', label: '办公地点' },
   { to: '/jobs', label: '职务管理' },
-  { to: '/leaves', label: '请假审批' },
+  { to: '/leaves', label: '请假审批', badge: pendingBadge.value },
   { to: '/users', label: '用户管理' },
   { to: '/audits', label: '审计日志' },
   { to: '/profile', label: '个人中心' },
-]
+])
 
 const title = computed(() => pageTitle.value)
 
@@ -100,4 +107,13 @@ async function handleLogout() {
     router.push('/login')
   }
 }
+
+onMounted(async () => {
+  try {
+    const result = await fetchPendingLeaves()
+    pendingBadge.value = (result.data || []).length
+  } catch {
+    pendingBadge.value = 0
+  }
+})
 </script>

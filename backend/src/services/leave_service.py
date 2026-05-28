@@ -117,3 +117,65 @@ def update_leave_status(leave_id, status, actor, comment=None):
         )
     write_audit(actor, status, "leave_request", str(leave_id), f"leave set to {status}")
     return get_leave(leave_id)
+
+
+def list_pending_leaves():
+    return json_array_query(
+        """
+        SELECT
+            l.leave_id,
+            l.employee_id,
+            e.employee_no,
+            e.full_name,
+            l.leave_type,
+            l.start_date,
+            l.end_date,
+            l.reason,
+            l.approval_status,
+            l.leave_type_id,
+            lt.leave_code,
+            lt.leave_name,
+            l.approver_user_id,
+            au.full_name AS approver_name,
+            l.approved_at,
+            l.approval_comment,
+            l.created_at
+        FROM leave_request l
+        JOIN employee e ON e.employee_id = l.employee_id
+        LEFT JOIN leave_type lt ON lt.leave_type_id = l.leave_type_id
+        LEFT JOIN sys_user au ON au.user_id = l.approver_user_id
+        WHERE l.approval_status = 'pending'
+        ORDER BY l.leave_id DESC
+        """
+    )
+
+
+def list_my_leaves(employee_id):
+    return json_array_query(
+        f"""
+        SELECT
+            l.leave_id,
+            l.employee_id,
+            e.employee_no,
+            e.full_name,
+            l.leave_type,
+            l.start_date,
+            l.end_date,
+            l.reason,
+            l.approval_status,
+            l.leave_type_id,
+            lt.leave_code,
+            lt.leave_name,
+            l.approver_user_id,
+            au.full_name AS approver_name,
+            l.approved_at,
+            l.approval_comment,
+            l.created_at
+        FROM leave_request l
+        JOIN employee e ON e.employee_id = l.employee_id
+        LEFT JOIN leave_type lt ON lt.leave_type_id = l.leave_type_id
+        LEFT JOIN sys_user au ON au.user_id = l.approver_user_id
+        WHERE l.employee_id = {int(employee_id)}
+        ORDER BY l.leave_id DESC
+        """
+    )

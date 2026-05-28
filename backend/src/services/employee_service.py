@@ -8,7 +8,9 @@ def list_employees(page_no, page_size, filters):
     if keyword:
         where_parts.append(
             f"(e.employee_no ILIKE '%' || {sql_literal(keyword)} || '%' "
-            f"OR e.full_name ILIKE '%' || {sql_literal(keyword)} || '%')"
+            f"OR e.full_name ILIKE '%' || {sql_literal(keyword)} || '%' "
+            f"OR e.phone ILIKE '%' || {sql_literal(keyword)} || '%' "
+            f"OR e.email ILIKE '%' || {sql_literal(keyword)} || '%')"
         )
     if filters.get("department_id"):
         where_parts.append(f"e.department_id = {int(filters['department_id'])}")
@@ -145,3 +147,60 @@ def update_employee(employee_id, payload, actor):
 def delete_employee(employee_id, actor):
     execute(f"DELETE FROM employee WHERE employee_id = {int(employee_id)};")
     write_audit(actor, "delete", "employee", str(employee_id), "deleted employee")
+
+
+VALID_STATUSES = ("active", "probation", "transferred", "resigned", "retired")
+
+
+def update_employee_status(employee_id, new_status, actor):
+    if new_status not in VALID_STATUSES:
+        raise ValueError(f"invalid status: {new_status}, must be one of {VALID_STATUSES}")
+    old_status = query_scalar(
+        f"SELECT employment_status FROM employee WHERE employee_id = {int(employee_id)};"
+    )
+    if not old_status:
+        raise ValueError(f"employee {employee_id} not found")
+    execute(
+        f"UPDATE employee SET employment_status = {sql_literal(new_status)} "
+        f"WHERE employee_id = {int(employee_id)};"
+    )
+    execute(
+        f"""
+        UPDATE employee_job_history
+        SET end_date = CURRENT_DATE
+        WHERE employee_id = {int(employee_id)} AND end_date IS NULL;
+        """
+    )
+    if new_status in ("active", "transferred"):
+        execute(
+            f"""
+            INSERT INTO employee_job_history (employee_id, department_id, position_id, job_id, manager_employee_id, start_date, change_reason)
+            SELECT employee_id, department_id, position_id, NULL, manager_employee_id, CURRENT_DATE, 'status changed to {new_status}'
+            FROM employee WHERE employee_id = {int(employee_id)};
+            """
+        )
+    write_audit(actor, "status_change", "employee", str(employee_id), f"status changed from {old_status} to {new_status}")
+    return get_employee(employee_id)
+
+
+def list_directory():
+    return json_array_query(
+        """
+        SELECT
+            d.department_name,
+            e.employee_id,
+            e.employee_no,
+            e.full_name,
+            e.gender,
+            e.phone,
+            e.email,
+            p.position_name,
+            mgr.full_name AS manager_name,
+            e.employment_status
+        FROM department d
+        JOIN employee e ON e.department_id = d.department_id AND e.employment_status = 'active'
+        LEFT JOIN position p ON p.position_id = e.position_id
+        LEFT JOIN employee mgr ON mgr.employee_id = e.manager_employee_id
+        ORDER BY d.department_name, e.full_name
+        """
+    )

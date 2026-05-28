@@ -4,34 +4,59 @@
       <div class="flex items-center justify-between gap-3">
         <div>
           <p class="text-xs uppercase tracking-[0.3em] text-[#9fb3c8]">Leave Requests</p>
-          <h3 class="mt-2 text-2xl font-black text-[#102a43]">请假审批列表</h3>
+          <h3 class="mt-2 text-2xl font-black text-[#102a43]">{{ tabLabel }}</h3>
         </div>
         <div class="flex gap-2">
-          <button
-            class="rounded-full bg-[#102a43] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0b1f33]"
-            @click="openCreateLeave"
-          >
-            新增请假
-          </button>
+          <template v-if="activeTab === 'all'">
+            <button
+              class="rounded-full bg-[#102a43] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0b1f33]"
+              @click="openCreateLeave"
+            >
+              新增请假
+            </button>
+          </template>
           <button
             class="rounded-full border border-[#bcccdc] px-4 py-2 text-sm font-semibold text-[#486581] transition hover:border-[#486581]"
-            @click="loadLeaves"
+            @click="loadData"
           >
             刷新
           </button>
         </div>
       </div>
 
+      <!-- Tabs -->
+      <div class="mt-4 flex gap-1 rounded-2xl bg-[#f0f4f8] p-1">
+        <button
+          v-for="tab in tabs"
+          :key="tab.key"
+          class="flex-1 rounded-xl py-2 text-sm font-semibold transition"
+          :class="activeTab === tab.key ? 'bg-white text-[#102a43] shadow-sm' : 'text-[#486581] hover:text-[#102a43]'"
+          @click="switchTab(tab.key)"
+        >
+          {{ tab.label }}
+          <span v-if="tab.key === 'pending' && pendingTotal > 0" class="ml-1 rounded-full bg-[#f0b429] px-1.5 py-0.5 text-xs text-[#102a43]">
+            {{ pendingTotal }}
+          </span>
+        </button>
+      </div>
+
+      <!-- Filters -->
       <div class="mt-4 grid gap-3 md:grid-cols-3">
-        <el-select v-model="leaveFilter.status" clearable placeholder="审批状态" @change="loadLeaves">
+        <el-select v-if="activeTab === 'all'" v-model="leaveFilter.status" clearable placeholder="审批状态" @change="loadData">
           <el-option label="待审批" value="pending" />
           <el-option label="已批准" value="approved" />
           <el-option label="已驳回" value="rejected" />
         </el-select>
-        <el-input v-model="leaveFilter.employee_name" clearable placeholder="按员工姓名搜索" @clear="loadLeaves" />
+        <el-select v-if="activeTab === 'mine'" v-model="mineFilter.status" clearable placeholder="审批状态" @change="loadData">
+          <el-option label="待审批" value="pending" />
+          <el-option label="已批准" value="approved" />
+          <el-option label="已驳回" value="rejected" />
+        </el-select>
+        <el-input v-if="activeTab === 'all'" v-model="leaveFilter.employee_name" clearable placeholder="按员工姓名搜索" @clear="loadData" />
       </div>
 
-      <el-table class="mt-5" :data="leaves" stripe v-loading="loading">
+      <!-- Table -->
+      <el-table class="mt-5" :data="displayLeaves" stripe v-loading="loading">
         <el-table-column prop="employee_no" label="工号" width="100" />
         <el-table-column prop="full_name" label="姓名" width="100" />
         <el-table-column prop="leave_type" label="类型" width="100" />
@@ -49,7 +74,7 @@
         <el-table-column prop="approver_name" label="审批人" width="100" />
         <el-table-column label="操作" width="160" fixed="right">
           <template #default="{ row }">
-            <template v-if="row.approval_status === 'pending'">
+            <template v-if="activeTab !== 'mine' && row.approval_status === 'pending'">
               <el-button size="small" type="success" @click="handleApprove(row)">批准</el-button>
               <el-button size="small" type="warning" @click="handleReject(row)">驳回</el-button>
             </template>
@@ -58,7 +83,8 @@
         </el-table-column>
       </el-table>
 
-      <div class="mt-5 flex justify-end">
+      <!-- Pagination -->
+      <div v-if="activeTab === 'all'" class="mt-5 flex justify-end">
         <el-pagination
           layout="prev, pager, next, total"
           :total="total"
@@ -69,6 +95,7 @@
       </div>
     </div>
 
+    <!-- Side Stats -->
     <div class="space-y-5">
       <div class="rounded-[30px] bg-[#102a43] p-5 text-white shadow-sm">
         <p class="text-xs uppercase tracking-[0.3em] text-white/55">Approval Stats</p>
@@ -160,8 +187,11 @@ import {
   fetchEmployees,
   fetchLeaveTypes,
   fetchLeaves,
+  fetchMyLeaves,
+  fetchPendingLeaves,
   rejectLeave,
 } from '../api/http'
+import { getProfileCache } from '../services/session'
 
 const emit = defineEmits(['update-title'])
 
@@ -170,13 +200,46 @@ const page = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
 const leaves = ref([])
+const pendingLeaves = ref([])
+const myLeaves = ref([])
+const pendingTotal = ref(0)
 const employees = ref([])
 const leaveTypes = ref([])
+
+const activeTab = ref('all')
+
+const tabs = [
+  { key: 'all', label: '全部请假' },
+  { key: 'pending', label: '待我审批' },
+  { key: 'mine', label: '我的申请' },
+]
+
+const tabLabel = computed(() => {
+  const t = tabs.find((t) => t.key === activeTab.value)
+  return t ? t.label : '请假审批列表'
+})
+
+const displayLeaves = computed(() => {
+  if (activeTab.value === 'pending') return pendingLeaves.value
+  if (activeTab.value === 'mine') {
+    if (mineFilter.status) {
+      return myLeaves.value.filter((l) => l.approval_status === mineFilter.status)
+    }
+    return myLeaves.value
+  }
+  return leaves.value
+})
 
 const leaveFilter = reactive({
   status: '',
   employee_name: '',
 })
+
+const mineFilter = reactive({
+  status: '',
+})
+
+const profile = computed(() => getProfileCache())
 
 // ---- Approve / Reject comment ----
 const commentDialogVisible = ref(false)
@@ -213,16 +276,35 @@ function statusLabel(status) {
   return '待审批'
 }
 
-async function loadLeaves() {
+function switchTab(tabKey) {
+  activeTab.value = tabKey
+  loadData()
+}
+
+async function loadData() {
   loading.value = true
   try {
-    const result = await fetchLeaves({
-      page: page.value,
-      page_size: pageSize.value,
-      approval_status: leaveFilter.status || undefined,
-    })
-    leaves.value = result.data.list
-    total.value = result.data.total
+    if (activeTab.value === 'all') {
+      const result = await fetchLeaves({
+        page: page.value,
+        page_size: pageSize.value,
+        approval_status: leaveFilter.status || undefined,
+      })
+      leaves.value = result.data.list
+      total.value = result.data.total
+    } else if (activeTab.value === 'pending') {
+      const result = await fetchPendingLeaves()
+      pendingLeaves.value = result.data || []
+      pendingTotal.value = pendingLeaves.value.length
+    } else if (activeTab.value === 'mine') {
+      const myEmpId = profile.value?.employee_id
+      if (myEmpId) {
+        const result = await fetchMyLeaves(myEmpId)
+        myLeaves.value = result.data || []
+      } else {
+        myLeaves.value = []
+      }
+    }
   } catch (error) {
     ElMessage.error(error.message)
   } finally {
@@ -232,7 +314,7 @@ async function loadLeaves() {
 
 function handlePageChange(nextPage) {
   page.value = nextPage
-  loadLeaves()
+  loadData()
 }
 
 function handleApprove(row) {
@@ -264,7 +346,7 @@ async function submitComment() {
     }
     ElMessage.success(commentAction.value === 'approve' ? '已批准' : '已驳回')
     commentDialogVisible.value = false
-    await loadLeaves()
+    await loadData()
   } catch (error) {
     ElMessage.error(error.message)
   }
@@ -294,7 +376,7 @@ async function submitCreateLeave() {
     })
     ElMessage.success('请假已提交')
     createDialogVisible.value = false
-    await loadLeaves()
+    await loadData()
   } catch (error) {
     ElMessage.error(error.message)
   }
@@ -303,12 +385,15 @@ async function submitCreateLeave() {
 onMounted(async () => {
   emit('update-title', '请假审批')
   await Promise.all([
-    loadLeaves(),
+    loadData(),
     fetchEmployees({ page: 1, page_size: 100 }).then((r) => {
       employees.value = r.data.list
     }),
     fetchLeaveTypes().then((r) => {
       leaveTypes.value = r.data || []
+    }),
+    fetchPendingLeaves().then((r) => {
+      pendingTotal.value = (r.data || []).length
     }),
   ])
 })

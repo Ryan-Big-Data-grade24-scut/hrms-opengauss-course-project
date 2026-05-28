@@ -11,9 +11,15 @@ def list_departments():
         """
         SELECT
             d.*,
-            l.location_name
+            l.location_name,
+            COALESCE(emp_cnt.actual_headcount, 0) AS actual_headcount
         FROM department d
         LEFT JOIN location l ON l.location_id = d.location_id
+        LEFT JOIN (
+            SELECT department_id, COUNT(*) AS actual_headcount
+            FROM employee WHERE employment_status = 'active'
+            GROUP BY department_id
+        ) emp_cnt ON emp_cnt.department_id = d.department_id
         ORDER BY d.department_id DESC
         """
     )
@@ -82,10 +88,16 @@ def list_positions():
         SELECT
             p.*,
             d.department_name,
-            j.job_title
+            j.job_title,
+            COALESCE(emp_cnt.actual_headcount, 0) AS actual_headcount
         FROM position p
         LEFT JOIN department d ON d.department_id = p.department_id
         LEFT JOIN job j ON j.job_id = p.job_id
+        LEFT JOIN (
+            SELECT position_id, COUNT(*) AS actual_headcount
+            FROM employee WHERE employment_status = 'active'
+            GROUP BY position_id
+        ) emp_cnt ON emp_cnt.position_id = p.position_id
         ORDER BY p.position_id DESC
         """
     )

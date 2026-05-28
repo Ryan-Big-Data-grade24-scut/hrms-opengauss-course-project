@@ -193,3 +193,26 @@ export async function fetchRoles() {
 export async function replaceUserRoles(userId, payload) {
   return http.put(`/users/${userId}/roles`, payload)
 }
+
+// ---- Dashboard ----
+export async function fetchDashboardStats() {
+  return http.get('/dashboard/stats')
+}
+
+// ---- Leave pending / mine ----
+export async function fetchPendingLeaves() {
+  return http.get('/leaves/pending')
+}
+export async function fetchMyLeaves(employeeId) {
+  return http.get('/leaves/mine', { params: { employee_id: employeeId } })
+}
+
+// ---- Employee Status ----
+export async function updateEmployeeStatus(employeeId, status) {
+  return http.put(`/employees/${employeeId}/status`, { status })
+}
+
+// ---- Directory ----
+export async function fetchDirectory() {
+  return http.get('/directory')
+}

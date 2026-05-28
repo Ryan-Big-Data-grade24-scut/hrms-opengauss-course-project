@@ -4,6 +4,7 @@ import { getToken } from '../services/session'
 
 const AppLayout = () => import('../layouts/AppLayout.vue')
 const LoginView = () => import('../views/LoginView.vue')
+const DashboardView = () => import('../views/DashboardView.vue')
 const EmployeesView = () => import('../views/EmployeesView.vue')
 const DepartmentsView = () => import('../views/DepartmentsView.vue')
 const LeavesView = () => import('../views/LeavesView.vue')
@@ -12,6 +13,8 @@ const AuditLogView = () => import('../views/AuditLogView.vue')
 const UserManagementView = () => import('../views/UserManagementView.vue')
 const LocationsView = () => import('../views/LocationsView.vue')
 const JobsView = () => import('../views/JobsView.vue')
+const OrgChartView = () => import('../views/OrgChartView.vue')
+const DirectoryView = () => import('../views/DirectoryView.vue')
 
 const router = createRouter({
   history: createWebHistory(),
@@ -28,7 +31,8 @@ const router = createRouter({
       children: [
         {
           path: '',
-          redirect: '/employees',
+          name: 'dashboard',
+          component: DashboardView,
         },
         {
           path: '/employees',
@@ -69,6 +73,16 @@ const router = createRouter({
           path: '/jobs',
           name: 'jobs',
           component: JobsView,
+        },
+        {
+          path: '/org-chart',
+          name: 'org-chart',
+          component: OrgChartView,
+        },
+        {
+          path: '/directory',
+          name: 'directory',
+          component: DirectoryView,
         },
       ],
     },

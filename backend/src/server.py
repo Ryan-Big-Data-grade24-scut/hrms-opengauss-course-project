@@ -167,6 +167,17 @@ class ApiHandler(BaseHTTPRequestHandler):
                 employee_service.delete_employee(int(match.group(1)), user["username"])
                 return self._send(200, ok())
 
+            match = re.fullmatch(r"/api/employees/(\d+)/status", path)
+            if match and method == "PUT":
+                self._require_permission(user, "employee.manage")
+                new_status = body.get("status")
+                if not new_status:
+                    return self._send(*error(4001, "status is required", 400))
+                return self._send(
+                    200,
+                    ok(employee_service.update_employee_status(int(match.group(1)), new_status, user["username"])),
+                )
+
             if path == "/api/locations" and method == "GET":
                 self._require_permission(user, "department.manage")
                 return self._send(200, ok(location_service.list_locations()))
@@ -288,6 +299,24 @@ class ApiHandler(BaseHTTPRequestHandler):
                 filters = {k: v[0] for k, v in query.items()}
                 rows, total = report_service.list_audits(page_no, page_size, filters)
                 return self._send(200, page(rows, total, page_no, page_size))
+
+            if path == "/api/dashboard/stats" and method == "GET":
+                return self._send(200, ok(report_service.get_dashboard_stats()))
+
+            if path == "/api/leaves/pending" and method == "GET":
+                self._require_permission(user, "leave.manage")
+                rows = leave_service.list_pending_leaves()
+                return self._send(200, ok(rows))
+
+            if path == "/api/leaves/mine" and method == "GET":
+                employee_id = query.get("employee_id", [None])[0]
+                if not employee_id:
+                    return self._send(200, ok([]))
+                rows = leave_service.list_my_leaves(int(employee_id))
+                return self._send(200, ok(rows))
+
+            if path == "/api/directory" and method == "GET":
+                return self._send(200, ok(employee_service.list_directory()))
 
             if path == "/api/backups" and method == "GET":
                 return self._send(200, ok(report_service.list_backups()))
