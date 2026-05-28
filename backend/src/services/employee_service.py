@@ -38,10 +38,16 @@ def list_employees(page_no, page_size, filters):
         d.department_name,
         e.position_id,
         p.position_name,
+        e.birth_date,
+        e.id_card_no,
+        e.employment_type,
+        e.manager_employee_id,
+        mgr.full_name AS manager_name,
         e.created_at
     FROM employee e
     LEFT JOIN department d ON d.department_id = e.department_id
     LEFT JOIN position p ON p.position_id = e.position_id
+    LEFT JOIN employee mgr ON mgr.employee_id = e.manager_employee_id
     WHERE {where_clause}
     ORDER BY e.employee_id DESC
     LIMIT {page_size} OFFSET {offset}
@@ -67,10 +73,16 @@ def get_employee(employee_id):
             d.department_name,
             e.position_id,
             p.position_name,
+            e.birth_date,
+            e.id_card_no,
+            e.employment_type,
+            e.manager_employee_id,
+            mgr.full_name AS manager_name,
             e.created_at
         FROM employee e
         LEFT JOIN department d ON d.department_id = e.department_id
         LEFT JOIN position p ON p.position_id = e.position_id
+        LEFT JOIN employee mgr ON mgr.employee_id = e.manager_employee_id
         WHERE e.employee_id = {int(employee_id)}
         """
     )
@@ -80,7 +92,8 @@ def create_employee(payload, actor):
     sql = f"""
     INSERT INTO employee (
         employee_no, full_name, gender, phone, email, hire_date,
-        employment_status, department_id, position_id
+        employment_status, department_id, position_id,
+        birth_date, id_card_no, employment_type, manager_employee_id
     )
     VALUES (
         {sql_literal(payload['employee_no'])},
@@ -91,7 +104,11 @@ def create_employee(payload, actor):
         {sql_literal(payload['hire_date'])},
         {sql_literal(payload.get('employment_status', 'active'))},
         {sql_literal(payload.get('department_id'))},
-        {sql_literal(payload.get('position_id'))}
+        {sql_literal(payload.get('position_id'))},
+        {sql_literal(payload.get('birth_date'))},
+        {sql_literal(payload.get('id_card_no'))},
+        {sql_literal(payload.get('employment_type'))},
+        {sql_literal(payload.get('manager_employee_id'))}
     )
     RETURNING employee_id;
     """
@@ -112,6 +129,10 @@ def update_employee(employee_id, payload, actor):
         "employment_status",
         "department_id",
         "position_id",
+        "birth_date",
+        "id_card_no",
+        "employment_type",
+        "manager_employee_id",
     ):
         if field in payload:
             fields.append(f"{field} = {sql_literal(payload[field])}")

@@ -10,7 +10,12 @@ from src.services import (
     auth_service,
     directory_service,
     employee_service,
+    employee_job_history_service,
+    employee_profile_service,
+    job_service,
     leave_service,
+    leave_type_service,
+    location_service,
     report_service,
     user_service,
 )
@@ -162,6 +167,99 @@ class ApiHandler(BaseHTTPRequestHandler):
                 employee_service.delete_employee(int(match.group(1)), user["username"])
                 return self._send(200, ok())
 
+            if path == "/api/locations" and method == "GET":
+                self._require_permission(user, "department.manage")
+                return self._send(200, ok(location_service.list_locations()))
+            if path == "/api/locations" and method == "POST":
+                self._require_permission(user, "department.manage")
+                return self._send(200, ok(location_service.create_location(body, user["username"])))
+
+            match = re.fullmatch(r"/api/locations/(\d+)", path)
+            if match and method == "GET":
+                self._require_permission(user, "department.manage")
+                return self._send(200, ok(location_service.get_location(int(match.group(1)))))
+            if match and method == "PUT":
+                self._require_permission(user, "department.manage")
+                return self._send(
+                    200,
+                    ok(location_service.update_location(int(match.group(1)), body, user["username"])),
+                )
+            if match and method == "DELETE":
+                self._require_permission(user, "department.manage")
+                location_service.delete_location(int(match.group(1)), user["username"])
+                return self._send(200, ok())
+
+            if path == "/api/jobs" and method == "GET":
+                self._require_permission(user, "department.manage")
+                return self._send(200, ok(job_service.list_jobs()))
+            if path == "/api/jobs" and method == "POST":
+                self._require_permission(user, "department.manage")
+                return self._send(200, ok(job_service.create_job(body, user["username"])))
+
+            match = re.fullmatch(r"/api/jobs/(\d+)", path)
+            if match and method == "GET":
+                self._require_permission(user, "department.manage")
+                return self._send(200, ok(job_service.get_job(int(match.group(1)))))
+            if match and method == "PUT":
+                self._require_permission(user, "department.manage")
+                return self._send(
+                    200,
+                    ok(job_service.update_job(int(match.group(1)), body, user["username"])),
+                )
+            if match and method == "DELETE":
+                self._require_permission(user, "department.manage")
+                job_service.delete_job(int(match.group(1)), user["username"])
+                return self._send(200, ok())
+
+            if path == "/api/leave-types" and method == "GET":
+                self._require_permission(user, "leave.manage")
+                return self._send(200, ok(leave_type_service.list_leave_types()))
+            if path == "/api/leave-types" and method == "POST":
+                self._require_permission(user, "leave.manage")
+                return self._send(200, ok(leave_type_service.create_leave_type(body, user["username"])))
+
+            match = re.fullmatch(r"/api/leave-types/(\d+)", path)
+            if match and method == "GET":
+                self._require_permission(user, "leave.manage")
+                return self._send(200, ok(leave_type_service.get_leave_type(int(match.group(1)))))
+            if match and method == "PUT":
+                self._require_permission(user, "leave.manage")
+                return self._send(
+                    200,
+                    ok(leave_type_service.update_leave_type(int(match.group(1)), body, user["username"])),
+                )
+            if match and method == "DELETE":
+                self._require_permission(user, "leave.manage")
+                leave_type_service.delete_leave_type(int(match.group(1)), user["username"])
+                return self._send(200, ok())
+
+            match = re.fullmatch(r"/api/employees/(\d+)/profile", path)
+            if match and method == "GET":
+                self._require_permission(user, "employee.manage")
+                return self._send(200, ok(employee_profile_service.get_employee_profile(int(match.group(1)))))
+            if match and method == "PUT":
+                self._require_permission(user, "employee.manage")
+                return self._send(
+                    200,
+                    ok(employee_profile_service.update_employee_profile(int(match.group(1)), body, user["username"])),
+                )
+
+            match = re.fullmatch(r"/api/employees/(\d+)/job-history", path)
+            if match and method == "GET":
+                self._require_permission(user, "employee.manage")
+                return self._send(
+                    200,
+                    ok(employee_job_history_service.list_employee_job_history(int(match.group(1)))),
+                )
+            if match and method == "POST":
+                self._require_permission(user, "employee.manage")
+                return self._send(
+                    200,
+                    ok(employee_job_history_service.create_employee_job_history(
+                        int(match.group(1)), body, user["username"]
+                    )),
+                )
+
             if path == "/api/leaves" and method == "GET":
                 self._require_permission(user, "leave.manage")
                 page_no, page_size = _parse_page(query)
@@ -178,7 +276,10 @@ class ApiHandler(BaseHTTPRequestHandler):
                 next_status = "approved" if match.group(2) == "approve" else "rejected"
                 return self._send(
                     200,
-                    ok(leave_service.update_leave_status(int(match.group(1)), next_status, user["username"])),
+                    ok(leave_service.update_leave_status(
+                        int(match.group(1)), next_status, user["username"],
+                        comment=body.get("approval_comment")
+                    )),
                 )
 
             if path == "/api/audits" and method == "GET":

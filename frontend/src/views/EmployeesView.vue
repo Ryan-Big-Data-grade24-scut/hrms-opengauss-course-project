@@ -59,6 +59,9 @@
           <el-table-column prop="full_name" label="姓名" min-width="120" />
           <el-table-column prop="department_name" label="部门" min-width="130" />
           <el-table-column prop="position_name" label="岗位" min-width="150" />
+          <el-table-column prop="birth_date" label="出生日期" min-width="120" />
+          <el-table-column prop="id_card_no" label="身份证号" min-width="170" />
+          <el-table-column prop="employment_type" label="雇佣类型" min-width="120" />
           <el-table-column prop="phone" label="电话" min-width="140" />
           <el-table-column prop="employment_status" label="状态" min-width="110" />
           <el-table-column label="操作" width="180" fixed="right">
@@ -132,6 +135,14 @@
             :value="position.position_id"
           />
         </el-select>
+        <el-input v-model="form.birth_date" placeholder="出生日期 1990-01-01" />
+        <el-input v-model="form.id_card_no" placeholder="身份证号" />
+        <el-select v-model="form.employment_type" placeholder="雇佣类型">
+          <el-option label="full-time" value="full-time" />
+          <el-option label="part-time" value="part-time" />
+          <el-option label="contract" value="contract" />
+          <el-option label="intern" value="intern" />
+        </el-select>
       </div>
 
       <template #footer>
@@ -187,6 +198,9 @@ const form = reactive({
   hire_date: '2026-04-11',
   department_id: 1,
   position_id: 1,
+  birth_date: '',
+  id_card_no: '',
+  employment_type: '',
 })
 
 const selectedDepartmentName = computed(() => {
@@ -210,6 +224,9 @@ function resetForm() {
     hire_date: '2026-04-11',
     department_id: departments.value[0]?.department_id || 1,
     position_id: positions.value[0]?.position_id || 1,
+    birth_date: '',
+    id_card_no: '',
+    employment_type: '',
   })
 }
 
@@ -274,6 +291,9 @@ function openEdit(row) {
     hire_date: String(row.hire_date).slice(0, 10),
     department_id: row.department_id,
     position_id: row.position_id,
+    birth_date: row.birth_date ? String(row.birth_date).slice(0, 10) : '',
+    id_card_no: row.id_card_no || '',
+    employment_type: row.employment_type || '',
   })
   dialogVisible.value = true
 }
