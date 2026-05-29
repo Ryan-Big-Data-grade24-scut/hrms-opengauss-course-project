@@ -20,26 +20,18 @@ const router = createRouter({
       children: [
         { path: '', redirect: '/attrition' },
         { path: '/attrition', name: 'attrition', component: AttritionView },
-        {
-          path: '/talent',
-          name: 'talent',
-          component: () => import('../views/TalentView.vue'),
-        },
-        {
-          path: '/org',
-          name: 'org',
-          component: () => import('../views/OrgPanoramaView.vue'),
-        },
-        {
-          path: '/profile',
-          name: 'profile',
-          component: () => import('../views/ProfileView.vue'),
-        },
-        {
-          path: '/settings',
-          name: 'settings',
-          component: () => import('../views/SettingsView.vue'),
-        },
+        { path: '/talent', name: 'talent', component: () => import('../views/TalentView.vue') },
+        { path: '/org', name: 'org', component: () => import('../views/OrgPanoramaView.vue') },
+        { path: '/profile', name: 'profile', component: () => import('../views/ProfileView.vue') },
+        { path: '/settings', name: 'settings', component: () => import('../views/SettingsView.vue') },
+        // Legacy routes (accessible from settings page)
+        { path: '/employees', name: 'employees', component: () => import('../views/EmployeesView.vue') },
+        { path: '/departments', name: 'departments', component: () => import('../views/DepartmentsView.vue') },
+        { path: '/leaves', name: 'leaves', component: () => import('../views/LeavesView.vue') },
+        { path: '/users', name: 'users', component: () => import('../views/UserManagementView.vue') },
+        { path: '/audits', name: 'audits', component: () => import('../views/AuditLogView.vue') },
+        { path: '/locations', name: 'locations', component: () => import('../views/LocationsView.vue') },
+        { path: '/jobs', name: 'jobs', component: () => import('../views/JobsView.vue') },
       ],
     },
   ],
