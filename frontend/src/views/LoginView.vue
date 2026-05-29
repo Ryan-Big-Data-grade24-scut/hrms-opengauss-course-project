@@ -86,7 +86,7 @@ async function handleSubmit() {
   try {
     await login(form)
     ElMessage.success('登录成功')
-    router.push('/employees')
+    router.push('/attrition')
   } catch (error) {
     ElMessage.error(error.message)
   } finally {
