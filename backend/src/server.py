@@ -16,7 +16,10 @@ from src.services import (
     leave_service,
     leave_type_service,
     location_service,
+    org_service,
+    predict_service,
     report_service,
+    skill_service,
     user_service,
 )
 
@@ -301,6 +304,46 @@ class ApiHandler(BaseHTTPRequestHandler):
                     200,
                     ok({"status": "reserved", "message": "restore workflow reserved for next phase"}),
                 )
+
+            # === New discover endpoints ===
+            if path == "/api/skills" and method == "GET":
+                return self._send(200, ok(skill_service.list_skills(query.get("category_id",[None])[0])))
+            if path == "/api/skills/categories" and method == "GET":
+                return self._send(200, ok(skill_service.list_skill_categories()))
+            if path == "/api/skills/recommend" and method == "GET":
+                sid = query.get("skill_id",[None])[0]
+                if sid: return self._send(200, ok(skill_service.skill_recommendations(int(sid))))
+                return self._send(200, ok([]))
+            if path == "/api/employees/skills" and method == "GET":
+                eid = query.get("employee_id",[None])[0]
+                if eid: return self._send(200, ok(skill_service.get_employee_skills(int(eid))))
+                return self._send(200, ok([]))
+            if path == "/api/employees/skills" and method == "POST":
+                return self._send(200, ok(skill_service.upsert_employee_skill(int(body["employee_id"]),body,user["username"])))
+            if path == "/api/match/employee" and method == "GET":
+                eid = query.get("employee_id",[None])[0]
+                if eid: return self._send(200, ok(skill_service.match_employee_to_positions(int(eid))))
+                return self._send(200, ok([]))
+            if path == "/api/skills/gap" and method == "GET":
+                return self._send(200, ok(skill_service.gap_analysis()))
+            if path == "/api/skills/heatmap" and method == "GET":
+                return self._send(200, ok(skill_service.heatmap()))
+            if path == "/api/predict/attrition" and method == "GET":
+                return self._send(200, ok(predict_service.predict_attrition()))
+            if path == "/api/predict/attrition/train" and method == "POST":
+                return self._send(200, ok(predict_service.train_attrition_model()))
+            if path == "/api/predict/model" and method == "GET":
+                return self._send(200, ok(predict_service.get_model_info()))
+            if path == "/api/org/tree" and method == "GET":
+                return self._send(200, ok(org_service.org_tree()))
+            if path == "/api/org/network" and method == "GET":
+                eid = query.get("employee_id",[None])[0]
+                if eid: return self._send(200, ok(org_service.employee_network(int(eid))))
+                return self._send(200, ok([]))
+            if path == "/api/org/critical" and method == "GET":
+                return self._send(200, ok(org_service.critical_persons()))
+            if path == "/api/org/departments" and method == "GET":
+                return self._send(200, ok(org_service.department_stats()))
 
             self._send(*error(4004, "endpoint not found", 404))
         except PermissionError as exc:

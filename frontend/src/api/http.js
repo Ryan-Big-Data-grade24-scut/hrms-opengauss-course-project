@@ -193,3 +193,5 @@ export async function fetchRoles() {
 export async function replaceUserRoles(userId, payload) {
   return http.put(`/users/${userId}/roles`, payload)
 }
+
+export default http

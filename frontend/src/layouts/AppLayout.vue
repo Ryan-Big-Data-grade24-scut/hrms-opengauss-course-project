@@ -75,14 +75,11 @@ const pageTitle = ref('员工总览')
 const profile = computed(() => getProfileCache())
 
 const navItems = [
-  { to: '/employees', label: '员工管理' },
-  { to: '/departments', label: '部门岗位' },
-  { to: '/locations', label: '办公地点' },
-  { to: '/jobs', label: '职务管理' },
-  { to: '/leaves', label: '请假审批' },
-  { to: '/users', label: '用户管理' },
-  { to: '/audits', label: '审计日志' },
-  { to: '/profile', label: '个人中心' },
+  { to: '/attrition', label: '离职预警' },
+  { to: '/talent', label: '人才发现' },
+  { to: '/org', label: '组织全景' },
+  { to: '/profile', label: '员工档案' },
+  { to: '/settings', label: '系统设置' },
 ]
 
 const title = computed(() => pageTitle.value)
