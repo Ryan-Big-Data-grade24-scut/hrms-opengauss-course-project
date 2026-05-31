@@ -1,6 +1,6 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useState } from 'react'
-import { User, Building2, BarChart3, LogOut, BookOpen } from 'lucide-react'
+import { User, Building2, BarChart3, LogOut, BookOpen, Users, ClipboardList } from 'lucide-react'
 
 export default function Layout() {
   const navigate = useNavigate()
@@ -11,6 +11,8 @@ export default function Layout() {
   const logout = () => { localStorage.clear(); navigate('/login') }
   const nav = [
     { to: '/profile', label: 'Profile & Talent', icon: User },
+    { to: '/org-people', label: 'Organisation & People', icon: Users },
+    { to: '/approval', label: 'Approval Center', icon: ClipboardList },
     { to: '/directory', label: 'Directory', icon: User },
     { to: '/org', label: 'Organization', icon: Building2 },
     { to: '/skills', label: 'Skills', icon: BookOpen },
