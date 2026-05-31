@@ -1,0 +1,3397 @@
+{
+  "sha": "633b5e9dd6d2e4b1fc8e5f2a18276d25d086ca64",
+  "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/633b5e9dd6d2e4b1fc8e5f2a18276d25d086ca64",
+  "tree": [
+    {
+      "path": ".dockerignore",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "17e82bbeac480bb9f5ecb96f01e90b184ea11299",
+      "size": 255,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/17e82bbeac480bb9f5ecb96f01e90b184ea11299"
+    },
+    {
+      "path": ".env.example",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "986e61d12611ed5db2a1750d2a7caf38cc4e1dd0",
+      "size": 163,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/986e61d12611ed5db2a1750d2a7caf38cc4e1dd0"
+    },
+    {
+      "path": ".github",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7605a479c60eca238e56d6e4e17bd91124205318",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/7605a479c60eca238e56d6e4e17bd91124205318"
+    },
+    {
+      "path": ".github/workflows",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "de9e9057700b18b0bd6bb7f369631729373e5528",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/de9e9057700b18b0bd6bb7f369631729373e5528"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2106d24808960b95d7e4eb225bf14689e9486fd9",
+      "size": 917,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/2106d24808960b95d7e4eb225bf14689e9486fd9"
+    },
+    {
+      "path": ".gitignore",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1d7da1222f38a860d3ec7112a0f8ab65e94b3ed9",
+      "size": 526,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/1d7da1222f38a860d3ec7112a0f8ab65e94b3ed9"
+    },
+    {
+      "path": ".husky",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "62a54573cfb9a04036ac98db4f99795de8a94fa0",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/62a54573cfb9a04036ac98db4f99795de8a94fa0"
+    },
+    {
+      "path": ".husky/pre-commit",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "41ae5cc028d82e2b48427ee8c61e56cc82508e37",
+      "size": 80,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/41ae5cc028d82e2b48427ee8c61e56cc82508e37"
+    },
+    {
+      "path": ".prettierignore",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6e9bf27f6427cc011f7ba527a688d6c3bfeb4774",
+      "size": 174,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/6e9bf27f6427cc011f7ba527a688d6c3bfeb4774"
+    },
+    {
+      "path": ".prettierrc",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2f1cd98bd632f39b346f92126e93f8a0413ff30a",
+      "size": 179,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/2f1cd98bd632f39b346f92126e93f8a0413ff30a"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4435ce36aff98af95164e58472cc640eb2ced437",
+      "size": 2969,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/4435ce36aff98af95164e58472cc640eb2ced437"
+    },
+    {
+      "path": "Dockerfile",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fdfadfd2ce210bc747ba19a55e1b38e01d8e4f18",
+      "size": 1379,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/fdfadfd2ce210bc747ba19a55e1b38e01d8e4f18"
+    },
+    {
+      "path": "LICENSE",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a6a552a87102c652e3405f4724d3c440d0b99ad2",
+      "size": 10756,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/a6a552a87102c652e3405f4724d3c440d0b99ad2"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "77818e05bf6330e40b87fffd22a0069de5573567",
+      "size": 6671,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/77818e05bf6330e40b87fffd22a0069de5573567"
+    },
+    {
+      "path": "components.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "edcaef267e34d591c9ae0f0b4cd14a146e6c012f",
+      "size": 451,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/edcaef267e34d591c9ae0f0b4cd14a146e6c012f"
+    },
+    {
+      "path": "docker-compose.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "813d4e3b8a19118ea33020bc305083656ca828a2",
+      "size": 573,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/813d4e3b8a19118ea33020bc305083656ca828a2"
+    },
+    {
+      "path": "eslint.config.mjs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ecb320e87f296f5ba1689e1695ba2dd5d6d9a372",
+      "size": 4771,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/ecb320e87f296f5ba1689e1695ba2dd5d6d9a372"
+    },
+    {
+      "path": "media",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "9cda13a94f344f2d77eaeef5bf8f12e18b27bfce",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/9cda13a94f344f2d77eaeef5bf8f12e18b27bfce"
+    },
+    {
+      "path": "media/iShot_2025-12-09_18.06.49.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "716b848bd305b257d4075f2eaf191c7dd0154a05",
+      "size": 618321,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/716b848bd305b257d4075f2eaf191c7dd0154a05"
+    },
+    {
+      "path": "media/iShot_2025-12-09_18.07.03.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "54691848609cede8bc0679f44591fe14b4fae558",
+      "size": 586674,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/54691848609cede8bc0679f44591fe14b4fae558"
+    },
+    {
+      "path": "media/iShot_2025-12-09_18.07.32.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b7cb060093c510a8f688bc187ffa933c4af3ac16",
+      "size": 734702,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/b7cb060093c510a8f688bc187ffa933c4af3ac16"
+    },
+    {
+      "path": "media/iShot_2025-12-09_18.08.00.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f6ebee8fc76cf737afdf2315dae73bf91545b749",
+      "size": 587395,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/f6ebee8fc76cf737afdf2315dae73bf91545b749"
+    },
+    {
+      "path": "media/iShot_2025-12-09_18.08.33.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9c1b3c404887fe945164d639320e691bfe7d1db6",
+      "size": 1032392,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/9c1b3c404887fe945164d639320e691bfe7d1db6"
+    },
+    {
+      "path": "media/iShot_2025-12-09_18.09.04.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d396151837ca1b749e36e92b64ca284e30f8fe7a",
+      "size": 624902,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/d396151837ca1b749e36e92b64ca284e30f8fe7a"
+    },
+    {
+      "path": "media/iShot_2025-12-09_18.12.35.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8c88fca56157b7f430345db9f919a1f15b8d2710",
+      "size": 2495447,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/8c88fca56157b7f430345db9f919a1f15b8d2710"
+    },
+    {
+      "path": "media/iShot_2025-12-09_18.12.50.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6f0ed545aea6e4bcce71450ff11c070a8c93a665",
+      "size": 488407,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/6f0ed545aea6e4bcce71450ff11c070a8c93a665"
+    },
+    {
+      "path": "media/iShot_2025-12-09_18.14.01.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5e22092989fa53e2f06f470c990ab1d3cba3e845",
+      "size": 655234,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/5e22092989fa53e2f06f470c990ab1d3cba3e845"
+    },
+    {
+      "path": "media/iShot_2025-12-09_18.14.15.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "445bbe1f2fcbbf7d25747257b768782359476018",
+      "size": 522268,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/445bbe1f2fcbbf7d25747257b768782359476018"
+    },
+    {
+      "path": "media/iShot_2025-12-09_18.14.28.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "44af71a1df1cb29493816c8acd1d9d17411a8b27",
+      "size": 466949,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/44af71a1df1cb29493816c8acd1d9d17411a8b27"
+    },
+    {
+      "path": "media/iShot_2025-12-09_18.14.43.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "af25844882bdc947a5804255dc31f32ad40e59f4",
+      "size": 454731,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/af25844882bdc947a5804255dc31f32ad40e59f4"
+    },
+    {
+      "path": "media/iShot_2025-12-09_18.14.57.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e23d146df02ecd2493ae2db14b1748307237359e",
+      "size": 503967,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/e23d146df02ecd2493ae2db14b1748307237359e"
+    },
+    {
+      "path": "media/iShot_2025-12-09_18.15.10.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "173d4fa633091ad0c4703f63a7081ecdf797a6bd",
+      "size": 470422,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/173d4fa633091ad0c4703f63a7081ecdf797a6bd"
+    },
+    {
+      "path": "media/iShot_2025-12-09_19.21.27.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a67b123dc2269c31ed4ca709b5852643e25a4724",
+      "size": 158313,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/a67b123dc2269c31ed4ca709b5852643e25a4724"
+    },
+    {
+      "path": "next.config.mjs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b8f878e8fda6c2646cf2eaa0e741f441a4c23704",
+      "size": 483,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/b8f878e8fda6c2646cf2eaa0e741f441a4c23704"
+    },
+    {
+      "path": "package.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "62373308a4362eac783b0f9e640d60f9c577f6c5",
+      "size": 2617,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/62373308a4362eac783b0f9e640d60f9c577f6c5"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8a0e718ac2015dd1631658775fac80c45643256f",
+      "size": 322344,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/8a0e718ac2015dd1631658775fac80c45643256f"
+    },
+    {
+      "path": "postcss.config.mjs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a869506ee48c89838ee770863c5d99ba97eeb930",
+      "size": 144,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/a869506ee48c89838ee770863c5d99ba97eeb930"
+    },
+    {
+      "path": "public",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "4c7f5a36b17a1c04b1ccd52fc2caca7d68589157",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/4c7f5a36b17a1c04b1ccd52fc2caca7d68589157"
+    },
+    {
+      "path": "public/avatars",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "10e6118e626b50f205b13f50398b8dc235e9ce6d",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/10e6118e626b50f205b13f50398b8dc235e9ce6d"
+    },
+    {
+      "path": "public/avatars/user-01.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d9e1890e1e6d77670fdca947faf565da5a78539e",
+      "size": 32807,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/d9e1890e1e6d77670fdca947faf565da5a78539e"
+    },
+    {
+      "path": "public/avatars/user-011.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8f95305e7b750f7093ac50a75e68fad8d5841f95",
+      "size": 27795,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/8f95305e7b750f7093ac50a75e68fad8d5841f95"
+    },
+    {
+      "path": "public/avatars/user-02.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "976c1150aa79fc3a06f5f6b6155714f43f440bc8",
+      "size": 23880,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/976c1150aa79fc3a06f5f6b6155714f43f440bc8"
+    },
+    {
+      "path": "public/avatars/user-03.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "324ad7d98031b9cf40552a1ed3ae6b0b89ba98ad",
+      "size": 21970,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/324ad7d98031b9cf40552a1ed3ae6b0b89ba98ad"
+    },
+    {
+      "path": "public/avatars/user-04.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "abfa43fac46a6d451eb709fc54812e715ce87047",
+      "size": 14489,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/abfa43fac46a6d451eb709fc54812e715ce87047"
+    },
+    {
+      "path": "public/avatars/user-05.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8b7f184af7454d78a366d7203e5d1d2688505f1f",
+      "size": 24747,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/8b7f184af7454d78a366d7203e5d1d2688505f1f"
+    },
+    {
+      "path": "public/avatars/user-06.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ad0b807f2a293f3e86eab3c2e3a9ce252448b9e8",
+      "size": 25325,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/ad0b807f2a293f3e86eab3c2e3a9ce252448b9e8"
+    },
+    {
+      "path": "public/avatars/user-07.jpg",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "580876389df3ce53f13efbf5441ca8a83f8b88b1",
+      "size": 62288,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/580876389df3ce53f13efbf5441ca8a83f8b88b1"
+    },
+    {
+      "path": "public/images",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "78f68c6e8a93e31ae27ec6a568228f345d39b2cc",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/78f68c6e8a93e31ae27ec6a568228f345d39b2cc"
+    },
+    {
+      "path": "public/images/bg-profile.jpeg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2a1df5f58088cbceff97e15cfd6c9516906031f3",
+      "size": 317812,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/2a1df5f58088cbceff97e15cfd6c9516906031f3"
+    },
+    {
+      "path": "public/images/logo.png",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "700c353c39f86cba464ffef6ad69aaab30744615",
+      "size": 13018,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/700c353c39f86cba464ffef6ad69aaab30744615"
+    },
+    {
+      "path": "public/projects",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "5b4e02cfe2c200542f95a74a1bd8dd48eb184f5f",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/5b4e02cfe2c200542f95a74a1bd8dd48eb184f5f"
+    },
+    {
+      "path": "public/projects/project-01.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "99a47f2084d5a47f72af26fcc70240da1826619d",
+      "size": 299730,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/99a47f2084d5a47f72af26fcc70240da1826619d"
+    },
+    {
+      "path": "public/projects/project-02.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "571b770e333e4d9de51560af26e1259d55df13e1",
+      "size": 178848,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/571b770e333e4d9de51560af26e1259d55df13e1"
+    },
+    {
+      "path": "public/projects/project-03.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0f39a0dc3b10e1662075d8a3cbd4513b468e6d42",
+      "size": 139474,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/0f39a0dc3b10e1662075d8a3cbd4513b468e6d42"
+    },
+    {
+      "path": "public/projects/project-04.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1c3a3443265e7bb59ff393773d779c40be0e2d5c",
+      "size": 155967,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/1c3a3443265e7bb59ff393773d779c40be0e2d5c"
+    },
+    {
+      "path": "src",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "3fbcaed0e9b9eb0351b6155bd62c9db832c61de5",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/3fbcaed0e9b9eb0351b6155bd62c9db832c61de5"
+    },
+    {
+      "path": "src/app",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "0bcaa3fda8af66ac483a17f6f6cc506d75e45c3b",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/0bcaa3fda8af66ac483a17f6f6cc506d75e45c3b"
+    },
+    {
+      "path": "src/app/(external)",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "b53a40fbb3c8330289df25a57636c86dda944866",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/b53a40fbb3c8330289df25a57636c86dda944866"
+    },
+    {
+      "path": "src/app/(external)/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b7902fb1f94ae44f00ed94ea17e32b0d209e535a",
+      "size": 141,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/b7902fb1f94ae44f00ed94ea17e32b0d209e535a"
+    },
+    {
+      "path": "src/app/(main)",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "bb8772da637c2a63e402a905eae155580b59dd72",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/bb8772da637c2a63e402a905eae155580b59dd72"
+    },
+    {
+      "path": "src/app/(main)/auth",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "1f433b61898ecb7b1d109be86b9adc2f8c9a1714",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/1f433b61898ecb7b1d109be86b9adc2f8c9a1714"
+    },
+    {
+      "path": "src/app/(main)/auth/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "25961045777413d348de97b787e1e1a409f9f59c",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/25961045777413d348de97b787e1e1a409f9f59c"
+    },
+    {
+      "path": "src/app/(main)/auth/_components/login-form.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "46e5f76648202abdc9c4dfa40a5bde7644b4e7fd",
+      "size": 3050,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/46e5f76648202abdc9c4dfa40a5bde7644b4e7fd"
+    },
+    {
+      "path": "src/app/(main)/auth/_components/register-form.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ddc0db5928f0a2690f37211ae208d4973d707361",
+      "size": 3017,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/ddc0db5928f0a2690f37211ae208d4973d707361"
+    },
+    {
+      "path": "src/app/(main)/auth/_components/social-auth",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "2fa2ae5e9e218cbc90f8f0c370fba30048a6ab32",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/2fa2ae5e9e218cbc90f8f0c370fba30048a6ab32"
+    },
+    {
+      "path": "src/app/(main)/auth/_components/social-auth/google-button.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "439f5cbe48636ced5eca720fe013ddc18cb669b2",
+      "size": 465,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/439f5cbe48636ced5eca720fe013ddc18cb669b2"
+    },
+    {
+      "path": "src/app/(main)/auth/v1",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "de42f11258b77e2033309719ffe51677cb831689",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/de42f11258b77e2033309719ffe51677cb831689"
+    },
+    {
+      "path": "src/app/(main)/auth/v1/login",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "c75ed92beb4204811ea4b81d7d130ca63c9f32ba",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/c75ed92beb4204811ea4b81d7d130ca63c9f32ba"
+    },
+    {
+      "path": "src/app/(main)/auth/v1/login/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ec3652d242d4da82223e5cc0303d685125c0e473",
+      "size": 1712,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/ec3652d242d4da82223e5cc0303d685125c0e473"
+    },
+    {
+      "path": "src/app/(main)/auth/v1/register",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "777901b7a917de8d63710889b7bd38f255db973f",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/777901b7a917de8d63710889b7bd38f255db973f"
+    },
+    {
+      "path": "src/app/(main)/auth/v1/register/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "217d31107fdbb5c439709be633de8e58a19a243f",
+      "size": 1700,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/217d31107fdbb5c439709be633de8e58a19a243f"
+    },
+    {
+      "path": "src/app/(main)/auth/v2",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "c45cc3d7a499638e8afa518e05cc4f05164a6da7",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/c45cc3d7a499638e8afa518e05cc4f05164a6da7"
+    },
+    {
+      "path": "src/app/(main)/auth/v2/layout.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d0d0a37d549738fdd6531a918635a1e18e4eb2b2",
+      "size": 1602,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/d0d0a37d549738fdd6531a918635a1e18e4eb2b2"
+    },
+    {
+      "path": "src/app/(main)/auth/v2/login",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "02b4a255b04af6fb2869c962dce8847567199c7c",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/02b4a255b04af6fb2869c962dce8847567199c7c"
+    },
+    {
+      "path": "src/app/(main)/auth/v2/login/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a3632e1089248d7082b118f1f1d6b95b47bed9be",
+      "size": 1692,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/a3632e1089248d7082b118f1f1d6b95b47bed9be"
+    },
+    {
+      "path": "src/app/(main)/auth/v2/register",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "8cfe20c027fad8493c158a9445cf3d02ad599dd4",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/8cfe20c027fad8493c158a9445cf3d02ad599dd4"
+    },
+    {
+      "path": "src/app/(main)/auth/v2/register/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a3f0f9943cb175f87db3da9aa1c7113ee08d3135",
+      "size": 1698,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/a3f0f9943cb175f87db3da9aa1c7113ee08d3135"
+    },
+    {
+      "path": "src/app/(main)/dashboard",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "c2e314e6d4fa4da467e13b406af7306803c38d8a",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/c2e314e6d4fa4da467e13b406af7306803c38d8a"
+    },
+    {
+      "path": "src/app/(main)/dashboard/[...not-found]",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "bf957180363bc54be4ba8147ddfbbfbeeed72eb9",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/bf957180363bc54be4ba8147ddfbbfbeeed72eb9"
+    },
+    {
+      "path": "src/app/(main)/dashboard/[...not-found]/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6ea3c3357ac0fe8d2f77e0131707583bc4bd637c",
+      "size": 146,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/6ea3c3357ac0fe8d2f77e0131707583bc4bd637c"
+    },
+    {
+      "path": "src/app/(main)/dashboard/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "e59971d3e5a3aa38d1b7df01823c0fbbefcd4443",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/e59971d3e5a3aa38d1b7df01823c0fbbefcd4443"
+    },
+    {
+      "path": "src/app/(main)/dashboard/_components/not-found-card.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f2b0749d552f090637163050c1434bc98c567dd1",
+      "size": 1532,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/f2b0749d552f090637163050c1434bc98c567dd1"
+    },
+    {
+      "path": "src/app/(main)/dashboard/_components/sidebar",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "0f6999e168841b898221279a242dd1d75b297340",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/0f6999e168841b898221279a242dd1d75b297340"
+    },
+    {
+      "path": "src/app/(main)/dashboard/_components/sidebar/account-switcher.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "84b7a83d2be9ec33389a89625afdda2ea0306848",
+      "size": 2992,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/84b7a83d2be9ec33389a89625afdda2ea0306848"
+    },
+    {
+      "path": "src/app/(main)/dashboard/_components/sidebar/app-sidebar.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e687e2d8d6b0e1318c91970b7906528f630953da",
+      "size": 1462,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/e687e2d8d6b0e1318c91970b7906528f630953da"
+    },
+    {
+      "path": "src/app/(main)/dashboard/_components/sidebar/layout-controls.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "08bd7c8cfd22ac4314cae9ec4c6ab1df323af00e",
+      "size": 7611,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/08bd7c8cfd22ac4314cae9ec4c6ab1df323af00e"
+    },
+    {
+      "path": "src/app/(main)/dashboard/_components/sidebar/nav-documents.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4cca385aa3e7eeb02066cf4a56a5612304241270",
+      "size": 2462,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/4cca385aa3e7eeb02066cf4a56a5612304241270"
+    },
+    {
+      "path": "src/app/(main)/dashboard/_components/sidebar/nav-main.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "17ea71ed5360af4565b62409967fff232aba196d",
+      "size": 8015,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/17ea71ed5360af4565b62409967fff232aba196d"
+    },
+    {
+      "path": "src/app/(main)/dashboard/_components/sidebar/nav-secondary.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8b45f85bfa152bea672c406ff11b80e2eddc7dc1",
+      "size": 926,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/8b45f85bfa152bea672c406ff11b80e2eddc7dc1"
+    },
+    {
+      "path": "src/app/(main)/dashboard/_components/sidebar/nav-user.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0e0b794dd5fcc4d7e709e65267a13bb1d756d4a1",
+      "size": 3364,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/0e0b794dd5fcc4d7e709e65267a13bb1d756d4a1"
+    },
+    {
+      "path": "src/app/(main)/dashboard/_components/sidebar/search-dialog.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c1ed50fe9d7864f205682bb81eab374e4598215a",
+      "size": 2858,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/c1ed50fe9d7864f205682bb81eab374e4598215a"
+    },
+    {
+      "path": "src/app/(main)/dashboard/_components/sidebar/theme-switcher.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "540f2f706ae1de0a4ddfb02f9272150c38a98c35",
+      "size": 817,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/540f2f706ae1de0a4ddfb02f9272150c38a98c35"
+    },
+    {
+      "path": "src/app/(main)/dashboard/_components/tab-bar.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ab90035b85c8ee253287770fdfc54ac7cf96f068",
+      "size": 4074,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/ab90035b85c8ee253287770fdfc54ac7cf96f068"
+    },
+    {
+      "path": "src/app/(main)/dashboard/academy",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "67372f84d562120490fa4e1b9f118ebe7d3cd542",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/67372f84d562120490fa4e1b9f118ebe7d3cd542"
+    },
+    {
+      "path": "src/app/(main)/dashboard/academy/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "28b6cce2c80c83d49a8da0e79a17f100870e0e36",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/28b6cce2c80c83d49a8da0e79a17f100870e0e36"
+    },
+    {
+      "path": "src/app/(main)/dashboard/academy/_components/academy-data.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b16fd7ea4e8bee1e1c1452636e82df72ea3c9647",
+      "size": 5879,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/b16fd7ea4e8bee1e1c1452636e82df72ea3c9647"
+    },
+    {
+      "path": "src/app/(main)/dashboard/academy/_components/achievements.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5e887599065d683d5fb7d0dc1b23bcfe7a07f6f9",
+      "size": 2365,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/5e887599065d683d5fb7d0dc1b23bcfe7a07f6f9"
+    },
+    {
+      "path": "src/app/(main)/dashboard/academy/_components/category-chart.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5b43adffd3f007cf2095d418cdade8d3ea63e6be",
+      "size": 2050,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/5b43adffd3f007cf2095d418cdade8d3ea63e6be"
+    },
+    {
+      "path": "src/app/(main)/dashboard/academy/_components/course-cards.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d044cd41fea0c4a624ae6bfc2288a2f50ddf854e",
+      "size": 4076,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/d044cd41fea0c4a624ae6bfc2288a2f50ddf854e"
+    },
+    {
+      "path": "src/app/(main)/dashboard/academy/_components/learning-paths.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "54485efc2915a046ed87f14fc857e4716d067ef7",
+      "size": 1971,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/54485efc2915a046ed87f14fc857e4716d067ef7"
+    },
+    {
+      "path": "src/app/(main)/dashboard/academy/_components/stats-cards.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1bc32545e9d951733d8f5cddef785d9c6ce32caa",
+      "size": 2263,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/1bc32545e9d951733d8f5cddef785d9c6ce32caa"
+    },
+    {
+      "path": "src/app/(main)/dashboard/academy/_components/upcoming-classes.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bf4f31c9a5a8a846f9df9925bd3b8cfd71b48553",
+      "size": 3163,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/bf4f31c9a5a8a846f9df9925bd3b8cfd71b48553"
+    },
+    {
+      "path": "src/app/(main)/dashboard/academy/_components/weekly-study-chart.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6b00580481ad739e156e5c282a3334d0308c6dd9",
+      "size": 2136,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/6b00580481ad739e156e5c282a3334d0308c6dd9"
+    },
+    {
+      "path": "src/app/(main)/dashboard/academy/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b704c6b8a5a2b75d6ed1eba9fbed70fb554f58ee",
+      "size": 1614,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/b704c6b8a5a2b75d6ed1eba9fbed70fb554f58ee"
+    },
+    {
+      "path": "src/app/(main)/dashboard/analytics",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "97e932921601a140f2fde83f871fd8fd006abe51",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/97e932921601a140f2fde83f871fd8fd006abe51"
+    },
+    {
+      "path": "src/app/(main)/dashboard/analytics/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "761cbbbc81427eae33eaded5d5851b71b2833020",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/761cbbbc81427eae33eaded5d5851b71b2833020"
+    },
+    {
+      "path": "src/app/(main)/dashboard/analytics/_components/booking-cards.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "815710c02d5d4539b6ba4ab0454d4af68d97a209",
+      "size": 2555,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/815710c02d5d4539b6ba4ab0454d4af68d97a209"
+    },
+    {
+      "path": "src/app/(main)/dashboard/analytics/_components/charts-row.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f6ba9a7527aa8bb48703a9468f8163e05b2bb988",
+      "size": 5143,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/f6ba9a7527aa8bb48703a9468f8163e05b2bb988"
+    },
+    {
+      "path": "src/app/(main)/dashboard/analytics/_components/sales-by-country.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2e160a9b728f7bcde87ab3b35ce1001e85961fbb",
+      "size": 2241,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/2e160a9b728f7bcde87ab3b35ce1001e85961fbb"
+    },
+    {
+      "path": "src/app/(main)/dashboard/analytics/_components/stats-cards.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e4d5343e4f3f52627551f4a17ddad8e4c6b8694e",
+      "size": 2328,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/e4d5343e4f3f52627551f4a17ddad8e4c6b8694e"
+    },
+    {
+      "path": "src/app/(main)/dashboard/analytics/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "96ba9ecb676ff9188302cb755148b7035d314012",
+      "size": 1046,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/96ba9ecb676ff9188302cb755148b7035d314012"
+    },
+    {
+      "path": "src/app/(main)/dashboard/billing",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "3d49656a22ec22eb15a857a1bbe21afc926cc347",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/3d49656a22ec22eb15a857a1bbe21afc926cc347"
+    },
+    {
+      "path": "src/app/(main)/dashboard/billing/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "127ddf446a0bdbeb9bef7b9465dfa2273b81707a",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/127ddf446a0bdbeb9bef7b9465dfa2273b81707a"
+    },
+    {
+      "path": "src/app/(main)/dashboard/billing/_components/billing-data.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4855b804fac1d9b0086d9417736d67be2770df5a",
+      "size": 2223,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/4855b804fac1d9b0086d9417736d67be2770df5a"
+    },
+    {
+      "path": "src/app/(main)/dashboard/billing/_components/billing-info.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dae3169eb587a5a4b867471e86c56585897ada33",
+      "size": 1649,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/dae3169eb587a5a4b867471e86c56585897ada33"
+    },
+    {
+      "path": "src/app/(main)/dashboard/billing/_components/current-plan.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5d9f5693bfb6260d5b3c91c0209a262894693f0d",
+      "size": 2695,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/5d9f5693bfb6260d5b3c91c0209a262894693f0d"
+    },
+    {
+      "path": "src/app/(main)/dashboard/billing/_components/invoices-list.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "94b693e7a471bb728333d7e7ad4adc2597a34d07",
+      "size": 2210,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/94b693e7a471bb728333d7e7ad4adc2597a34d07"
+    },
+    {
+      "path": "src/app/(main)/dashboard/billing/_components/payment-methods.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e4ac69a088e759dce900ecb281a7c2cdde6c3802",
+      "size": 3103,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/e4ac69a088e759dce900ecb281a7c2cdde6c3802"
+    },
+    {
+      "path": "src/app/(main)/dashboard/billing/_components/transactions-list.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2a9f04e8a290971f8c2a7776059065c0731ae379",
+      "size": 2446,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/2a9f04e8a290971f8c2a7776059065c0731ae379"
+    },
+    {
+      "path": "src/app/(main)/dashboard/billing/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "19953d2655dc43d0e5c7f6b6c40e2981fbd74e88",
+      "size": 2356,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/19953d2655dc43d0e5c7f6b6c40e2981fbd74e88"
+    },
+    {
+      "path": "src/app/(main)/dashboard/calendar",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "d73e1ff23e8b2fc48fc734198e2f9f4726a36ef0",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/d73e1ff23e8b2fc48fc734198e2f9f4726a36ef0"
+    },
+    {
+      "path": "src/app/(main)/dashboard/calendar/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "f1620abafc36133a79cf7aeff6de9eeb21e7e1f9",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/f1620abafc36133a79cf7aeff6de9eeb21e7e1f9"
+    },
+    {
+      "path": "src/app/(main)/dashboard/calendar/_components/calendar-data.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1d7fb20bc38517e5b421589bcfb775934e33f7bf",
+      "size": 2656,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/1d7fb20bc38517e5b421589bcfb775934e33f7bf"
+    },
+    {
+      "path": "src/app/(main)/dashboard/calendar/_components/calendar-view.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "24f7962d53a5d3ee9f430afad72d98b781249d75",
+      "size": 8819,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/24f7962d53a5d3ee9f430afad72d98b781249d75"
+    },
+    {
+      "path": "src/app/(main)/dashboard/calendar/_components/event-list.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "39ed449f05fe8039a5048c845fb94ac290b7b6f7",
+      "size": 2858,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/39ed449f05fe8039a5048c845fb94ac290b7b6f7"
+    },
+    {
+      "path": "src/app/(main)/dashboard/calendar/_components/mini-calendar.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e5b62f2ffc63daab74b190c0ae912104bb723ef1",
+      "size": 3130,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/e5b62f2ffc63daab74b190c0ae912104bb723ef1"
+    },
+    {
+      "path": "src/app/(main)/dashboard/calendar/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "856fe1c5762b8804400078f58250b3fb975e040a",
+      "size": 3719,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/856fe1c5762b8804400078f58250b3fb975e040a"
+    },
+    {
+      "path": "src/app/(main)/dashboard/charts",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "b1c2fc4d7c2f5ec8ae2c71e7d31e3241f1fcadb2",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/b1c2fc4d7c2f5ec8ae2c71e7d31e3241f1fcadb2"
+    },
+    {
+      "path": "src/app/(main)/dashboard/charts/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "04e842097049182f3b566466d7845ace8732588d",
+      "size": 24326,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/04e842097049182f3b566466d7845ace8732588d"
+    },
+    {
+      "path": "src/app/(main)/dashboard/chat",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "8b3296a9897e3ef3d88b29f1e0a61be30f4f3162",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/8b3296a9897e3ef3d88b29f1e0a61be30f4f3162"
+    },
+    {
+      "path": "src/app/(main)/dashboard/chat/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "b68affceabfd257e603c277cd474da25d6569eb5",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/b68affceabfd257e603c277cd474da25d6569eb5"
+    },
+    {
+      "path": "src/app/(main)/dashboard/chat/_components/chat-data.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "15f4798238628b5d52c4c3025bc04768e4f82a21",
+      "size": 4965,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/15f4798238628b5d52c4c3025bc04768e4f82a21"
+    },
+    {
+      "path": "src/app/(main)/dashboard/chat/_components/chat-input.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a2f89ba43eb3776e0b4e9ebd578307c85cc3b38c",
+      "size": 2230,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/a2f89ba43eb3776e0b4e9ebd578307c85cc3b38c"
+    },
+    {
+      "path": "src/app/(main)/dashboard/chat/_components/chat-sidebar.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b2e07414bd3f24be5b2539e946411a9931703de0",
+      "size": 3852,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/b2e07414bd3f24be5b2539e946411a9931703de0"
+    },
+    {
+      "path": "src/app/(main)/dashboard/chat/_components/chat-view.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c8fdb9c7f54bdd58273e7de754f6d05a99bc6b4d",
+      "size": 5198,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/c8fdb9c7f54bdd58273e7de754f6d05a99bc6b4d"
+    },
+    {
+      "path": "src/app/(main)/dashboard/chat/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "50a76e6a6f8bac2cb9c5f80f9916687f4e1ddd30",
+      "size": 4073,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/50a76e6a6f8bac2cb9c5f80f9916687f4e1ddd30"
+    },
+    {
+      "path": "src/app/(main)/dashboard/coming-soon",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "56290bc030993b4fe3727ffd829617443729178d",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/56290bc030993b4fe3727ffd829617443729178d"
+    },
+    {
+      "path": "src/app/(main)/dashboard/coming-soon/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c206fbdbca2fe69f7c112cb1bf8ebaea75468e03",
+      "size": 326,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/c206fbdbca2fe69f7c112cb1bf8ebaea75468e03"
+    },
+    {
+      "path": "src/app/(main)/dashboard/crm",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "054af8e3331c328aaa36698b26f8b9f433442a69",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/054af8e3331c328aaa36698b26f8b9f433442a69"
+    },
+    {
+      "path": "src/app/(main)/dashboard/crm/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "ed80564275382d4fc64137183d5dd5723ed5e463",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/ed80564275382d4fc64137183d5dd5723ed5e463"
+    },
+    {
+      "path": "src/app/(main)/dashboard/crm/_components/columns.crm.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a84a51a7f139e9d1095bfe527302f61fbe670c22",
+      "size": 2798,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/a84a51a7f139e9d1095bfe527302f61fbe670c22"
+    },
+    {
+      "path": "src/app/(main)/dashboard/crm/_components/crm.config.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "317ea92f0c526ee26ae20406c0c65ead0304be86",
+      "size": 7455,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/317ea92f0c526ee26ae20406c0c65ead0304be86"
+    },
+    {
+      "path": "src/app/(main)/dashboard/crm/_components/insight-cards.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "abb2651dbf8be9ea737327c8475b4a377ad0c442",
+      "size": 5786,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/abb2651dbf8be9ea737327c8475b4a377ad0c442"
+    },
+    {
+      "path": "src/app/(main)/dashboard/crm/_components/operational-cards.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a72dab7571c8e082fd14fb785ef40c209b5a9cb4",
+      "size": 4986,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/a72dab7571c8e082fd14fb785ef40c209b5a9cb4"
+    },
+    {
+      "path": "src/app/(main)/dashboard/crm/_components/overview-cards.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "135ef6392385078de4b4bb8e12a6e76783f990c9",
+      "size": 5711,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/135ef6392385078de4b4bb8e12a6e76783f990c9"
+    },
+    {
+      "path": "src/app/(main)/dashboard/crm/_components/schema.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "96c226f6b2181da7951a405826b0ed67991484a1",
+      "size": 202,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/96c226f6b2181da7951a405826b0ed67991484a1"
+    },
+    {
+      "path": "src/app/(main)/dashboard/crm/_components/table-cards.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a03792fa7881387cfa2fd5a2696fbef9b04d424f",
+      "size": 1747,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/a03792fa7881387cfa2fd5a2696fbef9b04d424f"
+    },
+    {
+      "path": "src/app/(main)/dashboard/crm/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d17ea68b4140979d72bda1eabd411b1c76d01c33",
+      "size": 722,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/d17ea68b4140979d72bda1eabd411b1c76d01c33"
+    },
+    {
+      "path": "src/app/(main)/dashboard/default",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "e85009cfa64af8ab56d82b487352f03f42f3e270",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/e85009cfa64af8ab56d82b487352f03f42f3e270"
+    },
+    {
+      "path": "src/app/(main)/dashboard/default/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "cae4a18a93d2be451715fdf6553551f53db511a8",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/cae4a18a93d2be451715fdf6553551f53db511a8"
+    },
+    {
+      "path": "src/app/(main)/dashboard/default/_components/chart-area-interactive.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a3bdf22ac41bc482e377c704f1e797185fafc118",
+      "size": 10157,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/a3bdf22ac41bc482e377c704f1e797185fafc118"
+    },
+    {
+      "path": "src/app/(main)/dashboard/default/_components/columns.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cebf42be6cfb5596a401eaeef11e4357a3c92507",
+      "size": 6478,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/cebf42be6cfb5596a401eaeef11e4357a3c92507"
+    },
+    {
+      "path": "src/app/(main)/dashboard/default/_components/data-table.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "87403d28a9e0b6256841500e8c68863ae671d341",
+      "size": 3867,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/87403d28a9e0b6256841500e8c68863ae671d341"
+    },
+    {
+      "path": "src/app/(main)/dashboard/default/_components/data.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ffbbc1318e8c8d3a9437699f500f4c13528d6a99",
+      "size": 11829,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/ffbbc1318e8c8d3a9437699f500f4c13528d6a99"
+    },
+    {
+      "path": "src/app/(main)/dashboard/default/_components/schema.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d26c2753dd76fc9dd8c991976e0df53e8adaec09",
+      "size": 219,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/d26c2753dd76fc9dd8c991976e0df53e8adaec09"
+    },
+    {
+      "path": "src/app/(main)/dashboard/default/_components/section-cards.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "20908d5f884607d8b19e195e896822031114a189",
+      "size": 3476,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/20908d5f884607d8b19e195e896822031114a189"
+    },
+    {
+      "path": "src/app/(main)/dashboard/default/_components/table-cell-viewer.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b1e8d063dd85ed2346b761b4666eaff787db64cb",
+      "size": 7374,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/b1e8d063dd85ed2346b761b4666eaff787db64cb"
+    },
+    {
+      "path": "src/app/(main)/dashboard/default/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ed9a5cae37f2b9c2ffee7c7af8b322eb0f0a76aa",
+      "size": 669,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/ed9a5cae37f2b9c2ffee7c7af8b322eb0f0a76aa"
+    },
+    {
+      "path": "src/app/(main)/dashboard/ecommerce",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "216a7860db241053acd4c2c50275bf286498ac33",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/216a7860db241053acd4c2c50275bf286498ac33"
+    },
+    {
+      "path": "src/app/(main)/dashboard/ecommerce/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "aeba7fc89cd5c3ab8a20426d5bd29a1ca83ae502",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/aeba7fc89cd5c3ab8a20426d5bd29a1ca83ae502"
+    },
+    {
+      "path": "src/app/(main)/dashboard/ecommerce/_components/category-chart.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fd5c61d00d398aa6ae1d7644d0c1c175d36a4e61",
+      "size": 1947,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/fd5c61d00d398aa6ae1d7644d0c1c175d36a4e61"
+    },
+    {
+      "path": "src/app/(main)/dashboard/ecommerce/_components/country-sales-table.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "36911f635c7a35e2658618b8b075ffefb31a5656",
+      "size": 2016,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/36911f635c7a35e2658618b8b075ffefb31a5656"
+    },
+    {
+      "path": "src/app/(main)/dashboard/ecommerce/_components/ecommerce-data.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f926788a639c38fd3a6e605ad4d38936e13e4d91",
+      "size": 5917,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/f926788a639c38fd3a6e605ad4d38936e13e4d91"
+    },
+    {
+      "path": "src/app/(main)/dashboard/ecommerce/_components/order-status-chart.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7547819dc7cf92a90b963e0af2326a46768590b5",
+      "size": 2182,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/7547819dc7cf92a90b963e0af2326a46768590b5"
+    },
+    {
+      "path": "src/app/(main)/dashboard/ecommerce/_components/recent-orders-table.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "086adcf0b361c07589d05709f5501bbb7618d4bb",
+      "size": 5038,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/086adcf0b361c07589d05709f5501bbb7618d4bb"
+    },
+    {
+      "path": "src/app/(main)/dashboard/ecommerce/_components/sales-funnel-chart.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "efde1730cd67590fafba79fae553fa5c47062998",
+      "size": 2841,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/efde1730cd67590fafba79fae553fa5c47062998"
+    },
+    {
+      "path": "src/app/(main)/dashboard/ecommerce/_components/sales-trend-chart.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "84b846f383ca7d782baa805460f7f7d2a2c0c75a",
+      "size": 1779,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/84b846f383ca7d782baa805460f7f7d2a2c0c75a"
+    },
+    {
+      "path": "src/app/(main)/dashboard/ecommerce/_components/stats-cards.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "80564f5c751a5ab715140143810932b3bdbfd8fe",
+      "size": 3233,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/80564f5c751a5ab715140143810932b3bdbfd8fe"
+    },
+    {
+      "path": "src/app/(main)/dashboard/ecommerce/_components/top-products-table.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "026236f17718ad75ae12f1238177622bd517818b",
+      "size": 3459,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/026236f17718ad75ae12f1238177622bd517818b"
+    },
+    {
+      "path": "src/app/(main)/dashboard/ecommerce/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c623ff1256c5b8c9b0e0922d67706ab879015555",
+      "size": 1989,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/c623ff1256c5b8c9b0e0922d67706ab879015555"
+    },
+    {
+      "path": "src/app/(main)/dashboard/email",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "acef93fd85d027b1601131bdcf72f3a3007565d7",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/acef93fd85d027b1601131bdcf72f3a3007565d7"
+    },
+    {
+      "path": "src/app/(main)/dashboard/email/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "daecb3866ad47d8723b624fddcef5939d3794c42",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/daecb3866ad47d8723b624fddcef5939d3794c42"
+    },
+    {
+      "path": "src/app/(main)/dashboard/email/_components/email-data.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c4fb6d10e8c5d9c767749bb21c4de1cff1a358cd",
+      "size": 5964,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/c4fb6d10e8c5d9c767749bb21c4de1cff1a358cd"
+    },
+    {
+      "path": "src/app/(main)/dashboard/email/_components/email-list.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "65995ccdc70726639267418c2aa17cff8ca0b803",
+      "size": 3240,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/65995ccdc70726639267418c2aa17cff8ca0b803"
+    },
+    {
+      "path": "src/app/(main)/dashboard/email/_components/email-sidebar.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d8e1fc3d9af0db1cc08cd46ccf468da68c00cb38",
+      "size": 3386,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/d8e1fc3d9af0db1cc08cd46ccf468da68c00cb38"
+    },
+    {
+      "path": "src/app/(main)/dashboard/email/_components/email-view.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a4033555e113febe9fd05d62f46d48d413d385ba",
+      "size": 6806,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/a4033555e113febe9fd05d62f46d48d413d385ba"
+    },
+    {
+      "path": "src/app/(main)/dashboard/email/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "816993103664119e09954ae82e8308f5f5fd93cc",
+      "size": 4028,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/816993103664119e09954ae82e8308f5f5fd93cc"
+    },
+    {
+      "path": "src/app/(main)/dashboard/error.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "170d43318b4e1d126d0591dc941608879a8dde21",
+      "size": 1767,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/170d43318b4e1d126d0591dc941608879a8dde21"
+    },
+    {
+      "path": "src/app/(main)/dashboard/files",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "88df30239c7f7439ff96ce9372ca97d7b7e3d1b3",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/88df30239c7f7439ff96ce9372ca97d7b7e3d1b3"
+    },
+    {
+      "path": "src/app/(main)/dashboard/files/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "987faa3bc1de46c21439ca2c01846ea2cd98cc01",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/987faa3bc1de46c21439ca2c01846ea2cd98cc01"
+    },
+    {
+      "path": "src/app/(main)/dashboard/files/_components/file-list.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f3bfa3a36a696a800b3af6bd5fee0a0fa2cb6a20",
+      "size": 8929,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/f3bfa3a36a696a800b3af6bd5fee0a0fa2cb6a20"
+    },
+    {
+      "path": "src/app/(main)/dashboard/files/_components/files-data.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b4674c743fde1e7d98664c6e83831e86fed70506",
+      "size": 7601,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/b4674c743fde1e7d98664c6e83831e86fed70506"
+    },
+    {
+      "path": "src/app/(main)/dashboard/files/_components/quick-access.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0de98dbb11f6393a7ba15e15048e2aba89ce7eb1",
+      "size": 1913,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/0de98dbb11f6393a7ba15e15048e2aba89ce7eb1"
+    },
+    {
+      "path": "src/app/(main)/dashboard/files/_components/recent-files.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "19e9b10676cba19f781089f5c0acfc50a5109c74",
+      "size": 2411,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/19e9b10676cba19f781089f5c0acfc50a5109c74"
+    },
+    {
+      "path": "src/app/(main)/dashboard/files/_components/storage-overview.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7e5712975e473c03e8b527df6200539b89ea3c7f",
+      "size": 2051,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/7e5712975e473c03e8b527df6200539b89ea3c7f"
+    },
+    {
+      "path": "src/app/(main)/dashboard/files/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0322c734d94503e1edee5e9dbca648363b75ca9b",
+      "size": 1961,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/0322c734d94503e1edee5e9dbca648363b75ca9b"
+    },
+    {
+      "path": "src/app/(main)/dashboard/finance",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "d83be0266b32dae7bb7e6fecfe9b767a0ff647d6",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/d83be0266b32dae7bb7e6fecfe9b767a0ff647d6"
+    },
+    {
+      "path": "src/app/(main)/dashboard/finance/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "cd8765cb1e3bded10dce6bfa6fe32ce705772fbd",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/cd8765cb1e3bded10dce6bfa6fe32ce705772fbd"
+    },
+    {
+      "path": "src/app/(main)/dashboard/finance/_components/account-overview.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "67c25ea844a292b0dd85ebb9893b9b43909d2b8c",
+      "size": 7362,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/67c25ea844a292b0dd85ebb9893b9b43909d2b8c"
+    },
+    {
+      "path": "src/app/(main)/dashboard/finance/_components/currency-exchange.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c272b89d8f31b09b4080bd29f0dc3d8fcce4ee9d",
+      "size": 3275,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/c272b89d8f31b09b4080bd29f0dc3d8fcce4ee9d"
+    },
+    {
+      "path": "src/app/(main)/dashboard/finance/_components/expense-summary.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2a84a6164bab181e80f64f951b9a5d7ca2cca8f7",
+      "size": 5442,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/2a84a6164bab181e80f64f951b9a5d7ca2cca8f7"
+    },
+    {
+      "path": "src/app/(main)/dashboard/finance/_components/financial-overview.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4d38700d7dc873a99d4d798713fb5442990b0b45",
+      "size": 5475,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/4d38700d7dc873a99d4d798713fb5442990b0b45"
+    },
+    {
+      "path": "src/app/(main)/dashboard/finance/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9fa2cb634463c90705bfc96f02c672900296549e",
+      "size": 1063,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/9fa2cb634463c90705bfc96f02c672900296549e"
+    },
+    {
+      "path": "src/app/(main)/dashboard/invoice",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "1bd607a7d868cd90e9b193774e2ba903cd666f5b",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/1bd607a7d868cd90e9b193774e2ba903cd666f5b"
+    },
+    {
+      "path": "src/app/(main)/dashboard/invoice/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "d8f99c36438b1a0f438460622b4b0ad74320e107",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/d8f99c36438b1a0f438460622b4b0ad74320e107"
+    },
+    {
+      "path": "src/app/(main)/dashboard/invoice/_components/invoice-data.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "663d592e60f0f779747d66d9433cff5922c7b626",
+      "size": 3444,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/663d592e60f0f779747d66d9433cff5922c7b626"
+    },
+    {
+      "path": "src/app/(main)/dashboard/invoice/_components/invoice-list.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a32d972ade07317d721b9429e6be088360ccce9f",
+      "size": 4918,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/a32d972ade07317d721b9429e6be088360ccce9f"
+    },
+    {
+      "path": "src/app/(main)/dashboard/invoice/_components/invoice-template.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "36c58c717c40f3d75faa8c66e582011631e7b512",
+      "size": 7739,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/36c58c717c40f3d75faa8c66e582011631e7b512"
+    },
+    {
+      "path": "src/app/(main)/dashboard/invoice/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fd66b2a33e079289ddd20b17ffbcca149e104a74",
+      "size": 5178,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/fd66b2a33e079289ddd20b17ffbcca149e104a74"
+    },
+    {
+      "path": "src/app/(main)/dashboard/kanban",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "deb4c47c702bb5604047bf88eba15fa54428337c",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/deb4c47c702bb5604047bf88eba15fa54428337c"
+    },
+    {
+      "path": "src/app/(main)/dashboard/kanban/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "fc39155aaf2b514cda9ce47b9566748c8d7081a1",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/fc39155aaf2b514cda9ce47b9566748c8d7081a1"
+    },
+    {
+      "path": "src/app/(main)/dashboard/kanban/_components/kanban-card.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "07280ed7f90a12787b68873e8b24002eb60941a5",
+      "size": 2804,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/07280ed7f90a12787b68873e8b24002eb60941a5"
+    },
+    {
+      "path": "src/app/(main)/dashboard/kanban/_components/kanban-column.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "437b5dc5047cc8c0fc6ea5027d577dfe53f017d7",
+      "size": 3755,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/437b5dc5047cc8c0fc6ea5027d577dfe53f017d7"
+    },
+    {
+      "path": "src/app/(main)/dashboard/kanban/_components/kanban-data.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9b653446d4cd7631610203eac86789dd1d37bb19",
+      "size": 2682,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/9b653446d4cd7631610203eac86789dd1d37bb19"
+    },
+    {
+      "path": "src/app/(main)/dashboard/kanban/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6ebfe83b4ce0e5de1d62f66f8fb5389a0d155756",
+      "size": 5948,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/6ebfe83b4ce0e5de1d62f66f8fb5389a0d155756"
+    },
+    {
+      "path": "src/app/(main)/dashboard/layout.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9e5fb5674181d69b4753ecb32a2cfedcf86c48ed",
+      "size": 3889,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/9e5fb5674181d69b4753ecb32a2cfedcf86c48ed"
+    },
+    {
+      "path": "src/app/(main)/dashboard/loading.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "70f4d39077e1f99ea889a9bb6741fdd6511dacb6",
+      "size": 525,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/70f4d39077e1f99ea889a9bb6741fdd6511dacb6"
+    },
+    {
+      "path": "src/app/(main)/dashboard/logistics",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "aa64043463210c596133c695b3aaeb2c717d6209",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/aa64043463210c596133c695b3aaeb2c717d6209"
+    },
+    {
+      "path": "src/app/(main)/dashboard/logistics/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "3cb38e918a1dfcf3e9f5ab35fbf07f6f97e1ac55",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/3cb38e918a1dfcf3e9f5ab35fbf07f6f97e1ac55"
+    },
+    {
+      "path": "src/app/(main)/dashboard/logistics/_components/delivery-status-chart.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "368c759bf30b743e28b7011c84de030917c1fee1",
+      "size": 1796,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/368c759bf30b743e28b7011c84de030917c1fee1"
+    },
+    {
+      "path": "src/app/(main)/dashboard/logistics/_components/delivery-trend-chart.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "748fa73391f5860ed9655fc531281f98cab5da0a",
+      "size": 2355,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/748fa73391f5860ed9655fc531281f98cab5da0a"
+    },
+    {
+      "path": "src/app/(main)/dashboard/logistics/_components/driver-list.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "64a1eacce920006e37c781b3823da3d25ee03c79",
+      "size": 3532,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/64a1eacce920006e37c781b3823da3d25ee03c79"
+    },
+    {
+      "path": "src/app/(main)/dashboard/logistics/_components/logistics-data.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "620f6809bd4f703489ca1c1eab80946e7b239bd6",
+      "size": 7485,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/620f6809bd4f703489ca1c1eab80946e7b239bd6"
+    },
+    {
+      "path": "src/app/(main)/dashboard/logistics/_components/recent-shipments-table.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "400d6faeb370e0c337aca9088a786db3204bb439",
+      "size": 4543,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/400d6faeb370e0c337aca9088a786db3204bb439"
+    },
+    {
+      "path": "src/app/(main)/dashboard/logistics/_components/region-stats.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cea8a48576821d2dcc9e19f30fe5271bcacabfaa",
+      "size": 2372,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/cea8a48576821d2dcc9e19f30fe5271bcacabfaa"
+    },
+    {
+      "path": "src/app/(main)/dashboard/logistics/_components/stats-cards.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4f26b0dcbbdcd3646772c5925272207322eefc2b",
+      "size": 2745,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/4f26b0dcbbdcd3646772c5925272207322eefc2b"
+    },
+    {
+      "path": "src/app/(main)/dashboard/logistics/_components/warehouse-overview.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "777f539c1e530ce90fd19d834a33ec37018acba5",
+      "size": 4002,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/777f539c1e530ce90fd19d834a33ec37018acba5"
+    },
+    {
+      "path": "src/app/(main)/dashboard/logistics/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "159a265e834307b26450842628ec557cbf32a810",
+      "size": 1724,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/159a265e834307b26450842628ec557cbf32a810"
+    },
+    {
+      "path": "src/app/(main)/dashboard/not-found.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2ce7d2b960ad8c593c82ebbded2ec4a8bf17cffb",
+      "size": 197,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/2ce7d2b960ad8c593c82ebbded2ec4a8bf17cffb"
+    },
+    {
+      "path": "src/app/(main)/dashboard/notifications",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "dbd427ff85034746d8ebc719d9b55c1bf5b9e5d6",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/dbd427ff85034746d8ebc719d9b55c1bf5b9e5d6"
+    },
+    {
+      "path": "src/app/(main)/dashboard/notifications/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "46e6a41e5faec4ff687538ae9fc1d0e16012234b",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/46e6a41e5faec4ff687538ae9fc1d0e16012234b"
+    },
+    {
+      "path": "src/app/(main)/dashboard/notifications/_components/notification-list.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "59f10ddd2f3253cb1c3c88df9c867371374c6a0d",
+      "size": 10294,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/59f10ddd2f3253cb1c3c88df9c867371374c6a0d"
+    },
+    {
+      "path": "src/app/(main)/dashboard/notifications/_components/notification-settings.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dad5ab06d38a51076a59feb689094ae5da9ec035",
+      "size": 2424,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/dad5ab06d38a51076a59feb689094ae5da9ec035"
+    },
+    {
+      "path": "src/app/(main)/dashboard/notifications/_components/notification-stats.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c53d35fa15d672e4fd09877b01f0eabf4c6a5ad1",
+      "size": 1790,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/c53d35fa15d672e4fd09877b01f0eabf4c6a5ad1"
+    },
+    {
+      "path": "src/app/(main)/dashboard/notifications/_components/notifications-data.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9984468ae9f93fd33186ccc2291b9ed297b2b49d",
+      "size": 4636,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/9984468ae9f93fd33186ccc2291b9ed297b2b49d"
+    },
+    {
+      "path": "src/app/(main)/dashboard/notifications/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "da561e696fc6484a86494e7e2142f8f8c53df40f",
+      "size": 986,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/da561e696fc6484a86494e7e2142f8f8c53df40f"
+    },
+    {
+      "path": "src/app/(main)/dashboard/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "850238e30c8dec25520c1de7c1fee7fadab45651",
+      "size": 62,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/850238e30c8dec25520c1de7c1fee7fadab45651"
+    },
+    {
+      "path": "src/app/(main)/dashboard/pricing",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "fa84f856e4e3a5b589eaf642505eabcb5ebc7d3b",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/fa84f856e4e3a5b589eaf642505eabcb5ebc7d3b"
+    },
+    {
+      "path": "src/app/(main)/dashboard/pricing/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7f7384597401ff64a2f334674da5356e025165f5",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/7f7384597401ff64a2f334674da5356e025165f5"
+    },
+    {
+      "path": "src/app/(main)/dashboard/pricing/_components/pricing-data.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d97a22b570f575caf98879bd0e25988985b65584",
+      "size": 2758,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/d97a22b570f575caf98879bd0e25988985b65584"
+    },
+    {
+      "path": "src/app/(main)/dashboard/pricing/_components/pricing-faq.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "152a9148bae0a400a51cd33d7435fce08347ce3f",
+      "size": 996,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/152a9148bae0a400a51cd33d7435fce08347ce3f"
+    },
+    {
+      "path": "src/app/(main)/dashboard/pricing/_components/pricing-plans.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3524ad7b55593ce9d3cb1bb07ff9219377598e76",
+      "size": 1452,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/3524ad7b55593ce9d3cb1bb07ff9219377598e76"
+    },
+    {
+      "path": "src/app/(main)/dashboard/pricing/_components/pricing-toggle.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6249d9a54a01a0ffeec88e1175743403da01033b",
+      "size": 1380,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/6249d9a54a01a0ffeec88e1175743403da01033b"
+    },
+    {
+      "path": "src/app/(main)/dashboard/pricing/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6f1438cb5d43891f4b49d272aacba9c2e43a7411",
+      "size": 1431,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/6f1438cb5d43891f4b49d272aacba9c2e43a7411"
+    },
+    {
+      "path": "src/app/(main)/dashboard/profile",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "e0c8f8b91722218f820bb3043009c71da24d7c8c",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/e0c8f8b91722218f820bb3043009c71da24d7c8c"
+    },
+    {
+      "path": "src/app/(main)/dashboard/profile/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "76274bbbe5f078a04a9856e92fbd4e72d63fd0fd",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/76274bbbe5f078a04a9856e92fbd4e72d63fd0fd"
+    },
+    {
+      "path": "src/app/(main)/dashboard/profile/_components/conversations-list.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5ed371e9c9eb51eb48bdea68682aeb72ae251bde",
+      "size": 1951,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/5ed371e9c9eb51eb48bdea68682aeb72ae251bde"
+    },
+    {
+      "path": "src/app/(main)/dashboard/profile/_components/platform-settings.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5cd60d8e3ac66c014c30a08a6b053ceac6435b59",
+      "size": 1974,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/5cd60d8e3ac66c014c30a08a6b053ceac6435b59"
+    },
+    {
+      "path": "src/app/(main)/dashboard/profile/_components/profile-header.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c3187e5b2a27651d542fcfc93384ba2300ab0ba8",
+      "size": 3217,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/c3187e5b2a27651d542fcfc93384ba2300ab0ba8"
+    },
+    {
+      "path": "src/app/(main)/dashboard/profile/_components/profile-info.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5253f493d7b29cff01d79dea62c78e771af39bb6",
+      "size": 2165,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/5253f493d7b29cff01d79dea62c78e771af39bb6"
+    },
+    {
+      "path": "src/app/(main)/dashboard/profile/_components/projects-grid.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "19164be530b6ed3f4b688fe743c5d133f52dd55b",
+      "size": 4337,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/19164be530b6ed3f4b688fe743c5d133f52dd55b"
+    },
+    {
+      "path": "src/app/(main)/dashboard/profile/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "977cea6c5f295d415adaf2cb51ab0fb758f2eabf",
+      "size": 1144,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/977cea6c5f295d415adaf2cb51ab0fb758f2eabf"
+    },
+    {
+      "path": "src/app/(main)/dashboard/roles",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "208e37a2e1e6bf513cb84e26a7bd53e4c52c28c0",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/208e37a2e1e6bf513cb84e26a7bd53e4c52c28c0"
+    },
+    {
+      "path": "src/app/(main)/dashboard/roles/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "3fca5dc0515fd74b5775db9260737b0debdec6fe",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/3fca5dc0515fd74b5775db9260737b0debdec6fe"
+    },
+    {
+      "path": "src/app/(main)/dashboard/roles/_components/permission-table.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7ed7f57680cc18f9f098f9e81798c602e014764b",
+      "size": 3531,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/7ed7f57680cc18f9f098f9e81798c602e014764b"
+    },
+    {
+      "path": "src/app/(main)/dashboard/roles/_components/role-card.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ca7f3bd2a9c21dcc7a7dd9f2240e830a2a35bc50",
+      "size": 3101,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/ca7f3bd2a9c21dcc7a7dd9f2240e830a2a35bc50"
+    },
+    {
+      "path": "src/app/(main)/dashboard/roles/_components/roles-data.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d3a1cb357aee15f394ccdad4c268c9682fb0a35f",
+      "size": 3962,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/d3a1cb357aee15f394ccdad4c268c9682fb0a35f"
+    },
+    {
+      "path": "src/app/(main)/dashboard/roles/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f60b57ad1e8ed3aeb8ea369e0ace3d13e045aaf5",
+      "size": 4840,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/f60b57ad1e8ed3aeb8ea369e0ace3d13e045aaf5"
+    },
+    {
+      "path": "src/app/(main)/dashboard/sales",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "2b5daf82e3c82b1c789e1e154f2e71d4bf9f6958",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/2b5daf82e3c82b1c789e1e154f2e71d4bf9f6958"
+    },
+    {
+      "path": "src/app/(main)/dashboard/sales/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "a1be2b6414127f3060e8d36b21fb07176b35dfaa",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/a1be2b6414127f3060e8d36b21fb07176b35dfaa"
+    },
+    {
+      "path": "src/app/(main)/dashboard/sales/_components/channels-chart.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d3239e76e0bb2b4ed36c2431289ba16ae3f30018",
+      "size": 2130,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/d3239e76e0bb2b4ed36c2431289ba16ae3f30018"
+    },
+    {
+      "path": "src/app/(main)/dashboard/sales/_components/revenue-chart.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a48e44705b7e28129b66aacd5c2f611ae3013e1d",
+      "size": 3943,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/a48e44705b7e28129b66aacd5c2f611ae3013e1d"
+    },
+    {
+      "path": "src/app/(main)/dashboard/sales/_components/sales-by-age.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "69591956bc62af0d45e63076513d1c3d2b920e22",
+      "size": 1681,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/69591956bc62af0d45e63076513d1c3d2b920e22"
+    },
+    {
+      "path": "src/app/(main)/dashboard/sales/_components/sales-table.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "61cb9791beefe96b13c26cd3d6162a30c25823e9",
+      "size": 4448,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/61cb9791beefe96b13c26cd3d6162a30c25823e9"
+    },
+    {
+      "path": "src/app/(main)/dashboard/sales/_components/stats-cards.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9635b4ce06ff30b0b0732a96bc9d9f8aaaf33dcc",
+      "size": 5183,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/9635b4ce06ff30b0b0732a96bc9d9f8aaaf33dcc"
+    },
+    {
+      "path": "src/app/(main)/dashboard/sales/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1a42503d76d366a45ca3cf468be0ea623005f938",
+      "size": 1706,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/1a42503d76d366a45ca3cf468be0ea623005f938"
+    },
+    {
+      "path": "src/app/(main)/dashboard/search",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7764ec66d1b8a5f9a73c7d1663f2090a8d47261d",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/7764ec66d1b8a5f9a73c7d1663f2090a8d47261d"
+    },
+    {
+      "path": "src/app/(main)/dashboard/search/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "08f973ef557c6053fb2dea1ab8d21d671cf5ecd8",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/08f973ef557c6053fb2dea1ab8d21d671cf5ecd8"
+    },
+    {
+      "path": "src/app/(main)/dashboard/search/_components/search-data.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f3b1702bd7e78c953e657aab3d545fd9b7c6624a",
+      "size": 6601,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/f3b1702bd7e78c953e657aab3d545fd9b7c6624a"
+    },
+    {
+      "path": "src/app/(main)/dashboard/search/_components/search-filters.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5ce97ef968dab1983f50ec3e3db57a54039e03b8",
+      "size": 1304,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/5ce97ef968dab1983f50ec3e3db57a54039e03b8"
+    },
+    {
+      "path": "src/app/(main)/dashboard/search/_components/search-input.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d487912b2ff4ae1bd54e3397207b8da0ef779252",
+      "size": 1664,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/d487912b2ff4ae1bd54e3397207b8da0ef779252"
+    },
+    {
+      "path": "src/app/(main)/dashboard/search/_components/search-results.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "eaafb8570bf4e3406fbe8de5279695e8c5de6f9f",
+      "size": 4953,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/eaafb8570bf4e3406fbe8de5279695e8c5de6f9f"
+    },
+    {
+      "path": "src/app/(main)/dashboard/search/_components/search-sidebar.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f9c80cc05bfac24475fc79fadbbb28213c87d71d",
+      "size": 3749,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/f9c80cc05bfac24475fc79fadbbb28213c87d71d"
+    },
+    {
+      "path": "src/app/(main)/dashboard/search/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0a9f8f0d55b70e827a5c6e67cb960662473bda00",
+      "size": 3159,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/0a9f8f0d55b70e827a5c6e67cb960662473bda00"
+    },
+    {
+      "path": "src/app/(main)/dashboard/settings",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "ff2d21e857c411578432a586884d20e06bbf35c9",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/ff2d21e857c411578432a586884d20e06bbf35c9"
+    },
+    {
+      "path": "src/app/(main)/dashboard/settings/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "13cc630850963c9a61cfdeceb95d1d638e53ecfc",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/13cc630850963c9a61cfdeceb95d1d638e53ecfc"
+    },
+    {
+      "path": "src/app/(main)/dashboard/settings/_components/appearance-settings.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "68a45e1f99450af84854bb061d33cc707e33997e",
+      "size": 4236,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/68a45e1f99450af84854bb061d33cc707e33997e"
+    },
+    {
+      "path": "src/app/(main)/dashboard/settings/_components/basic-info-form.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8abf1f4daf8b30aadde800c61b33c017e9ab98ae",
+      "size": 3531,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/8abf1f4daf8b30aadde800c61b33c017e9ab98ae"
+    },
+    {
+      "path": "src/app/(main)/dashboard/settings/_components/change-password-form.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9f59f774aa7685c201e3ae753c7c866ac7eeeeca",
+      "size": 2466,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/9f59f774aa7685c201e3ae753c7c866ac7eeeeca"
+    },
+    {
+      "path": "src/app/(main)/dashboard/settings/_components/danger-zone.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "248cf16b5385c4701f53ac13c6b83d991ce8f869",
+      "size": 3953,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/248cf16b5385c4701f53ac13c6b83d991ce8f869"
+    },
+    {
+      "path": "src/app/(main)/dashboard/settings/_components/notification-settings.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ac871ec9f36e45377a25457c0ff329a229f3b24d",
+      "size": 3069,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/ac871ec9f36e45377a25457c0ff329a229f3b24d"
+    },
+    {
+      "path": "src/app/(main)/dashboard/settings/_components/settings-header.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c4d2204a4d44449ba6bd0253d2a4d4208122cb9e",
+      "size": 1955,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/c4d2204a4d44449ba6bd0253d2a4d4208122cb9e"
+    },
+    {
+      "path": "src/app/(main)/dashboard/settings/_components/settings-sidebar.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1ed8f500499e2d85f271dc241729011bb2174ffb",
+      "size": 1373,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/1ed8f500499e2d85f271dc241729011bb2174ffb"
+    },
+    {
+      "path": "src/app/(main)/dashboard/settings/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "61a32854b374533d1b652c784258ae56c1812a87",
+      "size": 1758,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/61a32854b374533d1b652c784258ae56c1812a87"
+    },
+    {
+      "path": "src/app/(main)/dashboard/timeline",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "e70c12131bf01ae841a3271a056eb0da71db1e64",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/e70c12131bf01ae841a3271a056eb0da71db1e64"
+    },
+    {
+      "path": "src/app/(main)/dashboard/timeline/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "82444c21fe3c15df9d2b0c149182014f9e25a966",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/82444c21fe3c15df9d2b0c149182014f9e25a966"
+    },
+    {
+      "path": "src/app/(main)/dashboard/timeline/_components/timeline-data.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0c2c0ae428e7e2bc590d5a6368fac7b6f9131a5f",
+      "size": 3935,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/0c2c0ae428e7e2bc590d5a6368fac7b6f9131a5f"
+    },
+    {
+      "path": "src/app/(main)/dashboard/timeline/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c3d1feca79d2f93deba8f435353d7e97f368996a",
+      "size": 3715,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/c3d1feca79d2f93deba8f435353d7e97f368996a"
+    },
+    {
+      "path": "src/app/(main)/dashboard/users",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "b1898cbd9ac648199bc25a2da6575c51d8e186bc",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/b1898cbd9ac648199bc25a2da6575c51d8e186bc"
+    },
+    {
+      "path": "src/app/(main)/dashboard/users/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "1117210a638e5d0730c65c6a4be7c4f545618a91",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/1117210a638e5d0730c65c6a4be7c4f545618a91"
+    },
+    {
+      "path": "src/app/(main)/dashboard/users/_components/columns.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1c9e5e865582e69c6ebde6863a617d439a2fb62c",
+      "size": 3815,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/1c9e5e865582e69c6ebde6863a617d439a2fb62c"
+    },
+    {
+      "path": "src/app/(main)/dashboard/users/_components/user-actions-cell.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "49d381acbbddd5aac1ca091ad4b71f44ea60b685",
+      "size": 3021,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/49d381acbbddd5aac1ca091ad4b71f44ea60b685"
+    },
+    {
+      "path": "src/app/(main)/dashboard/users/_components/user-form-dialog.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "24a5a0f1286a84934410250974f5c2a674fd1bf1",
+      "size": 6830,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/24a5a0f1286a84934410250974f5c2a674fd1bf1"
+    },
+    {
+      "path": "src/app/(main)/dashboard/users/_components/users-table.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "489be44fbcb95fbd3a4813109140b2a59b28c212",
+      "size": 2822,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/489be44fbcb95fbd3a4813109140b2a59b28c212"
+    },
+    {
+      "path": "src/app/(main)/dashboard/users/_lib",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "cdd687e1284e2a01cd54a546e14961c141bd5f44",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/cdd687e1284e2a01cd54a546e14961c141bd5f44"
+    },
+    {
+      "path": "src/app/(main)/dashboard/users/_lib/actions.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cbc28fc48856d120490c30954a59c6cec6220920",
+      "size": 1246,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/cbc28fc48856d120490c30954a59c6cec6220920"
+    },
+    {
+      "path": "src/app/(main)/dashboard/users/_lib/store.test.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8cbbb2f0166931dbc4b618583216e059ef99a689",
+      "size": 2787,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/8cbbb2f0166931dbc4b618583216e059ef99a689"
+    },
+    {
+      "path": "src/app/(main)/dashboard/users/_lib/store.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "725c0746303bd513acb8f118b79c353401d9f3af",
+      "size": 5295,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/725c0746303bd513acb8f118b79c353401d9f3af"
+    },
+    {
+      "path": "src/app/(main)/dashboard/users/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7244fd833fbe6a1846626ae9c68b6d425dd9773d",
+      "size": 609,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/7244fd833fbe6a1846626ae9c68b6d425dd9773d"
+    },
+    {
+      "path": "src/app/(main)/dashboard/widgets",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "fcddd175f4041e72c58178123788c1d13b3ea613",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/fcddd175f4041e72c58178123788c1d13b3ea613"
+    },
+    {
+      "path": "src/app/(main)/dashboard/widgets/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "371ebe5337ed1b051c4f98119a1637ad8ca381da",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/371ebe5337ed1b051c4f98119a1637ad8ca381da"
+    },
+    {
+      "path": "src/app/(main)/dashboard/widgets/_components/light-switch-card.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "72c12436a882c8433de3c87442e2bff299b5df36",
+      "size": 719,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/72c12436a882c8433de3c87442e2bff299b5df36"
+    },
+    {
+      "path": "src/app/(main)/dashboard/widgets/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "78edd34e6a700fda047cf4bc489ed7d3c0f81f2d",
+      "size": 15309,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/78edd34e6a700fda047cf4bc489ed7d3c0f81f2d"
+    },
+    {
+      "path": "src/app/(main)/dashboard/wizard",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "801987e67aca547764b9bd0c0e2fb37c2b60eb33",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/801987e67aca547764b9bd0c0e2fb37c2b60eb33"
+    },
+    {
+      "path": "src/app/(main)/dashboard/wizard/_components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7f860c7da27eed6d1bd7bf1104616b450366ce8c",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/7f860c7da27eed6d1bd7bf1104616b450366ce8c"
+    },
+    {
+      "path": "src/app/(main)/dashboard/wizard/_components/step-about.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e887c5b883e5527b61c95412ac277428f11214fe",
+      "size": 2634,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/e887c5b883e5527b61c95412ac277428f11214fe"
+    },
+    {
+      "path": "src/app/(main)/dashboard/wizard/_components/step-account.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5d4a995354ce5b2151e93029a207fbf64d323fff",
+      "size": 2634,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/5d4a995354ce5b2151e93029a207fbf64d323fff"
+    },
+    {
+      "path": "src/app/(main)/dashboard/wizard/_components/step-address.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "843f3558c1db185ca421d18c2fbe2db2b0512a7d",
+      "size": 3544,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/843f3558c1db185ca421d18c2fbe2db2b0512a7d"
+    },
+    {
+      "path": "src/app/(main)/dashboard/wizard/_components/step-complete.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "097261282799cbb472bfe802bd9a488d26001031",
+      "size": 1004,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/097261282799cbb472bfe802bd9a488d26001031"
+    },
+    {
+      "path": "src/app/(main)/dashboard/wizard/_components/wizard-steps.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "448f9abe0d6cce776867a8a0ee0438d075438f43",
+      "size": 2297,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/448f9abe0d6cce776867a8a0ee0438d075438f43"
+    },
+    {
+      "path": "src/app/(main)/dashboard/wizard/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "de945379ad4c7511e4bd2d6e613612fc959a1b4c",
+      "size": 4312,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/de945379ad4c7511e4bd2d6e613612fc959a1b4c"
+    },
+    {
+      "path": "src/app/(main)/unauthorized",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "68fcd7b258be32cd391d64640fbeff888edc7ae7",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/68fcd7b258be32cd391d64640fbeff888edc7ae7"
+    },
+    {
+      "path": "src/app/(main)/unauthorized/page.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d26ed41ea151d2dc44d3c88db17713cb5f171cdc",
+      "size": 1064,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/d26ed41ea151d2dc44d3c88db17713cb5f171cdc"
+    },
+    {
+      "path": "src/app/error.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6fe59abf2964af696100c44124bd50bc40227060",
+      "size": 2210,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/6fe59abf2964af696100c44124bd50bc40227060"
+    },
+    {
+      "path": "src/app/globals.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e2ebc81b83df21a3e1056545784672ea5fc0db9f",
+      "size": 6022,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/e2ebc81b83df21a3e1056545784672ea5fc0db9f"
+    },
+    {
+      "path": "src/app/icon.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "704374a54e504561b2fe2950db39c84478e55e3f",
+      "size": 1580,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/704374a54e504561b2fe2950db39c84478e55e3f"
+    },
+    {
+      "path": "src/app/layout.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f14e0d8cadcef1299832a6704ac065a16c73351c",
+      "size": 2129,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/f14e0d8cadcef1299832a6704ac065a16c73351c"
+    },
+    {
+      "path": "src/app/not-found.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "396d960212fa92ea745ae2c94a47ad4738303d7d",
+      "size": 1878,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/396d960212fa92ea745ae2c94a47ad4738303d7d"
+    },
+    {
+      "path": "src/components",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "a782c44be7b9ec44e64d1fb2f8ddad81ce23e6c8",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/a782c44be7b9ec44e64d1fb2f8ddad81ce23e6c8"
+    },
+    {
+      "path": "src/components/animation",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "3f3c9d6e3fa99954f0944c6ee81757bd6047e29b",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/3f3c9d6e3fa99954f0944c6ee81757bd6047e29b"
+    },
+    {
+      "path": "src/components/animation/fade-in.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d9c0c7288b4adc7c7b59e1274e1f1a05c1e3b629",
+      "size": 1040,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/d9c0c7288b4adc7c7b59e1274e1f1a05c1e3b629"
+    },
+    {
+      "path": "src/components/animation/index.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c4fb7969214fca5b5a8618a2893662631c4f8960",
+      "size": 142,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/c4fb7969214fca5b5a8618a2893662631c4f8960"
+    },
+    {
+      "path": "src/components/animation/page-transition.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "22151286bbdd3eb2b107510394adb6ac4cd8721a",
+      "size": 777,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/22151286bbdd3eb2b107510394adb6ac4cd8721a"
+    },
+    {
+      "path": "src/components/animation/stagger-children.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "41af00d515210bb464912033d435b21d11b28d8f",
+      "size": 1367,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/41af00d515210bb464912033d435b21d11b28d8f"
+    },
+    {
+      "path": "src/components/data-table",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "00350f57043024a350f0cdf40e45274378458308",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/00350f57043024a350f0cdf40e45274378458308"
+    },
+    {
+      "path": "src/components/data-table/data-table-column-header.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "58af333b9c0416321b462ab04beef7909bb82f30",
+      "size": 2188,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/58af333b9c0416321b462ab04beef7909bb82f30"
+    },
+    {
+      "path": "src/components/data-table/data-table-pagination.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b043d1fbf47f81f0a47c2a18cf2200bf1e2463e5",
+      "size": 3987,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/b043d1fbf47f81f0a47c2a18cf2200bf1e2463e5"
+    },
+    {
+      "path": "src/components/data-table/data-table-view-options.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "55812069011a472e0a4f4d0622d25965f6e8b492",
+      "size": 1765,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/55812069011a472e0a4f4d0622d25965f6e8b492"
+    },
+    {
+      "path": "src/components/data-table/data-table.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3702f306d72ae3e1ed1be95c304ba93e7e018d4f",
+      "size": 3788,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/3702f306d72ae3e1ed1be95c304ba93e7e018d4f"
+    },
+    {
+      "path": "src/components/data-table/drag-column.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e2260f3f8f826dcdf3ea00055a81b51996bb2d92",
+      "size": 827,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/e2260f3f8f826dcdf3ea00055a81b51996bb2d92"
+    },
+    {
+      "path": "src/components/data-table/draggable-row.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "59bb17f2343800463ba05ca9030320be2445a2aa",
+      "size": 926,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/59bb17f2343800463ba05ca9030320be2445a2aa"
+    },
+    {
+      "path": "src/components/data-table/table-utils.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1db97323b4bc2cc1635dd097f06fdeab058de824",
+      "size": 231,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/1db97323b4bc2cc1635dd097f06fdeab058de824"
+    },
+    {
+      "path": "src/components/simple-icon.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9e02e7d7e932532f71d08af43feaf7cde84c4871",
+      "size": 618,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/9e02e7d7e932532f71d08af43feaf7cde84c4871"
+    },
+    {
+      "path": "src/components/ui",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "4497616177655a0747a07c048a5cc6c742d49564",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/4497616177655a0747a07c048a5cc6c742d49564"
+    },
+    {
+      "path": "src/components/ui/accordion.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "44efe621abc819ad18dfe5d46a1ba0fd683f5b6f",
+      "size": 2048,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/44efe621abc819ad18dfe5d46a1ba0fd683f5b6f"
+    },
+    {
+      "path": "src/components/ui/alert-dialog.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b5aae1f9eee27f71ddd1a0170c1a9eb6593182a5",
+      "size": 3858,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/b5aae1f9eee27f71ddd1a0170c1a9eb6593182a5"
+    },
+    {
+      "path": "src/components/ui/alert.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "14213546e5ac051dd33c8359f261f9f76051d66f",
+      "size": 1614,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/14213546e5ac051dd33c8359f261f9f76051d66f"
+    },
+    {
+      "path": "src/components/ui/aspect-ratio.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "57e38fa96f9c0cb767d7b8de0d6dbc171d1b921a",
+      "size": 274,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/57e38fa96f9c0cb767d7b8de0d6dbc171d1b921a"
+    },
+    {
+      "path": "src/components/ui/avatar.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "910728f25a3a516c0ee074fa1f834ae39ee10463",
+      "size": 1133,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/910728f25a3a516c0ee074fa1f834ae39ee10463"
+    },
+    {
+      "path": "src/components/ui/badge.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b0729c0daa763fca70071ebfe84afbb604d2d92d",
+      "size": 1652,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/b0729c0daa763fca70071ebfe84afbb604d2d92d"
+    },
+    {
+      "path": "src/components/ui/breadcrumb.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d32261662be0ffccc3eff2232a7405a2b504a861",
+      "size": 2376,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/d32261662be0ffccc3eff2232a7405a2b504a861"
+    },
+    {
+      "path": "src/components/ui/button-group.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7ce126f0ddac85925b535102efd5ff96e78f89e0",
+      "size": 2228,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/7ce126f0ddac85925b535102efd5ff96e78f89e0"
+    },
+    {
+      "path": "src/components/ui/button.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4abcb372772a1c1a2e2405f74abcd697222b940a",
+      "size": 2161,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/4abcb372772a1c1a2e2405f74abcd697222b940a"
+    },
+    {
+      "path": "src/components/ui/calendar.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6f304b5bd2f924ae416d47ec802b13980eec6091",
+      "size": 7781,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/6f304b5bd2f924ae416d47ec802b13980eec6091"
+    },
+    {
+      "path": "src/components/ui/card.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "acf57dc5a534792273b8fb86227e92e001f3dc53",
+      "size": 1987,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/acf57dc5a534792273b8fb86227e92e001f3dc53"
+    },
+    {
+      "path": "src/components/ui/carousel.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0e05a77ea155fde6af5d9a4848b1d3953df6ea5a",
+      "size": 5556,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/0e05a77ea155fde6af5d9a4848b1d3953df6ea5a"
+    },
+    {
+      "path": "src/components/ui/chart.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "011836a0fbc7b03156ea2d454b7e3efc002f1764",
+      "size": 10554,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/011836a0fbc7b03156ea2d454b7e3efc002f1764"
+    },
+    {
+      "path": "src/components/ui/checkbox.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ea7d1090971e3e59c8dc7e3b249b5ea17deafc83",
+      "size": 1214,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/ea7d1090971e3e59c8dc7e3b249b5ea17deafc83"
+    },
+    {
+      "path": "src/components/ui/collapsible.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2f7a4e7fc64a8874373c1584646a63f28cd63c47",
+      "size": 795,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/2f7a4e7fc64a8874373c1584646a63f28cd63c47"
+    },
+    {
+      "path": "src/components/ui/command.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8cb4ca7a583da481866f41692bb50ba7cfba709d",
+      "size": 4818,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/8cb4ca7a583da481866f41692bb50ba7cfba709d"
+    },
+    {
+      "path": "src/components/ui/context-menu.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3740312f645e035eeb7c828bcda9d3917162d3b3",
+      "size": 8268,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/3740312f645e035eeb7c828bcda9d3917162d3b3"
+    },
+    {
+      "path": "src/components/ui/credit-card.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4526ae6b0ce81e42200f51328de227d7ee91831d",
+      "size": 3471,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/4526ae6b0ce81e42200f51328de227d7ee91831d"
+    },
+    {
+      "path": "src/components/ui/dialog.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cd88ce2da5bcdf3643400ba1a642ec33e1a1c3e6",
+      "size": 3977,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/cd88ce2da5bcdf3643400ba1a642ec33e1a1c3e6"
+    },
+    {
+      "path": "src/components/ui/drawer.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8aa69230a087be1fb8efe2067d1cf793de87acd4",
+      "size": 4255,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/8aa69230a087be1fb8efe2067d1cf793de87acd4"
+    },
+    {
+      "path": "src/components/ui/dropdown-menu.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4246c7d9c44bccaada23b89753189de635406d36",
+      "size": 8418,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/4246c7d9c44bccaada23b89753189de635406d36"
+    },
+    {
+      "path": "src/components/ui/empty.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "df91e9d802c9143fd129a21b86eef08f5d53ea2f",
+      "size": 2396,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/df91e9d802c9143fd129a21b86eef08f5d53ea2f"
+    },
+    {
+      "path": "src/components/ui/field.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "235d00ef34a34d520c68a3623f69ebc635498a35",
+      "size": 6159,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/235d00ef34a34d520c68a3623f69ebc635498a35"
+    },
+    {
+      "path": "src/components/ui/floating-icon-card.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4e2e430fb59f1b80e89a79208629c776c45acbfb",
+      "size": 3635,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/4e2e430fb59f1b80e89a79208629c776c45acbfb"
+    },
+    {
+      "path": "src/components/ui/form.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7e2c0ad09b8eee76113725602ae442be561538f7",
+      "size": 3762,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/7e2c0ad09b8eee76113725602ae442be561538f7"
+    },
+    {
+      "path": "src/components/ui/gauge-chart.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b23edc15544c8f3258eb5e34674825032e362022",
+      "size": 5775,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/b23edc15544c8f3258eb5e34674825032e362022"
+    },
+    {
+      "path": "src/components/ui/hover-card.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3e0c4daf8c46e1679c528761dcf3d1be29f3fabf",
+      "size": 1526,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/3e0c4daf8c46e1679c528761dcf3d1be29f3fabf"
+    },
+    {
+      "path": "src/components/ui/input-group.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3d1f9d9238a867cbf61c474e31c965b246531929",
+      "size": 5065,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/3d1f9d9238a867cbf61c474e31c965b246531929"
+    },
+    {
+      "path": "src/components/ui/input-otp.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "614f70e383bf47886ddb3d71581ccd27c8b5739d",
+      "size": 2254,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/614f70e383bf47886ddb3d71581ccd27c8b5739d"
+    },
+    {
+      "path": "src/components/ui/input.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "89169058d054c972608ac3115cc655f267eedaa9",
+      "size": 962,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/89169058d054c972608ac3115cc655f267eedaa9"
+    },
+    {
+      "path": "src/components/ui/item.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "44e7bc682b7c61025eaf31e91fe4e42636765517",
+      "size": 4513,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/44e7bc682b7c61025eaf31e91fe4e42636765517"
+    },
+    {
+      "path": "src/components/ui/kbd.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "253c69f3dbcbd8a0015938fbd346372a4058d8c1",
+      "size": 862,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/253c69f3dbcbd8a0015938fbd346372a4058d8c1"
+    },
+    {
+      "path": "src/components/ui/label.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1ac80f701ebfe9dc02d632c08cafade732e46625",
+      "size": 606,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/1ac80f701ebfe9dc02d632c08cafade732e46625"
+    },
+    {
+      "path": "src/components/ui/menubar.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "608065eb080a9ce582f24cef7eeabc91359dba0a",
+      "size": 8389,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/608065eb080a9ce582f24cef7eeabc91359dba0a"
+    },
+    {
+      "path": "src/components/ui/navigation-menu.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "475d9599138453d4469af7fbb757fcbe29ac4422",
+      "size": 6658,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/475d9599138453d4469af7fbb757fcbe29ac4422"
+    },
+    {
+      "path": "src/components/ui/pagination.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0d185410e7bbf2a1326d7af4b55f1b4b8e14d16a",
+      "size": 2712,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/0d185410e7bbf2a1326d7af4b55f1b4b8e14d16a"
+    },
+    {
+      "path": "src/components/ui/popover.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4a20f3eaeacdfbc4c7b99c7dd4d8e542b356608a",
+      "size": 1630,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/4a20f3eaeacdfbc4c7b99c7dd4d8e542b356608a"
+    },
+    {
+      "path": "src/components/ui/pricing-card.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f0dd049c59464f479d23de79f58704acfeb66072",
+      "size": 3045,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/f0dd049c59464f479d23de79f58704acfeb66072"
+    },
+    {
+      "path": "src/components/ui/progress.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bca13feb4b32bdc92fb07a729eef3249e8ddcc8d",
+      "size": 735,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/bca13feb4b32bdc92fb07a729eef3249e8ddcc8d"
+    },
+    {
+      "path": "src/components/ui/radial-progress.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1e60c239b1e8325150bb024b1389fe128bd9b1ad",
+      "size": 3012,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/1e60c239b1e8325150bb024b1389fe128bd9b1ad"
+    },
+    {
+      "path": "src/components/ui/radio-group.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8dd6e5ee9656a3332f18af3af6b37d61daddbd8a",
+      "size": 1460,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/8dd6e5ee9656a3332f18af3af6b37d61daddbd8a"
+    },
+    {
+      "path": "src/components/ui/resizable.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "12bbd0b8b04e6ec83bde5b9fa8a3e29a166581da",
+      "size": 2028,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/12bbd0b8b04e6ec83bde5b9fa8a3e29a166581da"
+    },
+    {
+      "path": "src/components/ui/scroll-area.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0f873dcb529c5f2c785dc472fb27c13057a18d9d",
+      "size": 1639,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/0f873dcb529c5f2c785dc472fb27c13057a18d9d"
+    },
+    {
+      "path": "src/components/ui/select.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7dc91401d59eaecb64af5f7030cfe305a4ffb919",
+      "size": 6290,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/7dc91401d59eaecb64af5f7030cfe305a4ffb919"
+    },
+    {
+      "path": "src/components/ui/separator.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4c24b2a884d7526faa0e527ddf84fb5beb99289b",
+      "size": 694,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/4c24b2a884d7526faa0e527ddf84fb5beb99289b"
+    },
+    {
+      "path": "src/components/ui/sheet.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b74d0355cb48854a3e825ea1b419fc2c6fd96768",
+      "size": 4085,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/b74d0355cb48854a3e825ea1b419fc2c6fd96768"
+    },
+    {
+      "path": "src/components/ui/sidebar.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f30a3370ecf41131b9afbc19fff935a5b3cacb84",
+      "size": 21713,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/f30a3370ecf41131b9afbc19fff935a5b3cacb84"
+    },
+    {
+      "path": "src/components/ui/skeleton.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "32ea0ef7fb4d4f7cb0affa7a3b329533b5f2af23",
+      "size": 276,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/32ea0ef7fb4d4f7cb0affa7a3b329533b5f2af23"
+    },
+    {
+      "path": "src/components/ui/slider.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4b815ae64ea083fd064a551b9a175ce462fe29f0",
+      "size": 1991,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/4b815ae64ea083fd064a551b9a175ce462fe29f0"
+    },
+    {
+      "path": "src/components/ui/sonner.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9b20afe2e10fd9b94d1abc1ae732054b2fb9821c",
+      "size": 1034,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/9b20afe2e10fd9b94d1abc1ae732054b2fb9821c"
+    },
+    {
+      "path": "src/components/ui/spinner.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a70e713c5b4ecb2af186efe3fadea51805f26ba5",
+      "size": 331,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/a70e713c5b4ecb2af186efe3fadea51805f26ba5"
+    },
+    {
+      "path": "src/components/ui/switch.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "50006bc8432def0e9d7a73adfedbd6e88b451bbe",
+      "size": 1172,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/50006bc8432def0e9d7a73adfedbd6e88b451bbe"
+    },
+    {
+      "path": "src/components/ui/table.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "51b74dd52570a0268d78870be270dd460cef41db",
+      "size": 2448,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/51b74dd52570a0268d78870be270dd460cef41db"
+    },
+    {
+      "path": "src/components/ui/tabs.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9b5d2f16a81859dab8385b99a8c37c20f5e7bb84",
+      "size": 1964,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/9b5d2f16a81859dab8385b99a8c37c20f5e7bb84"
+    },
+    {
+      "path": "src/components/ui/textarea.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7f21b5e78a4c1c23bf41b6be206f3f81dc84fe99",
+      "size": 759,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/7f21b5e78a4c1c23bf41b6be206f3f81dc84fe99"
+    },
+    {
+      "path": "src/components/ui/timeline.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "894fdfffad78c3b6340fa6c773c09028e781cc28",
+      "size": 4157,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/894fdfffad78c3b6340fa6c773c09028e781cc28"
+    },
+    {
+      "path": "src/components/ui/toggle-group.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dc0e15eaf5745af96cadf542523a85234f6aafd9",
+      "size": 2308,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/dc0e15eaf5745af96cadf542523a85234f6aafd9"
+    },
+    {
+      "path": "src/components/ui/toggle.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "22da4fd8918a48be65fed19c42e9b61f1084c875",
+      "size": 1565,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/22da4fd8918a48be65fed19c42e9b61f1084c875"
+    },
+    {
+      "path": "src/components/ui/tooltip.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bcbfb67f86a7eed9c8d10f195125676879ac6ff5",
+      "size": 1887,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/bcbfb67f86a7eed9c8d10f195125676879ac6ff5"
+    },
+    {
+      "path": "src/config",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "3b90bbc9f523d05406c9993bacbbb51272b8324e",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/3b90bbc9f523d05406c9993bacbbb51272b8324e"
+    },
+    {
+      "path": "src/config/app-config.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "232502f5e30b054aed993f479830b3349c753293",
+      "size": 760,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/232502f5e30b054aed993f479830b3349c753293"
+    },
+    {
+      "path": "src/data",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "2d807c6abe5434a778831b96d1e8484605fa337e",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/2d807c6abe5434a778831b96d1e8484605fa337e"
+    },
+    {
+      "path": "src/data/users.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e868a09f4fa1ca255e8bbeeec262c8bada7e0ddc",
+      "size": 404,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/e868a09f4fa1ca255e8bbeeec262c8bada7e0ddc"
+    },
+    {
+      "path": "src/hooks",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "026814c2ecce35465cc50e55d1fa37b19dee854e",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/026814c2ecce35465cc50e55d1fa37b19dee854e"
+    },
+    {
+      "path": "src/hooks/use-data-table-instance.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "44798dbb99baf61d547ba42117a7a1d515e5c5e7",
+      "size": 2091,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/44798dbb99baf61d547ba42117a7a1d515e5c5e7"
+    },
+    {
+      "path": "src/hooks/use-mobile.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "749443cc090b87b2f94063f9d9d2738f3db26373",
+      "size": 615,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/749443cc090b87b2f94063f9d9d2738f3db26373"
+    },
+    {
+      "path": "src/lib",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "ba219d78a4889fa1faac986102b8309127b32ea3",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/ba219d78a4889fa1faac986102b8309127b32ea3"
+    },
+    {
+      "path": "src/lib/cookie.client.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4b22ea3d7bb791aa3406dca4e51435dc8c2e02d0",
+      "size": 651,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/4b22ea3d7bb791aa3406dca4e51435dc8c2e02d0"
+    },
+    {
+      "path": "src/lib/layout-utils.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "07cd67c90bc12358b22020cc433c337965bab170",
+      "size": 817,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/07cd67c90bc12358b22020cc433c337965bab170"
+    },
+    {
+      "path": "src/lib/preferences-config.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "77d89b14c3bed72e8d99df7eed020cb6a30b6286",
+      "size": 313,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/77d89b14c3bed72e8d99df7eed020cb6a30b6286"
+    },
+    {
+      "path": "src/lib/preferences-storage.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0a44662c91b1e71dbf0ce4f96ad43cbfb855b2d5",
+      "size": 529,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/0a44662c91b1e71dbf0ce4f96ad43cbfb855b2d5"
+    },
+    {
+      "path": "src/lib/theme-utils.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f3dcecab13cea9cc1312e23a78f5f94fceb4eaf8",
+      "size": 403,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/f3dcecab13cea9cc1312e23a78f5f94fceb4eaf8"
+    },
+    {
+      "path": "src/lib/utils.test.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "18407ed3b555ee221d5a20972e98baeef7fde359",
+      "size": 1743,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/18407ed3b555ee221d5a20972e98baeef7fde359"
+    },
+    {
+      "path": "src/lib/utils.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2123dec5153e0efc5245ec59de54b1380055aaee",
+      "size": 1075,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/2123dec5153e0efc5245ec59de54b1380055aaee"
+    },
+    {
+      "path": "src/navigation",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "925c224e24267f4f7b255335c2a05ff5b0937091",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/925c224e24267f4f7b255335c2a05ff5b0937091"
+    },
+    {
+      "path": "src/navigation/sidebar",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "a5a22731d442e1f3042a4410a12b76ca2282ea5b",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/a5a22731d442e1f3042a4410a12b76ca2282ea5b"
+    },
+    {
+      "path": "src/navigation/sidebar/sidebar-items.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7104e60604cc146e0f9aec000e2541283ac92df0",
+      "size": 4722,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/7104e60604cc146e0f9aec000e2541283ac92df0"
+    },
+    {
+      "path": "src/scripts",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "29723e6529793f4fb8caa099d1d03cf42f125bfa",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/29723e6529793f4fb8caa099d1d03cf42f125bfa"
+    },
+    {
+      "path": "src/scripts/generate-theme-presets.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "771cbaaffae126e3e11b48b3865ed924ec0f511b",
+      "size": 4499,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/771cbaaffae126e3e11b48b3865ed924ec0f511b"
+    },
+    {
+      "path": "src/scripts/theme-boot.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7c00e4f80a0a2d7331996b572af32be59609f020",
+      "size": 1409,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/7c00e4f80a0a2d7331996b572af32be59609f020"
+    },
+    {
+      "path": "src/server",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "0d8b1abb8cf881ccd261c969571e424a2826e2a5",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/0d8b1abb8cf881ccd261c969571e424a2826e2a5"
+    },
+    {
+      "path": "src/server/server-actions.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4591a5909d4d035d34064601d52af72cf9a884b1",
+      "size": 862,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/4591a5909d4d035d34064601d52af72cf9a884b1"
+    },
+    {
+      "path": "src/stores",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "e9d971ef3c54d09e6232701acee2a2a2184cbfcc",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/e9d971ef3c54d09e6232701acee2a2a2184cbfcc"
+    },
+    {
+      "path": "src/stores/preferences",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "e12ee850fc661966a859b3397d8ba8dfba53a231",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/e12ee850fc661966a859b3397d8ba8dfba53a231"
+    },
+    {
+      "path": "src/stores/preferences/preferences-provider.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "010f5239ae0ab034c3536da9f6a43f152ae8ee1b",
+      "size": 1708,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/010f5239ae0ab034c3536da9f6a43f152ae8ee1b"
+    },
+    {
+      "path": "src/stores/preferences/preferences-store.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "90ace287bf30c9f4ad0ff61276d5f117860d1d4f",
+      "size": 640,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/90ace287bf30c9f4ad0ff61276d5f117860d1d4f"
+    },
+    {
+      "path": "src/stores/tabs",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "23b96b6ae3ab0f4d04bea0f8c6ab32bd32265d84",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/23b96b6ae3ab0f4d04bea0f8c6ab32bd32265d84"
+    },
+    {
+      "path": "src/stores/tabs/tab-store-provider.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "019284911efa673c8c1b8f62a7acfe8caa2201d5",
+      "size": 2408,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/019284911efa673c8c1b8f62a7acfe8caa2201d5"
+    },
+    {
+      "path": "src/stores/tabs/tab-store.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "279ba4bd607d48978a0f017028b0075a1a1cb69b",
+      "size": 1889,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/279ba4bd607d48978a0f017028b0075a1a1cb69b"
+    },
+    {
+      "path": "src/styles",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "8f058155a56a6bd31f224babdd54a3f6bb7ae549",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/8f058155a56a6bd31f224babdd54a3f6bb7ae549"
+    },
+    {
+      "path": "src/styles/presets",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "9ac56383800e8cbc9da05fafa1b6b55118ddd30c",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/9ac56383800e8cbc9da05fafa1b6b55118ddd30c"
+    },
+    {
+      "path": "src/styles/presets/amber.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0bde855d7515a871a08137f960c84c47dce287d0",
+      "size": 2515,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/0bde855d7515a871a08137f960c84c47dce287d0"
+    },
+    {
+      "path": "src/styles/presets/brutalist.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b779fa1c699fc7cc6cf992cf9cffc0ea2d3d83cc",
+      "size": 3666,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/b779fa1c699fc7cc6cf992cf9cffc0ea2d3d83cc"
+    },
+    {
+      "path": "src/styles/presets/cherry.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "00f6bd630351241dd53f0e23a5821df908971fec",
+      "size": 2450,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/00f6bd630351241dd53f0e23a5821df908971fec"
+    },
+    {
+      "path": "src/styles/presets/cobalt.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ffb14a61ca6308354ee77db740ab1b52df75417f",
+      "size": 2577,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/ffb14a61ca6308354ee77db740ab1b52df75417f"
+    },
+    {
+      "path": "src/styles/presets/forest.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8ee285227f12aa60989ed3f34db0b0fdacafa160",
+      "size": 2566,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/8ee285227f12aa60989ed3f34db0b0fdacafa160"
+    },
+    {
+      "path": "src/styles/presets/lavender.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "435f3bad32f71fc98bb7b6b04b72abcff8ed2097",
+      "size": 2571,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/435f3bad32f71fc98bb7b6b04b72abcff8ed2097"
+    },
+    {
+      "path": "src/styles/presets/midnight.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d068707a1ae6840037ce4104975b7cca2f938919",
+      "size": 2559,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/d068707a1ae6840037ce4104975b7cca2f938919"
+    },
+    {
+      "path": "src/styles/presets/mint.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b7c3603a001e0b3c3879fc7d1f9041207c03f12f",
+      "size": 2546,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/b7c3603a001e0b3c3879fc7d1f9041207c03f12f"
+    },
+    {
+      "path": "src/styles/presets/ocean.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b723d29d9b4f0801856996cf597863cdf7746196",
+      "size": 2545,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/b723d29d9b4f0801856996cf597863cdf7746196"
+    },
+    {
+      "path": "src/styles/presets/rose.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "136592fef5dd70a6826201b9ee3324e8952472e9",
+      "size": 2543,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/136592fef5dd70a6826201b9ee3324e8952472e9"
+    },
+    {
+      "path": "src/styles/presets/slate.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "676ff749a680a5c8dc716e389e91c362b6f8e78b",
+      "size": 2572,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/676ff749a680a5c8dc716e389e91c362b6f8e78b"
+    },
+    {
+      "path": "src/styles/presets/soft-pop.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b69df01023e838ef41f7f89c07008cac01bf0bb8",
+      "size": 3984,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/b69df01023e838ef41f7f89c07008cac01bf0bb8"
+    },
+    {
+      "path": "src/styles/presets/sunset.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "35e608c7be90b486ddb471b71c5e20174ec2f386",
+      "size": 2510,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/35e608c7be90b486ddb471b71c5e20174ec2f386"
+    },
+    {
+      "path": "src/styles/presets/tangerine.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f2e5e15122dcf24ec965f1e09e6e44d68f47fe8b",
+      "size": 3794,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/f2e5e15122dcf24ec965f1e09e6e44d68f47fe8b"
+    },
+    {
+      "path": "src/types",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "fcf8b81afb05df97fd298909d4beb7d7441a7671",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/fcf8b81afb05df97fd298909d4beb7d7441a7671"
+    },
+    {
+      "path": "src/types/preferences",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "000aebe08f53f897ea839101c9c632bca8b72c36",
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/trees/000aebe08f53f897ea839101c9c632bca8b72c36"
+    },
+    {
+      "path": "src/types/preferences/layout.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f912bff08179e53ec8a2350168c4d69545304dce",
+      "size": 1281,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/f912bff08179e53ec8a2350168c4d69545304dce"
+    },
+    {
+      "path": "src/types/preferences/theme.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "01274a8b1416698554e48a3740b1dcd799dce9a2",
+      "size": 2787,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/01274a8b1416698554e48a3740b1dcd799dce9a2"
+    },
+    {
+      "path": "tsconfig.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "def40186a0bd1f99edc6d9ebb64fd680c977298a",
+      "size": 668,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/def40186a0bd1f99edc6d9ebb64fd680c977298a"
+    },
+    {
+      "path": "vitest.config.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c76c55c3f092baf000ad050bfe957f083cd42874",
+      "size": 472,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/c76c55c3f092baf000ad050bfe957f083cd42874"
+    },
+    {
+      "path": "vitest.setup.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f149f27ae4bbd7cc4f6253570176a4fce144ef95",
+      "size": 43,
+      "url": "https://api.github.com/repos/Afee2019/shadmin/git/blobs/f149f27ae4bbd7cc4f6253570176a4fce144ef95"
+    }
+  ],
+  "truncated": false
+}

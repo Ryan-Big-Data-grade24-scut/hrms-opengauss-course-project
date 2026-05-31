@@ -1,0 +1,17 @@
+import http from '@/utils/http'
+
+export const login = (d: any) => http.post('/auth/login', d)
+export const getProfile = () => http.get('/auth/profile')
+export const getPredictions = () => http.get('/predict/attrition')
+export const trainModel = () => http.post('/predict/attrition/train')
+export const getModelInfo = () => http.get('/predict/model')
+export const getDepartments = () => http.get('/departments')
+export const getPositions = () => http.get('/positions')
+export const getEmployees = (p: any) => http.get('/employees', { params: p })
+export const getEmployeeSkills = (id: number) => http.get('/employees/skills', { params: { employee_id: id } })
+export const getMatch = (id: number) => http.get('/match/employee', { params: { employee_id: id } })
+export const getSkillsGap = () => http.get('/skills/gap')
+export const getSkillsHeatmap = () => http.get('/skills/heatmap')
+export const getOrgDepartments = () => http.get('/org/departments')
+export const getOrgCritical = () => http.get('/org/critical')
+export const getOrgTree = () => http.get('/org/tree')

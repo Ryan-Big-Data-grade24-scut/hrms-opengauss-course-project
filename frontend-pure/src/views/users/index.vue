@@ -1,0 +1,1 @@
+<template><div class="text-center py-12 text-gray-400"><p>Users page is in the classic frontend</p><p class="text-sm mt-2">Access at old frontend (port 5173)</p></div></template>
