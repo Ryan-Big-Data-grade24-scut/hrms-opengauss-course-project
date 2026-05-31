@@ -1,50 +1,131 @@
 import json
-import subprocess
 from datetime import date, datetime
 
-from src.config import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER, DOCKER_CONTAINER
+import psycopg2
+import psycopg2.pool
+
+from src.config import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER
 
 
 class DatabaseError(RuntimeError):
     pass
 
 
-def _docker_command():
-    direct = ["docker"]
-    sudo_direct = ["sudo", "-n", "docker"]
+# ---------------------------------------------------------------------------
+# Connection pool
+# ---------------------------------------------------------------------------
 
-    if subprocess.run(direct + ["info"], capture_output=True).returncode == 0:
-        return direct
-
-    if subprocess.run(sudo_direct + ["info"], capture_output=True).returncode == 0:
-        return sudo_direct
-
-    return direct
+_pool: psycopg2.pool.ThreadedConnectionPool | None = None
 
 
-def _gsql_command(sql):
-    return [
-        *_docker_command(),
-        "exec",
-        "-e",
-        "LD_LIBRARY_PATH=/usr/local/opengauss/lib",
-        DOCKER_CONTAINER,
-        "/usr/local/opengauss/bin/gsql",
-        "-h",
-        DB_HOST,
-        "-p",
-        DB_PORT,
-        "-d",
-        DB_NAME,
-        "-U",
-        DB_USER,
-        "-W",
-        DB_PASSWORD,
-        "-t",
-        "-A",
-        "-c",
-        sql,
-    ]
+def _get_pool():
+    global _pool
+    if _pool is None:
+        _pool = psycopg2.pool.ThreadedConnectionPool(
+            minconn=1,
+            maxconn=10,
+            host=DB_HOST,
+            port=DB_PORT,
+            dbname=DB_NAME,
+            user=DB_USER,
+            password=DB_PASSWORD,
+        )
+    return _pool
+
+
+def _reset_pool():
+    global _pool
+    if _pool is not None:
+        try:
+            _pool.closeall()
+        except Exception:
+            pass
+        _pool = None
+
+
+def _get_conn():
+    """Get a healthy connection from the pool (auto-reconnect on failure)."""
+    pool = _get_pool()
+    try:
+        conn = pool.getconn()
+    except Exception:
+        _reset_pool()
+        pool = _get_pool()
+        conn = pool.getconn()
+
+    # Health check — verify the connection is still alive
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT 1")
+    except Exception:
+        try:
+            pool.putconn(conn)
+        except Exception:
+            pass
+        _reset_pool()
+        pool = _get_pool()
+        conn = pool.getconn()
+
+    return conn, pool
+
+
+def _put_conn(conn, pool):
+    try:
+        pool.putconn(conn)
+    except Exception:
+        try:
+            conn.close()
+        except Exception:
+            pass
+
+
+# ---------------------------------------------------------------------------
+# gsql-compatible output formatter
+# ---------------------------------------------------------------------------
+
+
+def _format_value(val):
+    """Format a Python value as gsql -tA style text."""
+    if val is None:
+        return ""
+    if isinstance(val, bool):
+        return "t" if val else "f"
+    if isinstance(val, (int, float)):
+        return str(val)
+    if isinstance(val, (date, datetime)):
+        return val.isoformat()
+    if isinstance(val, (dict, list)):
+        return json.dumps(val, ensure_ascii=False, default=str)
+    if isinstance(val, bytes):
+        return val.decode("utf-8", errors="replace")
+    return str(val)
+
+
+def _format_output(cursor):
+    """Format cursor results as gsql -tA style pipe-separated text.
+
+    * SELECT-like queries → rows joined by ``\\n``, columns separated by ``|``.
+    * DML / DDL          → ``str(rowcount)`` (mimics the gsql command tag).
+    """
+    if cursor.description is None:
+        rc = cursor.rowcount
+        return str(rc) if rc is not None and rc >= 0 else "0"
+
+    rows = cursor.fetchall()
+    if not rows:
+        return ""
+
+    lines = []
+    for row in rows:
+        parts = [_format_value(v) for v in row]
+        lines.append("|".join(parts))
+
+    return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Public helpers
+# ---------------------------------------------------------------------------
 
 
 def sql_literal(value):
@@ -61,15 +142,31 @@ def sql_literal(value):
 
 
 def run_sql(sql):
-    completed = subprocess.run(
-        _gsql_command(sql),
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-    )
-    if completed.returncode != 0:
-        raise DatabaseError((completed.stderr or completed.stdout).strip() or "gsql failed")
-    return completed.stdout.strip()
+    """Execute SQL and return gsql -tA style pipe-separated text output."""
+    conn, pool = _get_conn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(sql)
+            outputs = []
+            while True:
+                outputs.append(_format_output(cur))
+                try:
+                    has_next = cur.nextset()
+                except psycopg2.NotSupportedError:
+                    # openGauss does not support nextset()
+                    break
+                if not has_next:
+                    break
+            conn.commit()
+            return "\n".join(outputs)
+    except Exception as e:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        raise DatabaseError(str(e)) from e
+    finally:
+        _put_conn(conn, pool)
 
 
 def query_scalar(sql):
@@ -94,6 +191,37 @@ def query_json(sql):
 
 def execute(sql):
     return run_sql(sql)
+
+
+def run_sql_batch(sql_list, separator="---BATCH_SEP---"):
+    """Execute multiple SQL statements in a single session.
+
+    Each statement should append ``SELECT '{separator}';`` to mark its end.
+    Returns a list of result strings, one per statement.
+    """
+    marker = sql_literal(separator)
+    combined = "\n".join(sql_list) + f"\nSELECT {marker};"
+    output = run_sql(combined)
+    results = [s.strip() for s in output.split(separator) if s.strip()]
+    return results
+
+
+def execute_many(sql_statements):
+    """Execute multiple independent SQL statements one by one.
+
+    Unlike run_sql_batch, this does NOT require a marker suffix on each
+    statement.  Each statement is executed independently, which works
+    around openGauss's lack of ``nextset()`` support.
+
+    Returns a list of output strings, one per statement.
+    """
+    outputs = []
+    for stmt in sql_statements:
+        stmt = stmt.strip()
+        if not stmt:
+            continue
+        outputs.append(run_sql(stmt))
+    return outputs
 
 
 def json_array_query(inner_sql):
@@ -136,60 +264,104 @@ def _is_command_status(line):
 
 
 def bootstrap_rbac():
-    sql = """
-    INSERT INTO sys_user_role (user_id, role_id)
-    SELECT u.user_id, r.role_id
-    FROM sys_user u, sys_role r
-    WHERE u.username = 'admin' AND r.role_code = 'ADMIN'
-      AND NOT EXISTS (
-        SELECT 1 FROM sys_user_role x WHERE x.user_id = u.user_id AND x.role_id = r.role_id
-      );
-
-    INSERT INTO sys_user_role (user_id, role_id)
-    SELECT u.user_id, r.role_id
-    FROM sys_user u, sys_role r
-    WHERE u.username = 'hr01' AND r.role_code = 'HR'
-      AND NOT EXISTS (
-        SELECT 1 FROM sys_user_role x WHERE x.user_id = u.user_id AND x.role_id = r.role_id
-      );
-
-    INSERT INTO sys_user_role (user_id, role_id)
-    SELECT u.user_id, r.role_id
-    FROM sys_user u, sys_role r
-    WHERE u.username = 'emp01' AND r.role_code = 'EMPLOYEE'
-      AND NOT EXISTS (
-        SELECT 1 FROM sys_user_role x WHERE x.user_id = u.user_id AND x.role_id = r.role_id
-      );
-
-    INSERT INTO sys_role_permission (role_id, permission_id)
-    SELECT r.role_id, p.permission_id
-    FROM sys_role r
-    JOIN sys_permission p ON p.permission_code IN (
-      'user.manage', 'employee.manage', 'department.manage', 'leave.manage', 'audit.view'
-    )
-    WHERE r.role_code = 'ADMIN'
-      AND NOT EXISTS (
-        SELECT 1 FROM sys_role_permission x WHERE x.role_id = r.role_id AND x.permission_id = p.permission_id
-      );
-
-    INSERT INTO sys_role_permission (role_id, permission_id)
-    SELECT r.role_id, p.permission_id
-    FROM sys_role r
-    JOIN sys_permission p ON p.permission_code IN (
-      'employee.manage', 'department.manage', 'leave.manage', 'audit.view'
-    )
-    WHERE r.role_code = 'HR'
-      AND NOT EXISTS (
-        SELECT 1 FROM sys_role_permission x WHERE x.role_id = r.role_id AND x.permission_id = p.permission_id
-      );
-
-    INSERT INTO sys_role_permission (role_id, permission_id)
-    SELECT r.role_id, p.permission_id
-    FROM sys_role r
-    JOIN sys_permission p ON p.permission_code IN ('leave.manage')
-    WHERE r.role_code = 'EMPLOYEE'
-      AND NOT EXISTS (
-        SELECT 1 FROM sys_role_permission x WHERE x.role_id = r.role_id AND x.permission_id = p.permission_id
-      );
-    """
-    execute(sql)
+    statements = [
+        """
+        INSERT INTO sys_user_role (user_id, role_id)
+        SELECT u.user_id, r.role_id
+        FROM sys_user u, sys_role r
+        WHERE u.username = 'admin' AND r.role_code = 'ADMIN'
+          AND NOT EXISTS (
+            SELECT 1 FROM sys_user_role x WHERE x.user_id = u.user_id AND x.role_id = r.role_id
+          );
+        """,
+        """
+        INSERT INTO sys_user_role (user_id, role_id)
+        SELECT u.user_id, r.role_id
+        FROM sys_user u, sys_role r
+        WHERE u.username = 'hr_mgr' AND r.role_code = 'HR'
+          AND NOT EXISTS (
+            SELECT 1 FROM sys_user_role x WHERE x.user_id = u.user_id AND x.role_id = r.role_id
+          );
+        """,
+        """
+        INSERT INTO sys_user_role (user_id, role_id)
+        SELECT u.user_id, r.role_id
+        FROM sys_user u, sys_role r
+        WHERE u.username = 'employee' AND r.role_code = 'EMPLOYEE'
+          AND NOT EXISTS (
+            SELECT 1 FROM sys_user_role x WHERE x.user_id = u.user_id AND x.role_id = r.role_id
+          );
+        """,
+        """
+        INSERT INTO sys_role_permission (role_id, permission_id)
+        SELECT r.role_id, p.permission_id
+        FROM sys_role r
+        JOIN sys_permission p ON p.permission_code IN (
+          'user.manage', 'employee.manage', 'department.manage', 'leave.manage', 'audit.view',
+          'skill.manage', 'analytics.view', 'attendance.view',
+          'performance.view', 'performance.manage', 'team.view'
+        )
+        WHERE r.role_code = 'ADMIN'
+          AND NOT EXISTS (
+            SELECT 1 FROM sys_role_permission x WHERE x.role_id = r.role_id AND x.permission_id = p.permission_id
+          );
+        """,
+        """
+        INSERT INTO sys_role_permission (role_id, permission_id)
+        SELECT r.role_id, p.permission_id
+        FROM sys_role r
+        JOIN sys_permission p ON p.permission_code IN (
+          'employee.manage', 'department.manage', 'leave.manage', 'audit.view',
+          'skill.manage', 'analytics.view', 'attendance.view',
+          'performance.view', 'team.view'
+        )
+        WHERE r.role_code = 'HR'
+          AND NOT EXISTS (
+            SELECT 1 FROM sys_role_permission x WHERE x.role_id = r.role_id AND x.permission_id = p.permission_id
+          );
+        """,
+        """
+        INSERT INTO sys_role_permission (role_id, permission_id)
+        SELECT r.role_id, p.permission_id
+        FROM sys_role r
+        JOIN sys_permission p ON p.permission_code IN ('leave.manage')
+        WHERE r.role_code = 'EMPLOYEE'
+          AND NOT EXISTS (
+            SELECT 1 FROM sys_role_permission x WHERE x.role_id = r.role_id AND x.permission_id = p.permission_id
+          );
+        """,
+        """
+        INSERT INTO sys_role (role_code, role_name, description)
+        SELECT 'MANAGER', '部门经理', '审批人 + 团队管理'
+        WHERE NOT EXISTS (SELECT 1 FROM sys_role WHERE role_code = 'MANAGER');
+        """,
+        """
+        INSERT INTO sys_role_permission (role_id, permission_id)
+        SELECT r.role_id, p.permission_id
+        FROM sys_role r
+        JOIN sys_permission p ON p.permission_code IN (
+          'leave.manage', 'skill.manage', 'analytics.view',
+          'attendance.view', 'performance.view', 'team.view'
+        )
+        WHERE r.role_code = 'MANAGER'
+          AND NOT EXISTS (
+            SELECT 1 FROM sys_role_permission x WHERE x.role_id = r.role_id AND x.permission_id = p.permission_id
+          );
+        """,
+        """
+        INSERT INTO sys_role (role_code, role_name, description)
+        SELECT 'CEO', 'CEO/管理员', '系统所有者——所有权限'
+        WHERE NOT EXISTS (SELECT 1 FROM sys_role WHERE role_code = 'CEO');
+        """,
+        """
+        INSERT INTO sys_role_permission (role_id, permission_id)
+        SELECT r.role_id, p.permission_id
+        FROM sys_role r
+        CROSS JOIN sys_permission p
+        WHERE r.role_code = 'CEO'
+          AND NOT EXISTS (
+            SELECT 1 FROM sys_role_permission x WHERE x.role_id = r.role_id AND x.permission_id = p.permission_id
+          );
+        """,
+    ]
+    execute_many(statements)

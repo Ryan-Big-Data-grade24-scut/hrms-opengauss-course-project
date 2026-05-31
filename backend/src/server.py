@@ -7,6 +7,9 @@ from src.common.db import DatabaseError
 from src.common.http import error, ok, page, to_json_bytes
 from src.config import APP_HOST, APP_PORT
 from src.services import (
+    analytics_service,
+    attendance_service,
+    attrition_service,
     auth_service,
     directory_service,
     employee_service,
@@ -17,6 +20,7 @@ from src.services import (
     leave_type_service,
     location_service,
     org_service,
+    performance_service,
     predict_service,
     report_service,
     skill_service,
@@ -128,7 +132,10 @@ class ApiHandler(BaseHTTPRequestHandler):
 
             if path == "/api/positions" and method == "GET":
                 self._require_permission(user, "department.manage")
-                return self._send(200, ok(directory_service.list_positions()))
+                dept_id = query.get("department_id", [None])[0]
+                return self._send(200, ok(directory_service.list_positions(
+                    department_id=int(dept_id) if dept_id else None
+                )))
             if path == "/api/positions" and method == "POST":
                 self._require_permission(user, "department.manage")
                 return self._send(200, ok(directory_service.create_position(body, user["username"])))
@@ -149,6 +156,9 @@ class ApiHandler(BaseHTTPRequestHandler):
                 self._require_permission(user, "employee.manage")
                 page_no, page_size = _parse_page(query)
                 filters = {k: v[0] for k, v in query.items()}
+                # Map ?q= search param to ?keyword= for consistency with directory search
+                if "q" in filters and "keyword" not in filters:
+                    filters["keyword"] = filters.pop("q")
                 rows, total = employee_service.list_employees(page_no, page_size, filters)
                 return self._send(200, page(rows, total, page_no, page_size))
             if path == "/api/employees" and method == "POST":
@@ -305,11 +315,60 @@ class ApiHandler(BaseHTTPRequestHandler):
                     ok({"status": "reserved", "message": "restore workflow reserved for next phase"}),
                 )
 
+            # === Profile self-service ===
+            if path == "/api/profile/self" and method == "GET":
+                return self._send(200, ok(auth_service.get_employee_profile(user)))
+
+            if path == "/api/profile/contact" and method == "PUT":
+                eid = int(body.get("employee_id", user.get("employee_id", 0)))
+                upd = {}
+                if "phone" in body: upd["phone"] = body["phone"]
+                if "email" in body: upd["email"] = body["email"]
+                if "birth_date" in body: upd["birth_date"] = body["birth_date"]
+                if upd:
+                    employee_service.update_employee(eid, upd, user["username"])
+                return self._send(200, ok({"status": "updated"}))
+
+            # === Directory ===
+            if path == "/api/directory/tree" and method == "GET":
+                return self._send(200, ok(directory_service.directory_tree()))
+
+            if path == "/api/directory/search" and method == "GET":
+                keyword = query.get("q", [""])[0]
+                return self._send(200, ok(directory_service.directory_search(keyword)))
+
+            if path == "/api/directory/filters" and method == "GET":
+                return self._send(200, ok(directory_service.directory_filters()))
+
             # === New discover endpoints ===
             if path == "/api/skills" and method == "GET":
                 return self._send(200, ok(skill_service.list_skills(query.get("category_id",[None])[0])))
+            if path == "/api/skills" and method == "POST":
+                self._require_permission(user, "skill.manage")
+                return self._send(200, ok(skill_service.create_skill(body, user["username"])))
+
+            match = re.fullmatch(r"/api/skills/(\d+)", path)
+            if match and method == "PUT":
+                self._require_permission(user, "skill.manage")
+                return self._send(200, ok(skill_service.update_skill(int(match.group(1)), body, user["username"])))
+            if match and method == "DELETE":
+                self._require_permission(user, "skill.manage")
+                return self._send(200, ok(skill_service.delete_skill(int(match.group(1)), user["username"])))
+
             if path == "/api/skills/categories" and method == "GET":
                 return self._send(200, ok(skill_service.list_skill_categories()))
+            if path == "/api/skills/categories" and method == "POST":
+                self._require_permission(user, "skill.manage")
+                return self._send(200, ok(skill_service.create_skill_category(body, user["username"])))
+
+            match = re.fullmatch(r"/api/skills/categories/(\d+)", path)
+            if match and method == "PUT":
+                self._require_permission(user, "skill.manage")
+                return self._send(200, ok(skill_service.update_skill_category(int(match.group(1)), body, user["username"])))
+            if match and method == "DELETE":
+                self._require_permission(user, "skill.manage")
+                return self._send(200, ok(skill_service.delete_skill_category(int(match.group(1)), user["username"])))
+
             if path == "/api/skills/recommend" and method == "GET":
                 sid = query.get("skill_id",[None])[0]
                 if sid: return self._send(200, ok(skill_service.skill_recommendations(int(sid))))
@@ -319,7 +378,13 @@ class ApiHandler(BaseHTTPRequestHandler):
                 if eid: return self._send(200, ok(skill_service.get_employee_skills(int(eid))))
                 return self._send(200, ok([]))
             if path == "/api/employees/skills" and method == "POST":
+                self._require_permission(user, "skill.manage")
                 return self._send(200, ok(skill_service.upsert_employee_skill(int(body["employee_id"]),body,user["username"])))
+            if path == "/api/employees/skills" and method == "DELETE":
+                self._require_permission(user, "skill.manage")
+                eid = int(query.get("employee_id", ["0"])[0])
+                sid = int(query.get("skill_id", ["0"])[0])
+                return self._send(200, ok(skill_service.delete_employee_skill(eid, sid, user["username"])))
             if path == "/api/match/employee" and method == "GET":
                 eid = query.get("employee_id",[None])[0]
                 if eid: return self._send(200, ok(skill_service.match_employee_to_positions(int(eid))))
@@ -328,6 +393,23 @@ class ApiHandler(BaseHTTPRequestHandler):
                 return self._send(200, ok(skill_service.gap_analysis()))
             if path == "/api/skills/heatmap" and method == "GET":
                 return self._send(200, ok(skill_service.heatmap()))
+            if path == "/api/skills/analytics/overview" and method == "GET":
+                return self._send(200, ok(skill_service.org_skills_overview()))
+            if path == "/api/skills/analytics/department-comparison" and method == "GET":
+                return self._send(200, ok(skill_service.department_comparison()))
+
+            match = re.fullmatch(r"/api/skills/infer/(\d+)", path)
+            if match and method == "POST":
+                self._require_permission(user, "skill.manage")
+                return self._send(200, ok(skill_service.infer_skills_from_history(int(match.group(1)), user["username"])))
+
+            match = re.fullmatch(r"/api/employees/(\d+)/projects", path)
+            if match and method == "GET":
+                self._require_permission(user, "employee.manage")
+                return self._send(200, ok(skill_service.list_employee_projects(int(match.group(1)))))
+            if match and method == "POST":
+                self._require_permission(user, "employee.manage")
+                return self._send(200, ok(skill_service.create_employee_project(int(match.group(1)), body, user["username"])))
             if path == "/api/predict/attrition" and method == "GET":
                 return self._send(200, ok(predict_service.predict_attrition()))
             if path == "/api/predict/attrition/train" and method == "POST":
@@ -344,6 +426,150 @@ class ApiHandler(BaseHTTPRequestHandler):
                 return self._send(200, ok(org_service.critical_persons()))
             if path == "/api/org/departments" and method == "GET":
                 return self._send(200, ok(org_service.department_stats()))
+            if path == "/api/org/hierarchy" and method == "GET":
+                self._require_permission(user, "employee.manage")
+                return self._send(200, ok(org_service.org_hierarchy()))
+            match = re.fullmatch(r"/api/org/employee/(\d+)", path)
+            if match and method == "GET":
+                self._require_permission(user, "employee.manage")
+                bundle = org_service.get_employee_bundle(int(match.group(1)))
+                if bundle is None:
+                    self._send(*error(4001, "employee not found", 404))
+                    return
+                return self._send(200, ok(bundle))
+
+            # === Attrition risk (hybrid engine) ===
+            if path == "/api/attrition/risk" and method == "GET":
+                self._require_permission(user, "analytics.view")
+                eid = query.get("employee_id", [None])[0]
+                if eid:
+                    return self._send(200, ok(attrition_service.compute_risk(int(eid))))
+                return self._send(200, ok(attrition_service.compute_risk_all()))
+            if path == "/api/attrition/summary" and method == "GET":
+                self._require_permission(user, "analytics.view")
+                return self._send(200, ok(attrition_service.get_risk_summary()))
+            if path == "/api/attrition/flags" and method == "GET":
+                self._require_permission(user, "analytics.view")
+                threshold = float(query.get("threshold", ["0.5"])[0])
+                return self._send(200, ok(attrition_service.get_flagged_employees(threshold)))
+            if path == "/api/attrition/drivers" and method == "GET":
+                self._require_permission(user, "analytics.view")
+                return self._send(200, ok(attrition_service.get_high_risk_drivers()))
+            if path == "/api/attrition/distribution" and method == "GET":
+                self._require_permission(user, "analytics.view")
+                return self._send(200, ok(attrition_service.distribution()))
+            if path == "/api/attrition/snapshot" and method == "POST":
+                self._require_permission(user, "analytics.view")
+                return self._send(200, ok(attrition_service.snapshot_risk_history()))
+            match = re.fullmatch(r"/api/attrition/history/(\d+)", path)
+            if match and method == "GET":
+                self._require_permission(user, "analytics.view")
+                return self._send(200, ok(attrition_service.get_risk_history(int(match.group(1)))))
+
+            # === Attendance ===
+            if path == "/api/attendance/clock" and method == "POST":
+                eid = int(body.get("employee_id", user.get("employee_id", 0)))
+                clock_type = body.get("clock_type", "normal")
+                return self._send(200, ok(attendance_service.clock_in(eid, clock_type)))
+
+            if path == "/api/attendance/my" and method == "GET":
+                eid = int(query.get("employee_id", [0])[0])
+                if not eid:
+                    eid = user.get("employee_id", 0)
+                limit = int(query.get("limit", ["30"])[0])
+                return self._send(200, ok(attendance_service.get_my_attendance(eid, limit)))
+
+            if path == "/api/attendance/records" and method == "GET":
+                self._require_permission(user, "attendance.view")
+                page_no, page_size = _parse_page(query)
+                filters = {k: v[0] for k, v in query.items()}
+                rows, total = attendance_service.list_attendance_records(
+                    page_no, page_size,
+                    employee_id=filters.get("employee_id") and int(filters["employee_id"]) or None,
+                    department_id=filters.get("department_id") and int(filters["department_id"]) or None,
+                    date_from=filters.get("date_from"),
+                    date_to=filters.get("date_to"),
+                    manager_employee_id=filters.get("manager_employee_id") and int(filters["manager_employee_id"]) or None,
+                )
+                return self._send(200, page(rows, total, page_no, page_size))
+
+            if path == "/api/attendance/summary" and method == "GET":
+                self._require_permission(user, "analytics.view")
+                dept_id = query.get("department_id", [None])[0]
+                return self._send(200, ok(attendance_service.attendance_summary(
+                    department_id=int(dept_id) if dept_id else None,
+                    date_from=query.get("date_from", [None])[0],
+                    date_to=query.get("date_to", [None])[0],
+                )))
+
+            if path == "/api/attendance/sync" and method == "POST":
+                self._require_permission(user, "analytics.view")
+                return self._send(200, ok(attendance_service.update_absent_late_counts()))
+
+            # === Performance Reviews ===
+            if path == "/api/performance/reviews" and method == "GET":
+                self._require_permission(user, "performance.view")
+                page_no, page_size = _parse_page(query)
+                filters = {k: v[0] for k, v in query.items()}
+                rows, total = performance_service.list_reviews(
+                    page_no, page_size,
+                    employee_id=filters.get("employee_id") and int(filters["employee_id"]) or None,
+                    department_id=filters.get("department_id") and int(filters["department_id"]) or None,
+                    review_period=filters.get("review_period"),
+                    status=filters.get("status"),
+                    manager_employee_id=filters.get("manager_employee_id") and int(filters["manager_employee_id"]) or None,
+                )
+                return self._send(200, page(rows, total, page_no, page_size))
+
+            if path == "/api/performance/reviews" and method == "POST":
+                self._require_permission(user, "performance.manage")
+                return self._send(200, ok(performance_service.create_review(body, user["username"])))
+
+            match = re.fullmatch(r"/api/performance/reviews/(\d+)", path)
+            if match and method == "PUT":
+                self._require_permission(user, "performance.manage")
+                return self._send(200, ok(performance_service.update_review(int(match.group(1)), body, user["username"])))
+
+            if path == "/api/performance/my" and method == "GET":
+                eid = int(query.get("employee_id", [0])[0])
+                if not eid:
+                    eid = user.get("employee_id", 0)
+                return self._send(200, ok(performance_service.get_my_reviews(eid)))
+
+            if path == "/api/performance/summary" and method == "GET":
+                self._require_permission(user, "analytics.view")
+                dept_id = query.get("department_id", [None])[0]
+                period = query.get("review_period", [None])[0]
+                return self._send(200, ok(performance_service.performance_summary(
+                    department_id=int(dept_id) if dept_id else None,
+                    review_period=period,
+                )))
+
+            if path == "/api/performance/sync" and method == "POST":
+                self._require_permission(user, "analytics.view")
+                return self._send(200, ok(performance_service.sync_avg_performance_score()))
+
+            # === Analytics (cross-module) ===
+            if path == "/api/analytics/department-health" and method == "GET":
+                self._require_permission(user, "analytics.view")
+                return self._send(200, ok(analytics_service.department_health_score()))
+
+            if path == "/api/analytics/risk-trends" and method == "GET":
+                self._require_permission(user, "analytics.view")
+                return self._send(200, ok(analytics_service.org_risk_trend_summary()))
+
+            if path == "/api/analytics/critical-persons" and method == "GET":
+                self._require_permission(user, "analytics.view")
+                return self._send(200, ok(analytics_service.critical_persons_enhanced()))
+
+            match = re.fullmatch(r"/api/skills/gap/department/(\d+)", path)
+            if match and method == "GET":
+                self._require_permission(user, "analytics.view")
+                return self._send(200, ok(analytics_service.org_skill_gap_department(int(match.group(1)))))
+
+            if path == "/api/skills/gap/enhanced" and method == "GET":
+                self._require_permission(user, "analytics.view")
+                return self._send(200, ok(analytics_service.skill_gap_analysis_enhanced()))
 
             self._send(*error(4004, "endpoint not found", 404))
         except PermissionError as exc:

@@ -1,4 +1,4 @@
-from src.common.db import bootstrap_rbac, json_object_query, sql_literal
+from src.common.db import bootstrap_rbac, json_array_query, json_object_query, sql_literal
 from src.common.security import TOKENS, verify_password
 
 
@@ -58,3 +58,39 @@ def get_profile(token):
 
 def logout(token):
     TOKENS.delete(token)
+
+
+def get_employee_profile(user):
+    """Get the current user's bound employee profile bundle.
+
+    The user profile (from token) may include an employee_id field.
+    If not, fall back to matching by username -> employee.
+    Returns employee + profile + skills + match + job_history.
+    """
+    employee_id = user.get("employee_id")
+    if not employee_id:
+        # Attempt match by full_name
+        row = json_object_query(f"""
+            SELECT employee_id FROM employee
+            WHERE full_name = {sql_literal(user.get('full_name', ''))}
+            LIMIT 1
+        """)
+        if row:
+            employee_id = row.get("employee_id")
+    if not employee_id:
+        return {"employee": None}
+
+    from src.services.employee_service import get_employee
+    from src.services.employee_profile_service import get_employee_profile as get_profile
+    from src.services.employee_job_history_service import list_employee_job_history
+    from src.services.skill_service import get_employee_skills, match_employee_to_positions
+    from src.services.attrition_service import compute_risk
+
+    return {
+        "employee": get_employee(employee_id),
+        "profile": get_profile(employee_id),
+        "skills": get_employee_skills(employee_id),
+        "position_match": match_employee_to_positions(employee_id),
+        "job_history": list_employee_job_history(employee_id),
+        "attrition_risk": compute_risk(employee_id),
+    }
