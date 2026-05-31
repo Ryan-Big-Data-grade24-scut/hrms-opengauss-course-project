@@ -61,20 +61,21 @@ export default function SkillsPage() {
       await api.addEmployeeSkill(selectedEmp, addSkillId, addLevel)
       const sk = await api.employeeSkills(selectedEmp)
       setSkills(sk.data || [])
-      setFeedback('Skill added')
+      setFeedback('已提交审批')
       setAddOpen(false); setAddSkillId(null); setAddLevel(3)
-      setTimeout(() => setFeedback(''), 2000)
-    } catch { setFeedback('Failed to add skill') }
+      setTimeout(() => setFeedback(''), 3000)
+    } catch { setFeedback('提交审批失败') }
   }
 
   async function handleDeleteSkill(skillId: number) {
     if (!selectedEmp) return
     try {
       await api.deleteEmployeeSkill(selectedEmp, skillId)
-      setSkills(prev => prev.filter(s => s.skill_id !== skillId))
-      setFeedback('Skill removed')
-      setTimeout(() => setFeedback(''), 2000)
-    } catch { setFeedback('Failed to remove skill') }
+      const sk = await api.employeeSkills(selectedEmp)
+      setSkills(sk.data || [])
+      setFeedback('已提交审批')
+      setTimeout(() => setFeedback(''), 3000)
+    } catch { setFeedback('提交审批失败') }
   }
 
   async function handleAddJob() {
@@ -213,20 +214,31 @@ export default function SkillsPage() {
           ) : (
             <div className="space-y-2">
               {skills.map(s => (
-                <div key={s.skill_id} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-stone-50 transition group">
-                  <div className="flex-1">
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="font-medium text-stone-700">{s.skill_name}</span>
-                      <span className="text-xs text-stone-400">{s.proficiency_level}/5</span>
+                <div key={s.approval_id || s.skill_id} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-stone-50 transition group">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 text-sm mb-1">
+                      <span className="font-medium text-stone-700 truncate">{s.skill_name}</span>
+                      <span className="text-xs text-stone-400 shrink-0">{s.proficiency_level}/5</span>
+                      {s.approval_status === 'pending' && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium shrink-0">pending</span>
+                      )}
+                      {s.approval_status === 'approved' && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-medium shrink-0">approved</span>
+                      )}
+                      {s.approval_status === 'rejected' && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 font-medium shrink-0">rejected</span>
+                      )}
                     </div>
                     <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
                       <div className="h-full rounded-full bg-stone-500 transition-all" style={{ width: `${s.proficiency_level * 20}%` }} />
                     </div>
                   </div>
-                  <button onClick={() => handleDeleteSkill(s.skill_id)} title="Remove skill"
-                    className="ml-3 p-1.5 rounded-md text-stone-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition">
-                    <X className="w-3.5 h-3.5" />
-                  </button>
+                  {(s.approval_status === 'approved' || !s.approval_status) && (
+                    <button onClick={() => handleDeleteSkill(s.skill_id)} title="Remove skill"
+                      className="ml-3 p-1.5 rounded-md text-stone-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>

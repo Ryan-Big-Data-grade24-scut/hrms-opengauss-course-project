@@ -15,6 +15,7 @@ import {
   Clock,
   CheckCircle,
   XCircle,
+  Pencil,
   FileText,
 } from 'lucide-react'
 
@@ -24,6 +25,18 @@ async function get(path: string) {
   const token = localStorage.getItem('token')
   const res = await fetch(BASE + path, {
     headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.message || 'Request failed')
+  return data
+}
+
+async function post(path: string, body: any) {
+  const token = localStorage.getItem('token')
+  const res = await fetch(BASE + path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    body: JSON.stringify(body),
   })
   const data = await res.json()
   if (!res.ok) throw new Error(data.message || 'Request failed')
@@ -189,6 +202,11 @@ export default function OrgPeoplePage() {
   const [profileLoading, setProfileLoading] = useState(false)
   const [profileError, setProfileError] = useState('')
 
+  /* ---- Contact edit modal ---- */
+  const [contactEditOpen, setContactEditOpen] = useState(false)
+  const [contactForm, setContactForm] = useState({ phone: '', email: '' })
+  const [contactSubmitting, setContactSubmitting] = useState(false)
+
   /* ---- Derived state ---- */
   const isSearching = debouncedQuery.trim().length > 0
   const rootNodes = treeFlat.filter(n => n.parent_department_id === null)
@@ -344,6 +362,37 @@ export default function OrgPeoplePage() {
   const clearSearch = () => {
     setQuery('')
     setDebouncedQuery('')
+  }
+
+  /* ---- Contact edit handlers ---- */
+  const openContactEdit = () => {
+    setContactForm({
+      phone: profile?.basic?.phone || '',
+      email: profile?.basic?.email || '',
+    })
+    setContactEditOpen(true)
+  }
+
+  const submitContactEdit = async () => {
+    if (!selectedEmpId) return
+    setContactSubmitting(true)
+    try {
+      await post('/approval-requests', {
+        target_type: 'PROFILE_UPDATE',
+        target_id: selectedEmpId,
+        payload: JSON.stringify({
+          employee_id: selectedEmpId,
+          phone: contactForm.phone,
+          email: contactForm.email,
+        }),
+        reason: 'Contact info update requested',
+      })
+      setContactEditOpen(false)
+    } catch {
+      // error is surfaced via the modal's inline error; keep modal open
+    } finally {
+      setContactSubmitting(false)
+    }
   }
 
   const closeProfile = () => {
@@ -594,34 +643,87 @@ export default function OrgPeoplePage() {
                   )}
 
                   {/* Block 2: Contact */}
-                  {profile.basic && (profile.basic.phone || profile.basic.email || profile.basic.emergency_contact_name) && (
+                  {profile.basic && (
                     <div>
-                      <h5 className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Contact</h5>
-                      <div className="space-y-2 text-sm text-stone-600">
-                        {profile.basic.phone && (
-                          <div className="flex items-center gap-2">
-                            <Phone className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-                            <span>{profile.basic.phone}</span>
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Contact</h5>
+                        <button onClick={openContactEdit} className="p-1 rounded hover:bg-stone-100 transition" title="Edit contact">
+                          <Pencil className="w-3.5 h-3.5 text-stone-400" />
+                        </button>
+                      </div>
+                      {(profile.basic.phone || profile.basic.email || profile.basic.emergency_contact_name) ? (
+                        <div className="space-y-2 text-sm text-stone-600">
+                          {profile.basic.phone && (
+                            <div className="flex items-center gap-2">
+                              <Phone className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                              <span>{profile.basic.phone}</span>
+                            </div>
+                          )}
+                          {profile.basic.email && (
+                            <div className="flex items-center gap-2">
+                              <Mail className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                              <span className="truncate">{profile.basic.email}</span>
+                            </div>
+                          )}
+                          {profile.basic.manager_name && (
+                            <div className="flex items-center gap-2">
+                              <Briefcase className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                              <span>Reports to: {profile.basic.manager_name}</span>
+                            </div>
+                          )}
+                          {profile.basic.emergency_contact_name && (
+                            <div className="flex items-center gap-2">
+                              <Phone className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                              <span>Emergency: {profile.basic.emergency_contact_name} {profile.basic.emergency_contact_phone || ''}</span>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-stone-400">No contact info</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Contact edit modal */}
+                  {contactEditOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={() => setContactEditOpen(false)}>
+                      <div className="bg-white rounded-xl shadow-xl border border-stone-200 w-80 p-5" onClick={e => e.stopPropagation()}>
+                        <h4 className="text-sm font-semibold text-stone-700 mb-4">Edit Contact</h4>
+                        <div className="space-y-3">
+                          <div>
+                            <label className="text-xs text-stone-500 mb-1 block">Phone</label>
+                            <input
+                              type="text"
+                              value={contactForm.phone}
+                              onChange={e => setContactForm(prev => ({ ...prev, phone: e.target.value }))}
+                              className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400"
+                            />
                           </div>
-                        )}
-                        {profile.basic.email && (
-                          <div className="flex items-center gap-2">
-                            <Mail className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-                            <span className="truncate">{profile.basic.email}</span>
+                          <div>
+                            <label className="text-xs text-stone-500 mb-1 block">Email</label>
+                            <input
+                              type="email"
+                              value={contactForm.email}
+                              onChange={e => setContactForm(prev => ({ ...prev, email: e.target.value }))}
+                              className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400"
+                            />
                           </div>
-                        )}
-                        {profile.basic.manager_name && (
-                          <div className="flex items-center gap-2">
-                            <Briefcase className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-                            <span>Reports to: {profile.basic.manager_name}</span>
-                          </div>
-                        )}
-                        {profile.basic.emergency_contact_name && (
-                          <div className="flex items-center gap-2">
-                            <Phone className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-                            <span>Emergency: {profile.basic.emergency_contact_name} {profile.basic.emergency_contact_phone || ''}</span>
-                          </div>
-                        )}
+                        </div>
+                        <div className="flex items-center justify-end gap-2 mt-5">
+                          <button
+                            onClick={() => setContactEditOpen(false)}
+                            className="text-xs px-3 py-1.5 rounded-lg border border-stone-200 text-stone-500 hover:bg-stone-50 transition"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={submitContactEdit}
+                            disabled={contactSubmitting}
+                            className="text-xs px-3 py-1.5 rounded-lg bg-stone-800 text-white hover:bg-stone-700 transition disabled:opacity-50"
+                          >
+                            {contactSubmitting ? 'Submitting...' : 'Submit'}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )}

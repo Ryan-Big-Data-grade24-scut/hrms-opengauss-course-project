@@ -28,6 +28,24 @@ function riskBarColor(score: number): string {
   return 'bg-green-500'
 }
 
+const FACTOR_MAP = [
+  { key: 'engagement_risk', label: 'Eng', color: 'bg-blue-400' },
+  { key: 'attendance_risk', label: 'Att', color: 'bg-cyan-400' },
+  { key: 'performance_risk', label: 'Perf', color: 'bg-emerald-400' },
+  { key: 'promotion_risk', label: 'Prom', color: 'bg-violet-400' },
+  { key: 'overtime_risk', label: 'OT', color: 'bg-amber-400' },
+]
+
+function getRiskLabels(a: any): { text: string; color: string }[] {
+  const labels: { text: string; color: string }[] = []
+  if ((a.engagement_score ?? 0) < 50) labels.push({ text: '敬业度低', color: 'bg-blue-100 text-blue-700' })
+  if ((a.attendance_late_count ?? 0) > 5) labels.push({ text: '频繁迟到', color: 'bg-orange-100 text-orange-700' })
+  if ((a.last_promotion_months ?? 0) > 24) labels.push({ text: '长期未晋升', color: 'bg-purple-100 text-purple-700' })
+  if ((a.overtime_count ?? 0) > 15) labels.push({ text: '过度加班', color: 'bg-yellow-100 text-yellow-700' })
+  if ((a.manager_changes ?? 0) > 2) labels.push({ text: '管理变动频繁', color: 'bg-cyan-100 text-cyan-700' })
+  return labels
+}
+
 export default function StrategicAnalytics() {
   const { setTitle } = useOutletContext() as any
 
@@ -151,6 +169,7 @@ export default function StrategicAnalytics() {
                       <th className="px-5 py-3 font-medium">Department</th>
                       <th className="px-5 py-3 font-medium">Risk %</th>
                       <th className="px-5 py-3 font-medium">Level</th>
+                      <th className="px-5 py-3 font-medium">Risk Factors</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -178,6 +197,35 @@ export default function StrategicAnalytics() {
                             <span className={`text-xs font-medium px-2 py-1 rounded-full ${level.bg} ${level.color}`}>
                               {level.label}
                             </span>
+                          </td>
+                          <td className="px-5 py-3 min-w-[180px]">
+                            <div className="flex flex-col gap-1">
+                              {/* Stacked bar — factor decomposition */}
+                              <div className="flex h-2 bg-stone-100 rounded-full overflow-hidden">
+                                {(() => {
+                                  const factors = FACTOR_MAP.map(f => ({ ...f, value: a[f.key] ?? 0 }))
+                                  const total = factors.reduce((s, f) => s + f.value, 0)
+                                  return total > 0
+                                    ? factors.map(f => (
+                                        <div
+                                          key={f.key}
+                                          className={`${f.color} h-full transition-all`}
+                                          style={{ width: `${(f.value / total) * 100}%` }}
+                                          title={`${f.label}: ${(f.value).toFixed(3)}`}
+                                        />
+                                      ))
+                                    : <div className="bg-stone-200 h-full w-full rounded-full" />
+                                })()}
+                              </div>
+                              {/* Risk labels */}
+                              <div className="flex flex-wrap gap-1">
+                                {getRiskLabels(a).map((l, i) => (
+                                  <span key={i} className={`text-[10px] px-1.5 py-[1px] rounded font-medium ${l.color}`}>
+                                    {l.text}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
                           </td>
                         </tr>
                       )

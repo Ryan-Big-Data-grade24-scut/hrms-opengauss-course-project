@@ -9,6 +9,7 @@ from src.config import APP_HOST, APP_PORT
 from src.services import (
     analytics_service,
     attendance_service,
+    approval_service,
     attrition_service,
     auth_service,
     directory_service,
@@ -19,6 +20,7 @@ from src.services import (
     leave_service,
     leave_type_service,
     location_service,
+    org_people_service,
     org_service,
     performance_service,
     predict_service,
@@ -32,6 +34,23 @@ def _parse_page(query):
     page_no = int(query.get("page", ["1"])[0] or "1")
     page_size = int(query.get("page_size", ["10"])[0] or "10")
     return max(page_no, 1), max(min(page_size, 100), 1)
+
+
+def _get_employee_id(username):
+    """从 sys_user/employee 表查询 username 对应的 employee_id。"""
+    from src.common.db import query_scalar, sql_literal
+    # 数字字符串 → 直接作为 employee_id
+    try:
+        return int(username)
+    except (ValueError, TypeError):
+        pass
+    # sys_user.username → JOIN employee.full_name
+    return query_scalar(f"""
+        SELECT e.employee_id
+        FROM sys_user u
+        JOIN employee e ON e.full_name = u.full_name
+        WHERE u.username = {sql_literal(username)}
+    """)
 
 
 class ApiHandler(BaseHTTPRequestHandler):
@@ -379,12 +398,41 @@ class ApiHandler(BaseHTTPRequestHandler):
                 return self._send(200, ok([]))
             if path == "/api/employees/skills" and method == "POST":
                 self._require_permission(user, "skill.manage")
-                return self._send(200, ok(skill_service.upsert_employee_skill(int(body["employee_id"]),body,user["username"])))
+                applicant_id = approval_service.resolve_employee_id(user["username"])
+                if not applicant_id:
+                    return self._send(400, error("无法解析当前用户的员工 ID"))
+                result = approval_service.submit_approval(
+                    employee_id=applicant_id,
+                    action_type="SKILL_CHANGE",
+                    target_id=int(body["employee_id"]),
+                    payload={
+                        "action": "add",
+                        "employee_id": body["employee_id"],
+                        "skill_id": body["skill_id"],
+                        "proficiency_level": body.get("proficiency_level", 1),
+                    },
+                    actor=user["username"],
+                )
+                return self._send(200, ok(result))
             if path == "/api/employees/skills" and method == "DELETE":
                 self._require_permission(user, "skill.manage")
                 eid = int(query.get("employee_id", ["0"])[0])
                 sid = int(query.get("skill_id", ["0"])[0])
-                return self._send(200, ok(skill_service.delete_employee_skill(eid, sid, user["username"])))
+                applicant_id = approval_service.resolve_employee_id(user["username"])
+                if not applicant_id:
+                    return self._send(400, error("无法解析当前用户的员工 ID"))
+                result = approval_service.submit_approval(
+                    employee_id=applicant_id,
+                    action_type="SKILL_CHANGE",
+                    target_id=eid,
+                    payload={
+                        "action": "delete",
+                        "employee_id": eid,
+                        "skill_id": sid,
+                    },
+                    actor=user["username"],
+                )
+                return self._send(200, ok(result))
             if path == "/api/match/employee" and method == "GET":
                 eid = query.get("employee_id",[None])[0]
                 if eid: return self._send(200, ok(skill_service.match_employee_to_positions(int(eid))))
@@ -570,6 +618,162 @@ class ApiHandler(BaseHTTPRequestHandler):
             if path == "/api/skills/gap/enhanced" and method == "GET":
                 self._require_permission(user, "analytics.view")
                 return self._send(200, ok(analytics_service.skill_gap_analysis_enhanced()))
+
+            # === Org-People (V2 unified) ===
+            if path == "/api/v2/org-people/tree" and method == "GET":
+                return self._send(200, ok(org_people_service.org_people_tree()))
+
+            if path == "/api/v2/org-people/search" and method == "GET":
+                q = query.get("q", [""])[0]
+                return self._send(200, ok(org_people_service.org_people_search(q)))
+
+            if path == "/api/v2/org-people/filters" and method == "GET":
+                return self._send(200, ok(org_people_service.org_people_filters()))
+
+            if path == "/api/v2/org-people/positions" and method == "GET":
+                dept_id = query.get("department_id", [None])[0]
+                if dept_id:
+                    return self._send(200, ok(org_people_service.get_positions_by_department(int(dept_id))))
+                return self._send(200, ok([]))
+
+            if path == "/api/v2/org-people/employees" and method == "GET":
+                dept_id = query.get("department_id", [None])[0]
+                pos_id = query.get("position_id", [None])[0]
+                if dept_id:
+                    return self._send(200, ok(org_people_service.get_employees_by_dept(
+                        int(dept_id),
+                        position_id=int(pos_id) if pos_id else None
+                    )))
+                return self._send(200, ok([]))
+
+            match = re.fullmatch(r"/api/v2/org-people/employee/(\d+)/profile", path)
+            if match and method == "GET":
+                profile = org_people_service.employee_profile(int(match.group(1)))
+                if profile is None:
+                    self._send(*error(4001, "employee not found", 404))
+                    return
+                return self._send(200, ok(profile))
+
+            # === Org-People (V2 aliases without v2 prefix for simplicity) ===
+            if path == "/api/org-people/tree" and method == "GET":
+                return self._send(200, ok(org_people_service.org_people_tree()))
+
+            if path == "/api/org-people/search" and method == "GET":
+                q = query.get("q", [""])[0]
+                return self._send(200, ok(org_people_service.org_people_search(q)))
+
+            if path == "/api/org-people/filters" and method == "GET":
+                return self._send(200, ok(org_people_service.org_people_filters()))
+
+            if path == "/api/org-people/positions" and method == "GET":
+                dept_id = query.get("department_id", [None])[0]
+                if dept_id:
+                    return self._send(200, ok(org_people_service.get_positions_by_department(int(dept_id))))
+                return self._send(200, ok([]))
+
+            if path == "/api/org-people/employees" and method == "GET":
+                dept_id = query.get("department_id", [None])[0]
+                pos_id = query.get("position_id", [None])[0]
+                if dept_id:
+                    return self._send(200, ok(org_people_service.get_employees_by_dept(
+                        int(dept_id),
+                        position_id=int(pos_id) if pos_id else None
+                    )))
+                return self._send(200, ok([]))
+
+            match = re.fullmatch(r"/api/org-people/employee/(\d+)/profile", path)
+            if match and method == "GET":
+                profile = org_people_service.employee_profile(int(match.group(1)))
+                if profile is None:
+                    self._send(*error(4001, "employee not found", 404))
+                    return
+                return self._send(200, ok(profile))
+
+            # === Approval (V2) ===
+            if path == "/api/v2/approval-requests/pending" and method == "GET":
+                data = approval_service.get_pending_approvals(user["username"])
+                return self._send(200, ok(data))
+
+            if path == "/api/v2/approval-requests/my" and method == "GET":
+                emp_id = _get_employee_id(user["username"])
+                data = approval_service.get_my_requests(emp_id) if emp_id else []
+                return self._send(200, ok(data))
+
+            if path == "/api/v2/approval-requests/done" and method == "GET":
+                emp_id = _get_employee_id(user["username"])
+                data = approval_service.get_processed_requests(emp_id) if emp_id else []
+                return self._send(200, ok(data))
+
+            match = re.fullmatch(r"/api/v2/approval-requests/(\d+)/logs", path)
+            if match and method == "GET":
+                data = approval_service.get_request_detail(int(match.group(1)))
+                return self._send(200, ok(data))
+
+            match = re.fullmatch(r"/api/v2/approval-requests/(\d+)/(approve|reject)", path)
+            if match and method == "PUT":
+                request_id = int(match.group(1))
+                action = match.group(2)
+                comment = (body or {}).get("comment", "")
+                if action == "approve":
+                    data = approval_service.approve(request_id, user["username"], comment)
+                else:
+                    data = approval_service.reject(request_id, user["username"], comment)
+                return self._send(200, ok(data))
+
+            match = re.fullmatch(r"/api/v2/approval-requests/(\d+)/recall", path)
+            if match and method == "PUT":
+                data = approval_service.recall(int(match.group(1)), user["username"])
+                return self._send(200, ok(data))
+
+            # === Approval aliases (non-v2) ===
+            if path == "/api/approval-requests/pending" and method == "GET":
+                data = approval_service.get_pending_approvals(user["username"])
+                return self._send(200, ok(data))
+
+            if path == "/api/approval-requests/my" and method == "GET":
+                emp_id = _get_employee_id(user["username"])
+                data = approval_service.get_my_requests(emp_id) if emp_id else []
+                return self._send(200, ok(data))
+
+            if path == "/api/approval-requests/done" and method == "GET":
+                emp_id = _get_employee_id(user["username"])
+                data = approval_service.get_processed_requests(emp_id) if emp_id else []
+                return self._send(200, ok(data))
+
+            match = re.fullmatch(r"/api/approval-requests/(\d+)/logs", path)
+            if match and method == "GET":
+                data = approval_service.get_request_detail(int(match.group(1)))
+                return self._send(200, ok(data))
+
+            match = re.fullmatch(r"/api/approval-requests/(\d+)/(approve|reject)", path)
+            if match and method == "PUT":
+                request_id = int(match.group(1))
+                action = match.group(2)
+                comment = (body or {}).get("comment", "")
+                if action == "approve":
+                    data = approval_service.approve(request_id, user["username"], comment)
+                else:
+                    data = approval_service.reject(request_id, user["username"], comment)
+                return self._send(200, ok(data))
+
+            match = re.fullmatch(r"/api/approval-requests/(\d+)/recall", path)
+            if match and method == "PUT":
+                data = approval_service.recall(int(match.group(1)), user["username"])
+                return self._send(200, ok(data))
+
+            # === Approval submit ===
+            if path == "/api/approval-requests" and method == "POST":
+                emp_id = _get_employee_id(user["username"])
+                if not emp_id:
+                    return self._send(*error(4001, "无法解析当前用户对应的员工", 400))
+                data = approval_service.submit_approval(
+                    employee_id=emp_id,
+                    action_type=body.get("action_type"),
+                    target_id=body.get("target_id"),
+                    payload=body.get("payload", {}),
+                    actor=user["username"],
+                )
+                return self._send(200, ok(data))
 
             self._send(*error(4004, "endpoint not found", 404))
         except PermissionError as exc:

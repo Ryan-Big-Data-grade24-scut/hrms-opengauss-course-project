@@ -181,6 +181,10 @@ def approve(request_id, actor, comment):
     log_comment = comment or f"节点{request['current_node']}审批通过"
     write_audit(actor, 'approve', 'approval_request', str(request_id), log_comment)
 
+    # 6. 末节点审批通过后执行业务逻辑
+    if is_last:
+        _execute_payload(request.get("payload", {}), request.get("operation_type", ""))
+
     return get_request_detail(request_id)
 
 
@@ -249,6 +253,55 @@ def reject(request_id, actor, comment):
     return get_request_detail(request_id)
 
 
+def recall(request_id, actor):
+    """撤回审批单（仅发起人可撤回）。
+
+    仅当审批单状态为 PENDING 时允许撤回。
+    撤回后审批单进入 RECALLED 终态。
+
+    Args:
+        request_id: 审批单 ID
+        actor:      操作人用户名
+
+    Returns:
+        dict: 更新后的审批单详情
+
+    Raises:
+        ValueError:     审批单不存在或状态不正确
+        PermissionError: 当前用户不是审批单发起人
+        RuntimeError:    乐观锁冲突
+    """
+    request = _get_request(int(request_id))
+    if not request:
+        raise ValueError(f"审批单 #{request_id} 不存在")
+    if request["status"] != "pending":
+        raise ValueError(f"审批单状态为 {request['status']}，无法撤回（仅 pending 可撤回）")
+
+    actor_emp_id = _resolve_actor_to_employee_id(actor)
+    if actor_emp_id != request.get("applicant_id"):
+        raise PermissionError("仅审批单发起人可以撤回")
+
+    chain = _parse_chain_snapshot(request["chain_snapshot"])
+
+    updated = int(query_scalar(f"""
+        UPDATE approval_requests
+        SET status = 'recalled',
+            chain_snapshot = {sql_literal(json.dumps(chain, ensure_ascii=False))},
+            version = version + 1,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = {int(request_id)}
+          AND version = {request["version"]}
+        RETURNING version
+    """) or "0")
+
+    if not updated:
+        raise RuntimeError("审批单已被他人操作，请刷新后重新尝试")
+
+    write_audit(actor, 'recall', 'approval_request', str(request_id), '撤回审批单')
+
+    return get_request_detail(request_id)
+
+
 def get_pending_approvals(actor):
     """查询当前用户待审批的审批单列表。
 
@@ -296,6 +349,35 @@ def get_my_requests(employee_id):
     return rows
 
 
+def get_processed_requests(employee_id):
+    """查询当前员工已审批过的审批单列表（已通过或已拒绝）。
+
+    Args:
+        employee_id: 员工 employee_id
+
+    Returns:
+        list[dict]: 该员工审批过的审批单列表（按创建时间倒序）
+    """
+    emp_id = int(employee_id)
+    rows = json_array_query(f"""
+        SELECT DISTINCT ar.id, ar.operation_type, ar.target_emp_id,
+               ar.status, ar.current_node, ar.created_at
+        FROM approval_requests ar
+        JOIN audit_log al ON al.target_type = 'approval_request'
+            AND al.target_id = CAST(ar.id AS TEXT)
+        WHERE al.action_type IN ('approve', 'reject')
+          AND ar.status IN ('approved', 'rejected')
+          AND EXISTS (
+              SELECT 1 FROM sys_user u
+              JOIN employee e ON e.full_name = u.full_name
+              WHERE u.username = al.username
+                AND e.employee_id = {emp_id}
+          )
+        ORDER BY ar.created_at DESC
+    """)
+    return rows
+
+
 def get_request_detail(request_id):
     """获取审批单完整详情（含审批链快照和审计日志）。
 
@@ -334,6 +416,72 @@ def get_request_detail(request_id):
 # ===================================================================
 # 内部辅助函数
 # ===================================================================
+
+def _execute_payload(payload, action_type):
+    """审批通过后执行业务逻辑。
+
+    根据操作类型执行对应的数据变更：
+      - SKILL_CHANGE  → INSERT employee_skill
+      - PROFILE_UPDATE → UPDATE employee_profile
+
+    Args:
+        payload:     审批内容（dict）
+        action_type: 操作类型
+    """
+    if action_type == "SKILL_CHANGE":
+        employee_id = int(payload.get("employee_id", 0))
+        skill_id = int(payload.get("skill_id", 0))
+        action = payload.get("action", "add")
+
+        if action == "delete":
+            execute(f"""
+                DELETE FROM employee_skill
+                WHERE employee_id = {employee_id} AND skill_id = {skill_id}
+            """)
+        else:
+            level = int(payload.get("proficiency_level", 1))
+            source = payload.get("acquired_from", "self")
+            is_core = payload.get("is_core", False)
+            existing = query_scalar(
+                f"SELECT employee_skill_id FROM employee_skill "
+                f"WHERE employee_id = {employee_id} AND skill_id = {skill_id}"
+            )
+            if existing:
+                execute(f"""
+                    UPDATE employee_skill
+                    SET proficiency_level = {level},
+                        acquired_from = {sql_literal(source)},
+                        is_core = {str(is_core).upper()},
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE employee_id = {employee_id} AND skill_id = {skill_id}
+                """)
+            else:
+                execute(f"""
+                    INSERT INTO employee_skill
+                        (employee_id, skill_id, proficiency_level, acquired_from, is_core)
+                    VALUES ({employee_id}, {skill_id}, {level},
+                            {sql_literal(source)}, {str(is_core).upper()})
+                """)
+    elif action_type == "PROFILE_UPDATE":
+        fields = payload.get("fields", {})
+        set_clauses = [
+            f"{k} = {sql_literal(v)}" for k, v in fields.items()
+        ]
+        if set_clauses:
+            execute(f"""
+                UPDATE employee_profile
+                SET {', '.join(set_clauses)}
+                WHERE employee_id = {int(payload.get("employee_id", 0))}
+            """)
+
+
+def resolve_employee_id(actor):
+    """公开包装：将 actor 用户名解析为 employee_id。
+
+    返回 int 或 None。
+    """
+    return _resolve_actor_to_employee_id(actor)
+
 
 def _get_request(request_id):
     """根据 ID 查询审批单原始记录。"""

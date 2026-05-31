@@ -1,22 +1,19 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useState } from 'react'
-import { User, Building2, BarChart3, LogOut, BookOpen, Users, ClipboardList } from 'lucide-react'
+import { BarChart3, LogOut, BookOpen, Users, ClipboardList } from 'lucide-react'
 
 export default function Layout() {
   const navigate = useNavigate()
   const location = useLocation()
-  const [title, setTitle] = useState('Profile & Talent')
+  const [title, setTitle] = useState('Organisation & People')
   const profile = JSON.parse(localStorage.getItem('profile') || '{}')
 
   const logout = () => { localStorage.clear(); navigate('/login') }
   const nav = [
-    { to: '/profile', label: 'Profile & Talent', icon: User },
-    { to: '/org-people', label: 'Organisation & People', icon: Users },
-    { to: '/approval', label: 'Approval Center', icon: ClipboardList },
-    { to: '/directory', label: 'Directory', icon: User },
-    { to: '/org', label: 'Organization', icon: Building2 },
-    { to: '/skills', label: 'Skills', icon: BookOpen },
-    { to: '/analytics', label: 'Analytics', icon: BarChart3 },
+    { to: '/service-hall', label: '办事大厅', icon: ClipboardList },
+    { to: '/org-people', label: '组织人员', icon: Users },
+    { to: '/skills', label: '技能管理', icon: BookOpen },
+    { to: '/analytics', label: '数据分析', icon: BarChart3 },
   ]
 
   return (
