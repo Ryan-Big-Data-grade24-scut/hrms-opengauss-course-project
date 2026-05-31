@@ -9,3 +9,11 @@ master/*.local.md
 backups/
 dist/
 NUL
+backend/.vite/
+backend/debug_test.py
+.vite/
+*.log
+__pycache__/
+*.pyc
+node_modules/
+dist/
