@@ -127,14 +127,39 @@ def compute_risk_all():
     return json_array_query(_risk_sql())
 
 
+def compute_risk_all_paginated(page_no=1, page_size=20):
+    """Paginated version of compute_risk_all.
+
+    Returns:
+        tuple: (list[dict] rows, int total_count)
+    """
+    offset = (max(page_no, 1) - 1) * max(page_size, 1)
+    limit = max(min(page_size, 100), 1)
+
+    total = int(query_scalar(f"""
+        SELECT COUNT(*) FROM employee
+        WHERE employment_status IN ('active', 'probation')
+    """) or 0)
+
+    rows = json_array_query(_risk_sql() + f" LIMIT {limit} OFFSET {offset}")
+    return rows, total
+
+
 def compute_risk(employee_id: int):
     """Compute risk for a single employee."""
     return json_object_query(_risk_sql(f"AND e.employee_id = {int(employee_id)}"))
 
 
 def get_risk_summary():
-    """Department-level attrition risk summary with counts per risk level."""
-    return json_array_query(
+    """Department-level attrition risk summary with trend data.
+
+    Returns:
+        dict: {
+            "departments": [...],  # per-department risk summary
+            "trends": [...]        # monthly avg risk per department
+        }
+    """
+    departments = json_array_query(
         f"""
         SELECT
             d.department_id,
@@ -159,6 +184,29 @@ def get_risk_summary():
         ORDER BY avg_risk_score DESC
         """
     )
+
+    # Monthly trend: average risk score per department per month from attrition_history
+    trends = json_array_query(
+        """
+        SELECT
+            d.department_id,
+            d.department_name,
+            TO_CHAR(ah.snapshot_date, 'YYYY-MM') AS month,
+            ROUND(AVG(ah.risk_score)::decimal, 4) AS avg_risk_score,
+            COUNT(*) AS sample_count
+        FROM attrition_history ah
+        JOIN employee e ON e.employee_id = ah.employee_id
+        JOIN department d ON d.department_id = e.department_id
+        WHERE ah.snapshot_date >= CURRENT_TIMESTAMP - INTERVAL '6 months'
+        GROUP BY d.department_id, d.department_name, TO_CHAR(ah.snapshot_date, 'YYYY-MM')
+        ORDER BY d.department_name, month
+        """
+    )
+
+    return {
+        "departments": departments,
+        "trends": trends,
+    }
 
 
 def get_flagged_employees(threshold: float = 0.5):

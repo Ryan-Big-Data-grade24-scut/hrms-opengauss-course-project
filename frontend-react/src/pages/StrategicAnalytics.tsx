@@ -1,6 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
-import { AlertTriangle, TrendingUp, Users, Target } from 'lucide-react'
+import {
+  AlertTriangle,
+  TrendingUp,
+  Users,
+  Target,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Search,
+} from 'lucide-react'
 
 const BASE = '/api'
 
@@ -46,9 +57,127 @@ function getRiskLabels(a: any): { text: string; color: string }[] {
   return labels
 }
 
+/* ------------------------------------------------------------------ */
+/*  Pagination component                                               */
+/* ------------------------------------------------------------------ */
+
+function Pagination({
+  current,
+  total,
+  pageSize,
+  onChange,
+}: {
+  current: number
+  total: number
+  pageSize: number
+  onChange: (page: number) => void
+}) {
+  const totalPages = Math.max(1, Math.ceil(total / pageSize))
+  if (totalPages <= 1) return null
+
+  const pages: (number | string)[] = []
+  const range = 2
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || (i >= current - range && i <= current + range)) {
+      pages.push(i)
+    } else if (pages[pages.length - 1] !== '...') {
+      pages.push('...')
+    }
+  }
+
+  return (
+    <div className="flex items-center justify-between px-5 py-3 border-t border-stone-100">
+      <span className="text-xs text-stone-400">
+        共 {total} 条，第 {current}/{totalPages} 页
+      </span>
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => onChange(current - 1)}
+          disabled={current <= 1}
+          className="p-1 rounded hover:bg-stone-100 disabled:opacity-30 disabled:cursor-not-allowed transition"
+        >
+          <ChevronLeft className="w-4 h-4 text-stone-500" />
+        </button>
+        {pages.map((p, i) =>
+          typeof p === 'string' ? (
+            <span key={`ellipsis-${i}`} className="px-1 text-xs text-stone-300">...</span>
+          ) : (
+            <button
+              key={p}
+              onClick={() => onChange(p)}
+              className={`min-w-[28px] h-7 text-xs font-medium rounded transition ${
+                p === current
+                  ? 'bg-stone-800 text-white'
+                  : 'text-stone-500 hover:bg-stone-100'
+              }`}
+            >
+              {p}
+            </button>
+          )
+        )}
+        <button
+          onClick={() => onChange(current + 1)}
+          disabled={current >= totalPages}
+          className="p-1 rounded hover:bg-stone-100 disabled:opacity-30 disabled:cursor-not-allowed transition"
+        >
+          <ChevronRight className="w-4 h-4 text-stone-500" />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Sortable table header                                              */
+/* ------------------------------------------------------------------ */
+
+type SortDir = 'asc' | 'desc' | null
+
+function SortHeader({
+  label,
+  active,
+  direction,
+  onClick,
+}: {
+  label: string
+  active: boolean
+  direction: SortDir
+  onClick: () => void
+}) {
+  return (
+    <th
+      className="px-5 py-3 font-medium cursor-pointer select-none hover:text-stone-600 transition"
+      onClick={onClick}
+    >
+      <div className="flex items-center gap-1">
+        <span>{label}</span>
+        {active && direction === 'asc' && <ArrowUp className="w-3 h-3" />}
+        {active && direction === 'desc' && <ArrowDown className="w-3 h-3" />}
+        {!active && <ArrowUpDown className="w-3 h-3 text-stone-300" />}
+      </div>
+    </th>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Main component                                                     */
+/* ------------------------------------------------------------------ */
+
 export default function StrategicAnalytics() {
   const { setTitle } = useOutletContext() as any
 
+  // Tabs
+  const TABS = [
+    { key: 'attrition', label: '离职风险', icon: AlertTriangle },
+    { key: 'skillsGap', label: '技能缺口', icon: Target },
+    { key: 'deptMatrix', label: '部门矩阵', icon: Users },
+    { key: 'attPerf', label: '出勤绩效', icon: TrendingUp },
+    { key: 'health', label: '综合健康', icon: TrendingUp },
+  ] as const
+  type TabKey = (typeof TABS)[number]['key']
+  const [activeTab, setActiveTab] = useState<TabKey>('attrition')
+
+  // Data from main load
   const [attrition, setAttrition] = useState<any[]>([])
   const [gaps, setGaps] = useState<any[]>([])
   const [heatmap, setHeatmap] = useState<any[]>([])
@@ -56,20 +185,59 @@ export default function StrategicAnalytics() {
   const [error, setError] = useState('')
   const [retraining, setRetraining] = useState(false)
 
+  // Lazy-loaded data for attendance & performance tab
+  const [attendanceSummary, setAttendanceSummary] = useState<any>(null)
+  const [perfSummary, setPerfSummary] = useState<any>(null)
+  const [attPerfLoading, setAttPerfLoading] = useState(false)
+  const [attPerfError, setAttPerfError] = useState('')
+
+  // Lazy-loaded data for health tab
+  const [deptHealth, setDeptHealth] = useState<any[]>([])
+  const [criticalPersons, setCriticalPersons] = useState<any[]>([])
+  const [healthLoading, setHealthLoading] = useState(false)
+  const [healthError, setHealthError] = useState('')
+
+  // ---- Pagination state ----
+  const PAGE_SIZE = 20
+  const [page, setPage] = useState(1)
+
+  // ---- Department filter ----
+  const [departments, setDepartments] = useState<{ id: number; name: string }[]>([])
+  const [deptFilter, setDeptFilter] = useState<number | ''>('')
+
+  // ---- Sort state for risk table ----
+  const [sortKey, setSortKey] = useState<string>('risk_score_pct')
+  const [sortDir, setSortDir] = useState<SortDir>('desc')
+
+  // ---- Skills gap: category filter & sort ----
+  const [gapCategoryFilter, setGapCategoryFilter] = useState<string>('')
+  const [gapSortKey, setGapSortKey] = useState<'category_name' | 'coverage_pct' | 'avg_proficiency'>('category_name')
+  const [gapSortDir, setGapSortDir] = useState<SortDir>('asc')
+
   useEffect(() => { setTitle('Strategic Analytics') }, [])
 
   const load = async () => {
     setLoading(true)
     setError('')
     try {
-      const [a, g, h] = await Promise.all([
-        get('/attrition/risk').catch(() => ({ data: [] })),
-        get('/skills/analytics/overview').catch(() => ({ data: [] })),
-        get('/skills/analytics/department-comparison').catch(() => ({ data: [] })),
+      const [a, g, h, d] = await Promise.allSettled([
+        get('/attrition/risk'),
+        get('/skills/analytics/overview'),
+        get('/skills/analytics/department-comparison'),
+        get('/departments'),
       ])
-      setAttrition(a.data || [])
-      setGaps(g.data || [])
-      setHeatmap(h.data || [])
+      if (a.status === 'fulfilled') {
+        setAttrition(a.value.data || a.value || [])
+      }
+      if (g.status === 'fulfilled') {
+        setGaps(g.value.data || g.value || [])
+      }
+      if (h.status === 'fulfilled') {
+        setHeatmap(h.value.data || h.value || [])
+      }
+      if (d.status === 'fulfilled') {
+        setDepartments(d.value.data || d.value || [])
+      }
     } catch (e: any) {
       setError(e.message || 'Failed to load analytics data')
     } finally {
@@ -92,7 +260,105 @@ export default function StrategicAnalytics() {
     finally { setRetraining(false) }
   }
 
-  // Summary counts — use risk_score_pct (0-130%) not raw risk_score (0-1.3)
+  /* ---- Lazy load attendance & performance data ---- */
+  useEffect(() => {
+    if (activeTab !== 'attPerf') return
+    if (attendanceSummary && perfSummary) return // already loaded
+    setAttPerfLoading(true)
+    setAttPerfError('')
+    Promise.allSettled([
+      get('/attendance/summary').then(r => setAttendanceSummary(r.data || r)),
+      get('/performance/summary').then(r => setPerfSummary(r.data || r)),
+    ]).then(results => {
+      const errors = results.filter(r => r.status === 'rejected') as PromiseRejectedResult[]
+      if (errors.length > 0) setAttPerfError('部分出勤/绩效数据加载失败')
+    }).finally(() => setAttPerfLoading(false))
+  }, [activeTab])
+
+  /* ---- Lazy load health data ---- */
+  useEffect(() => {
+    if (activeTab !== 'health') return
+    if (deptHealth.length > 0 && criticalPersons.length > 0) return
+    setHealthLoading(true)
+    setHealthError('')
+    Promise.allSettled([
+      get('/analytics/department-health').then(r => setDeptHealth(r.data || r || [])),
+      get('/analytics/critical-persons').then(r => setCriticalPersons(r.data || r || [])),
+    ]).then(results => {
+      const errors = results.filter(r => r.status === 'rejected') as PromiseRejectedResult[]
+      if (errors.length > 0) setHealthError('部分健康数据加载失败')
+    }).finally(() => setHealthLoading(false))
+  }, [activeTab])
+
+  /* ---- Derived: filtered + sorted + paginated attrition ---- */
+
+  const filteredAttrition = useMemo(() => {
+    let list = [...attrition]
+    // Department filter
+    if (deptFilter !== '') {
+      list = list.filter((a: any) => a.department_id === deptFilter || a.department_name === departments.find(d => d.id === deptFilter)?.name)
+    }
+    // Sort
+    list.sort((a: any, b: any) => {
+      const aVal = a[sortKey] ?? 0
+      const bVal = b[sortKey] ?? 0
+      if (typeof aVal === 'string') {
+        return sortDir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal)
+      }
+      return sortDir === 'asc' ? aVal - bVal : bVal - aVal
+    })
+    return list
+  }, [attrition, deptFilter, departments, sortKey, sortDir])
+
+  const totalFiltered = filteredAttrition.length
+  const pagedAttrition = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE
+    return filteredAttrition.slice(start, start + PAGE_SIZE)
+  }, [filteredAttrition, page])
+
+  // Reset to page 1 when filter changes
+  useEffect(() => { setPage(1) }, [deptFilter])
+
+  /* ---- Derived: filtered + sorted gaps ---- */
+
+  const filteredGaps = useMemo(() => {
+    let list = [...gaps]
+    if (gapCategoryFilter) {
+      list = list.filter((g: any) => g.category_name === gapCategoryFilter)
+    }
+    list.sort((a: any, b: any) => {
+      const aVal = a[gapSortKey] ?? ''
+      const bVal = b[gapSortKey] ?? ''
+      if (typeof aVal === 'string') {
+        return gapSortDir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal)
+      }
+      return gapSortDir === 'asc' ? aVal - bVal : bVal - aVal
+    })
+    return list
+  }, [gaps, gapCategoryFilter, gapSortKey, gapSortDir])
+
+  const gapCategories = useMemo(() => {
+    return [...new Set(gaps.map((g: any) => g.category_name).filter(Boolean))] as string[]
+  }, [gaps])
+
+  /* ---- Sort toggle helper ---- */
+  const toggleSort = (key: string) => {
+    setSortDir(prev => {
+      if (sortKey !== key) return 'asc'
+      return prev === 'asc' ? 'desc' : prev === 'desc' ? null : 'asc'
+    })
+    setSortKey(key)
+  }
+
+  const toggleGapSort = (key: 'category_name' | 'coverage_pct' | 'avg_proficiency') => {
+    setGapSortDir(prev => {
+      if (gapSortKey !== key) return 'asc'
+      return prev === 'asc' ? 'desc' : prev === 'desc' ? null : 'asc'
+    })
+    setGapSortKey(key)
+  }
+
+  // ---- Summary counts ----
   const totalAtRisk = attrition.length
   const critical = attrition.filter((a: any) => (a.risk_score_pct || 0) >= 70).length
   const high = attrition.filter((a: any) => (a.risk_score_pct || 0) >= 50 && (a.risk_score_pct || 0) < 70).length
@@ -128,138 +394,465 @@ export default function StrategicAnalytics() {
 
       {!loading && (
         <>
-          {/* Summary cards */}
-          <div className="grid grid-cols-4 gap-4">
-            {summaryCards.map((card, i) => (
-              <div key={i} className="bg-white rounded-xl p-5 shadow-sm border border-stone-200">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-medium text-stone-400 uppercase tracking-wider">{card.label}</span>
-                  <div className={`w-8 h-8 rounded-lg ${card.bg} flex items-center justify-center`}>
-                    <card.icon className={`w-4 h-4 ${card.color}`} />
-                  </div>
-                </div>
-                <p className={`text-2xl font-bold ${card.color}`}>{card.value}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Risk table */}
-          <div className="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden">
-            <div className="px-5 py-4 border-b border-stone-100 flex items-center justify-between">
-              <h3 className="font-semibold text-sm text-stone-700">Attrition Risk Breakdown</h3>
-              <button
-                onClick={retrain}
-                disabled={retraining}
-                className="text-xs bg-amber-100 text-amber-700 px-3 py-1.5 rounded-lg hover:bg-amber-200 transition font-medium disabled:opacity-50"
-              >
-                {retraining ? 'Training...' : 'Retrain model'}
-              </button>
-            </div>
-            <div className="overflow-x-auto">
-              {attrition.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12">
-                  <AlertTriangle className="w-8 h-8 text-stone-300 mb-2" />
-                  <p className="text-sm text-stone-400">No predictions yet. Click retrain to train the ML model.</p>
-                </div>
-              ) : (
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="text-left text-stone-400 border-b border-stone-50">
-                      <th className="px-5 py-3 font-medium">Name</th>
-                      <th className="px-5 py-3 font-medium">Department</th>
-                      <th className="px-5 py-3 font-medium">Risk %</th>
-                      <th className="px-5 py-3 font-medium">Level</th>
-                      <th className="px-5 py-3 font-medium">Risk Factors</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {attrition.map((a: any) => {
-                      const score = a.risk_score_pct ?? (a.risk_score * 100)
-                      const level = riskLevel(score)
-                      return (
-                        <tr key={a.employee_id} className="border-b border-stone-50 last:border-0 hover:bg-stone-50 transition">
-                          <td className="px-5 py-3 text-stone-700 font-medium">{a.full_name}</td>
-                          <td className="px-5 py-3 text-stone-500">{a.department_name}</td>
-                          <td className="px-5 py-3">
-                            <div className="flex items-center gap-3">
-                              <div className="w-24 h-1.5 bg-stone-100 rounded-full overflow-hidden">
-                                <div
-                                  className={`h-full rounded-full ${riskBarColor(score)}`}
-                                  style={{ width: `${Math.min(score, 100)}%` }}
-                                />
-                              </div>
-                              <span className={`text-xs font-semibold w-8 text-right ${level.color}`}>
-                                {score.toFixed(1)}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="px-5 py-3">
-                            <span className={`text-xs font-medium px-2 py-1 rounded-full ${level.bg} ${level.color}`}>
-                              {level.label}
-                            </span>
-                          </td>
-                          <td className="px-5 py-3 min-w-[180px]">
-                            <div className="flex flex-col gap-1">
-                              {/* Stacked bar — factor decomposition */}
-                              <div className="flex h-2 bg-stone-100 rounded-full overflow-hidden">
-                                {(() => {
-                                  const factors = FACTOR_MAP.map(f => ({ ...f, value: a[f.key] ?? 0 }))
-                                  const total = factors.reduce((s, f) => s + f.value, 0)
-                                  return total > 0
-                                    ? factors.map(f => (
-                                        <div
-                                          key={f.key}
-                                          className={`${f.color} h-full transition-all`}
-                                          style={{ width: `${(f.value / total) * 100}%` }}
-                                          title={`${f.label}: ${(f.value).toFixed(3)}`}
-                                        />
-                                      ))
-                                    : <div className="bg-stone-200 h-full w-full rounded-full" />
-                                })()}
-                              </div>
-                              {/* Risk labels */}
-                              <div className="flex flex-wrap gap-1">
-                                {getRiskLabels(a).map((l, i) => (
-                                  <span key={i} className={`text-[10px] px-1.5 py-[1px] rounded font-medium ${l.color}`}>
-                                    {l.text}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              )}
+          {/* ============================================================ */}
+          {/* TabBar — 5 tabs                                                */}
+          {/* ============================================================ */}
+          <div className="bg-white rounded-xl shadow-sm border border-stone-200">
+            <div className="flex border-b border-stone-100 overflow-x-auto">
+              {TABS.map(tab => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`flex items-center gap-2 px-5 py-3 text-sm font-medium transition border-b-2 whitespace-nowrap ${
+                    activeTab === tab.key
+                      ? 'border-stone-800 text-stone-800'
+                      : 'border-transparent text-stone-400 hover:text-stone-600 hover:border-stone-300'
+                  }`}
+                >
+                  <tab.icon className="w-4 h-4" />
+                  {tab.label}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Skills overview */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="bg-white rounded-xl p-5 shadow-sm border border-stone-200">
-              <h3 className="font-semibold text-sm text-stone-700 mb-4">Skills Coverage</h3>
-              {gaps.length === 0 ? (
-                <p className="text-sm text-stone-400">No skills data</p>
-              ) : (
-                <div className="space-y-3">
-                  {gaps.map((c: any) => (
-                    <div key={c.category_name}>
-                      <div className="flex items-center justify-between text-xs mb-1">
-                        <span className="font-medium text-stone-600">{c.category_name}</span>
-                        <span className="text-stone-400">{c.coverage_pct}% cov &middot; avg {c.avg_proficiency}</span>
+          {/* ============================================================ */}
+          {/* Tab 1: Attrition Risk                                         */}
+          {/* ============================================================ */}
+          {activeTab === 'attrition' && (
+            <>
+              {/* Summary cards + Department filter */}
+              <div className="flex items-end justify-between gap-4">
+                <div className="grid grid-cols-5 gap-4 flex-1">
+                  {summaryCards.map((card, i) => (
+                    <div key={i} className="bg-white rounded-xl p-5 shadow-sm border border-stone-200">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-xs font-medium text-stone-400 uppercase tracking-wider">{card.label}</span>
+                        <div className={`w-8 h-8 rounded-lg ${card.bg} flex items-center justify-center`}>
+                          <card.icon className={`w-4 h-4 ${card.color}`} />
+                        </div>
                       </div>
-                      <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
-                        <div className={`h-full rounded-full ${c.coverage_pct > 40 ? 'bg-green-500' : c.coverage_pct > 20 ? 'bg-amber-500' : 'bg-red-500'}`}
-                          style={{ width: `${c.coverage_pct}%` }} />
-                      </div>
+                      <p className={`text-2xl font-bold ${card.color}`}>{card.value}</p>
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* Risk table */}
+              <div className="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden">
+                <div className="px-5 py-4 border-b border-stone-100 flex items-center justify-between gap-4 flex-wrap">
+                  <div className="flex items-center gap-3">
+                    <h3 className="font-semibold text-sm text-stone-700">Attrition Risk Breakdown</h3>
+                    <select
+                      value={deptFilter}
+                      onChange={e => setDeptFilter(e.target.value ? Number(e.target.value) : '')}
+                      className="text-xs border border-stone-200 rounded-lg px-2 py-1.5 outline-none focus:border-stone-400 transition"
+                    >
+                      <option value="">全部部门</option>
+                      {departments.map(d => (
+                        <option key={d.id} value={d.id}>{d.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <button
+                    onClick={retrain}
+                    disabled={retraining}
+                    className="text-xs bg-amber-100 text-amber-700 px-3 py-1.5 rounded-lg hover:bg-amber-200 transition font-medium disabled:opacity-50"
+                  >
+                    {retraining ? 'Training...' : 'Retrain model'}
+                  </button>
+                </div>
+                <div className="overflow-x-auto">
+                  {filteredAttrition.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-12">
+                      <AlertTriangle className="w-8 h-8 text-stone-300 mb-2" />
+                      <p className="text-sm text-stone-400">No predictions yet. Click retrain to train the ML model.</p>
+                    </div>
+                  ) : (
+                    <>
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="text-left text-stone-400 border-b border-stone-50">
+                            <SortHeader label="Name" active={sortKey === 'full_name'} direction={sortKey === 'full_name' ? sortDir : null} onClick={() => toggleSort('full_name')} />
+                            <SortHeader label="Department" active={sortKey === 'department_name'} direction={sortKey === 'department_name' ? sortDir : null} onClick={() => toggleSort('department_name')} />
+                            <SortHeader label="Risk %" active={sortKey === 'risk_score_pct'} direction={sortKey === 'risk_score_pct' ? sortDir : null} onClick={() => toggleSort('risk_score_pct')} />
+                            <th className="px-5 py-3 font-medium">Level</th>
+                            <th className="px-5 py-3 font-medium">Risk Factors</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {pagedAttrition.map((a: any) => {
+                            const score = a.risk_score_pct ?? (a.risk_score * 100)
+                            const level = riskLevel(score)
+                            return (
+                              <tr key={a.employee_id} className="border-b border-stone-50 last:border-0 hover:bg-stone-50 transition">
+                                <td className="px-5 py-3 text-stone-700 font-medium">{a.full_name}</td>
+                                <td className="px-5 py-3 text-stone-500">{a.department_name}</td>
+                                <td className="px-5 py-3">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-24 h-1.5 bg-stone-100 rounded-full overflow-hidden">
+                                      <div
+                                        className={`h-full rounded-full ${riskBarColor(score)}`}
+                                        style={{ width: `${Math.min(score, 100)}%` }}
+                                      />
+                                    </div>
+                                    <span className={`text-xs font-semibold w-8 text-right ${level.color}`}>
+                                      {score.toFixed(1)}
+                                    </span>
+                                  </div>
+                                </td>
+                                <td className="px-5 py-3">
+                                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${level.bg} ${level.color}`}>
+                                    {level.label}
+                                  </span>
+                                </td>
+                                <td className="px-5 py-3 min-w-[180px]">
+                                  <div className="flex flex-col gap-1">
+                                    <div className="flex h-2 bg-stone-100 rounded-full overflow-hidden">
+                                      {(() => {
+                                        const factors = FACTOR_MAP.map(f => ({ ...f, value: a[f.key] ?? 0 }))
+                                        const total = factors.reduce((s, f) => s + f.value, 0)
+                                        return total > 0
+                                          ? factors.map(f => (
+                                              <div
+                                                key={f.key}
+                                                className={`${f.color} h-full transition-all`}
+                                                style={{ width: `${(f.value / total) * 100}%` }}
+                                                title={`${f.label}: ${(f.value).toFixed(3)}`}
+                                              />
+                                            ))
+                                          : <div className="bg-stone-200 h-full w-full rounded-full" />
+                                      })()}
+                                    </div>
+                                    <div className="flex flex-wrap gap-1">
+                                      {getRiskLabels(a).map((l, i) => (
+                                        <span key={i} className={`text-[10px] px-1.5 py-[1px] rounded font-medium ${l.color}`}>
+                                          {l.text}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                      <Pagination current={page} total={totalFiltered} pageSize={PAGE_SIZE} onChange={setPage} />
+                    </>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ============================================================ */}
+          {/* Tab 2: Skills Gap                                             */}
+          {/* ============================================================ */}
+          {activeTab === 'skillsGap' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="bg-white rounded-xl p-5 shadow-sm border border-stone-200">
+                <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                  <h3 className="font-semibold text-sm text-stone-700">Skills Coverage</h3>
+                  <div className="flex items-center gap-2">
+                    {gapCategories.length > 0 && (
+                      <select
+                        value={gapCategoryFilter}
+                        onChange={e => setGapCategoryFilter(e.target.value)}
+                        className="text-xs border border-stone-200 rounded-lg px-2 py-1.5 outline-none focus:border-stone-400 transition"
+                      >
+                        <option value="">全部分类</option>
+                        {gapCategories.map(c => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </select>
+                    )}
+                    <div className="flex items-center gap-1 text-xs text-stone-400">
+                      <span>排序:</span>
+                      <button
+                        onClick={() => toggleGapSort('category_name')}
+                        className={`px-2 py-1 rounded transition ${
+                          gapSortKey === 'category_name' ? 'bg-stone-100 text-stone-700' : 'hover:bg-stone-50'
+                        }`}
+                      >
+                        名称 {gapSortKey === 'category_name' && (gapSortDir === 'asc' ? '↑' : gapSortDir === 'desc' ? '↓' : '')}
+                      </button>
+                      <button
+                        onClick={() => toggleGapSort('coverage_pct')}
+                        className={`px-2 py-1 rounded transition ${
+                          gapSortKey === 'coverage_pct' ? 'bg-stone-100 text-stone-700' : 'hover:bg-stone-50'
+                        }`}
+                      >
+                        覆盖率 {gapSortKey === 'coverage_pct' && (gapSortDir === 'asc' ? '↑' : gapSortDir === 'desc' ? '↓' : '')}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                {filteredGaps.length === 0 ? (
+                  <p className="text-sm text-stone-400">No skills data</p>
+                ) : (
+                  <div className="space-y-3">
+                    {filteredGaps.map((c: any) => (
+                      <div key={c.category_name}>
+                        <div className="flex items-center justify-between text-xs mb-1">
+                          <span className="font-medium text-stone-600">{c.category_name}</span>
+                          <span className="text-stone-400">
+                            {c.coverage_pct}% cov &middot; avg {c.avg_proficiency}
+                            {c.target_level != null && (
+                              <> &middot; target {c.target_level} &middot; gap {c.gap != null ? c.gap.toFixed(1) : '-'}</>
+                            )}
+                            {c.severity != null && (
+                              <span className={`ml-1 ${c.severity === 'high' ? 'text-red-500' : c.severity === 'medium' ? 'text-amber-500' : 'text-green-500'}`}>
+                                [{c.severity}]
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                        <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full ${c.coverage_pct > 40 ? 'bg-green-500' : c.coverage_pct > 20 ? 'bg-amber-500' : 'bg-red-500'}`}
+                            style={{ width: `${c.coverage_pct}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Department drill-down placeholder */}
+              <div className="bg-white rounded-xl p-5 shadow-sm border border-stone-200">
+                <h3 className="font-semibold text-sm text-stone-700 mb-4">Department Drill-down</h3>
+                <p className="text-xs text-stone-400 mb-3">Select a department to see skill gaps at the department level.</p>
+                <select className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 mb-4">
+                  <option value="">Choose department...</option>
+                  {departments.map(d => (
+                    <option key={d.id} value={d.id}>{d.name}</option>
+                  ))}
+                </select>
+                <div className="bg-stone-50 rounded-lg p-4 text-center">
+                  <Target className="w-8 h-8 text-stone-300 mx-auto mb-2" />
+                  <p className="text-xs text-stone-400">Select a department above to view detailed skill gap analysis.</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ============================================================ */}
+          {/* Tab 3: Department Matrix (heatmap)                            */}
+          {/* ============================================================ */}
+          {activeTab === 'deptMatrix' && (
+            <div className="bg-white rounded-xl p-5 shadow-sm border border-stone-200">
+              <h3 className="font-semibold text-sm text-stone-700 mb-4">Department Skills Matrix</h3>
+              {heatmap.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <AlertTriangle className="w-8 h-8 text-stone-300 mb-2" />
+                  <p className="text-sm text-stone-400">No department comparison data available.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-stone-400 border-b border-stone-100">
+                        <th className="px-4 py-2 font-medium">Department</th>
+                        {(() => {
+                          // Extract unique skill categories from heatmap data
+                          const categories = [...new Set(heatmap.flatMap((h: any) => {
+                            if (h.categories) return h.categories.map((c: any) => c.category_name || c.name)
+                            if (h.skill_categories) return h.skill_categories.map((c: any) => c.category_name || c.name)
+                            return []
+                          }))]
+                          return categories.map(cat => (
+                            <th key={cat} className="px-4 py-2 font-medium text-xs">{cat}</th>
+                          ))
+                        })()}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {heatmap.map((row: any, idx: number) => {
+                        const deptName = row.department_name || row.name || `Dept ${idx}`
+                        const categories = row.categories || row.skill_categories || []
+                        return (
+                          <tr key={idx} className="border-b border-stone-50 last:border-0 hover:bg-stone-50 transition">
+                            <td className="px-4 py-2 text-stone-700 font-medium text-xs">{deptName}</td>
+                            {categories.map((cat: any, ci: number) => {
+                              const coverage = cat.coverage_pct ?? cat.coverage ?? 0
+                              const intensity = coverage / 100
+                              return (
+                                <td key={ci} className="px-4 py-2">
+                                  <div
+                                    className="w-8 h-8 rounded"
+                                    style={{
+                                      backgroundColor: intensity > 0.7 ? '#1e3a5f' : intensity > 0.4 ? '#5b8fc9' : intensity > 0.1 ? '#b3cde3' : '#f0f0f0'
+                                    }}
+                                    title={`${deptName}: ${cat.category_name || cat.name} - ${coverage.toFixed(1)}% coverage`}
+                                  />
+                                </td>
+                              )
+                            })}
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
-          </div>
+          )}
+
+          {/* ============================================================ */}
+          {/* Tab 4: Attendance & Performance                               */}
+          {/* ============================================================ */}
+          {activeTab === 'attPerf' && (
+            <div className="space-y-5">
+              {attPerfError && (
+                <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                  <p className="text-sm text-amber-700">{attPerfError}</p>
+                </div>
+              )}
+              {attPerfLoading ? (
+                <div className="bg-white rounded-xl p-10 shadow-sm border border-stone-200 flex items-center justify-center">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-5 h-5 border-2 border-stone-300 border-t-stone-600 rounded-full animate-spin" />
+                    <p className="text-xs text-stone-400">Loading attendance & performance data...</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {/* Attendance Summary Card */}
+                  <div className="bg-white rounded-xl p-5 shadow-sm border border-stone-200">
+                    <h3 className="font-semibold text-sm text-stone-700 mb-3">Attendance Summary</h3>
+                    {attendanceSummary ? (
+                      <div className="space-y-3">
+                        <div className="flex justify-between text-xs">
+                          <span className="text-stone-500">Attendance Rate</span>
+                          <span className="font-medium text-stone-700">{(attendanceSummary.attendance_rate ?? attendanceSummary.rate ?? 0).toFixed(1)}%</span>
+                        </div>
+                        <div className="h-2 bg-stone-100 rounded-full overflow-hidden">
+                          <div className="h-full rounded-full bg-green-500" style={{ width: `${attendanceSummary.attendance_rate ?? attendanceSummary.rate ?? 0}%` }} />
+                        </div>
+                        <div className="flex justify-between text-xs">
+                          <span className="text-stone-500">Late Rate</span>
+                          <span className="font-medium text-amber-600">{(attendanceSummary.late_rate ?? 0).toFixed(1)}%</span>
+                        </div>
+                        <div className="h-2 bg-stone-100 rounded-full overflow-hidden">
+                          <div className="h-full rounded-full bg-amber-500" style={{ width: `${attendanceSummary.late_rate ?? 0}%` }} />
+                        </div>
+                        <div className="flex justify-between text-xs">
+                          <span className="text-stone-500">Absence Rate</span>
+                          <span className="font-medium text-red-600">{(attendanceSummary.absence_rate ?? 0).toFixed(1)}%</span>
+                        </div>
+                        <div className="h-2 bg-stone-100 rounded-full overflow-hidden">
+                          <div className="h-full rounded-full bg-red-500" style={{ width: `${attendanceSummary.absence_rate ?? 0}%` }} />
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-stone-400">No attendance data</p>
+                    )}
+                  </div>
+
+                  {/* Performance Summary Card */}
+                  <div className="bg-white rounded-xl p-5 shadow-sm border border-stone-200">
+                    <h3 className="font-semibold text-sm text-stone-700 mb-3">Performance Summary</h3>
+                    {perfSummary ? (
+                      <div className="space-y-3">
+                        <div className="flex justify-between text-xs">
+                          <span className="text-stone-500">Average Score</span>
+                          <span className="font-medium text-stone-700">{(perfSummary.avg_score ?? perfSummary.average ?? 0).toFixed(1)}</span>
+                        </div>
+                        <div className="flex justify-between text-xs">
+                          <span className="text-stone-500">Min Score</span>
+                          <span className="font-medium text-stone-700">{perfSummary.min_score ?? perfSummary.min ?? 0}</span>
+                        </div>
+                        <div className="flex justify-between text-xs">
+                          <span className="text-stone-500">Max Score</span>
+                          <span className="font-medium text-stone-700">{perfSummary.max_score ?? perfSummary.max ?? 0}</span>
+                        </div>
+                        <div className="flex justify-between text-xs">
+                          <span className="text-stone-500">Total Reviews</span>
+                          <span className="font-medium text-stone-700">{perfSummary.total_reviews ?? perfSummary.count ?? 0}</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-stone-400">No performance data</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ============================================================ */}
+          {/* Tab 5: Health                                                 */}
+          {/* ============================================================ */}
+          {activeTab === 'health' && (
+            <div className="space-y-5">
+              {healthError && (
+                <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                  <p className="text-sm text-amber-700">{healthError}</p>
+                </div>
+              )}
+              {healthLoading ? (
+                <div className="bg-white rounded-xl p-10 shadow-sm border border-stone-200 flex items-center justify-center">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-5 h-5 border-2 border-stone-300 border-t-stone-600 rounded-full animate-spin" />
+                    <p className="text-xs text-stone-400">Loading health data...</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {/* Department Health */}
+                  <div className="bg-white rounded-xl p-5 shadow-sm border border-stone-200">
+                    <h3 className="font-semibold text-sm text-stone-700 mb-3">Department Health Scores</h3>
+                    {deptHealth.length > 0 ? (
+                      <div className="space-y-3">
+                        {deptHealth.map((d: any, i: number) => (
+                          <div key={i}>
+                            <div className="flex justify-between text-xs mb-1">
+                              <span className="font-medium text-stone-600">{d.department_name || d.name || `Dept ${i}`}</span>
+                              <span className={`font-semibold ${(d.health_score ?? d.score ?? 0) >= 70 ? 'text-green-600' : (d.health_score ?? d.score ?? 0) >= 50 ? 'text-amber-600' : 'text-red-600'}`}>
+                                {(d.health_score ?? d.score ?? 0).toFixed(1)}
+                              </span>
+                            </div>
+                            <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full rounded-full ${(d.health_score ?? d.score ?? 0) >= 70 ? 'bg-green-500' : (d.health_score ?? d.score ?? 0) >= 50 ? 'bg-amber-500' : 'bg-red-500'}`}
+                                style={{ width: `${Math.min(d.health_score ?? d.score ?? 0, 100)}%` }}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-stone-400">No health data</p>
+                    )}
+                  </div>
+
+                  {/* Critical Persons */}
+                  <div className="bg-white rounded-xl p-5 shadow-sm border border-stone-200">
+                    <h3 className="font-semibold text-sm text-stone-700 mb-3">Critical Persons</h3>
+                    {criticalPersons.length > 0 ? (
+                      <div className="space-y-2">
+                        {criticalPersons.map((p: any, i: number) => (
+                          <div key={i} className="flex items-center justify-between py-2 px-3 bg-stone-50 rounded-lg">
+                            <div>
+                              <p className="text-xs font-medium text-stone-700">{p.full_name || p.name || `Person ${i}`}</p>
+                              <p className="text-[10px] text-stone-400">{p.position_name || p.position || ''}</p>
+                            </div>
+                            <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${(p.risk_score ?? 0) > 60 ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>
+                              {(p.risk_score ?? 0).toFixed(0)}%
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-stone-400">No critical persons data</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </>
       )}
     </div>

@@ -150,56 +150,17 @@ def delete_skill(skill_id, actor):
 # ===================================================================
 
 def get_employee_skills(employee_id):
-    """获取员工的技能列表（含分类、熟练度和审批状态）。
-
-    返回：
-      - employee_skill 表中已确认的技能 → approval_status='approved'
-      - approval_requests 中对该员工「待审批/已拒绝」的技能添加/删除记录
-    """
-    rows = json_array_query(
+    """获取员工的技能列表（仅已确认的）。"""
+    return json_array_query(
         f"""
-        -- 已确认的技能
-        SELECT es.*, s.skill_name, sc.category_name, sc.category_id,
-               'approved' AS approval_status, NULL AS approval_id
+        SELECT es.*, s.skill_name, sc.category_name, sc.category_id
         FROM employee_skill es
         JOIN skill s ON s.skill_id = es.skill_id
         JOIN skill_category sc ON sc.category_id = s.category_id
         WHERE es.employee_id = {int(employee_id)}
-          AND (es.confirmed_by IS NOT NULL OR es.is_inferred = false)
-
-        UNION ALL
-
-        -- 待审批 / 已拒绝的技能添加请求（尚未进入 employee_skill）
-        SELECT
-            NULL AS employee_skill_id,
-            {int(employee_id)} AS employee_id,
-            (ar.payload->>'skill_id')::int AS skill_id,
-            COALESCE((ar.payload->>'proficiency_level')::int, 1) AS proficiency_level,
-            'self' AS acquired_from,
-            false AS is_core,
-            NULL AS confirmed_by,
-            NULL AS confirmed_at,
-            NULL AS is_inferred,
-            ar.created_at AS updated_at,
-            s.skill_name, sc.category_name, sc.category_id,
-            ar.status AS approval_status,
-            ar.id AS approval_id
-        FROM approval_requests ar
-        JOIN skill s ON s.skill_id = (ar.payload->>'skill_id')::int
-        JOIN skill_category sc ON sc.category_id = s.category_id
-        WHERE ar.operation_type = 'SKILL_CHANGE'
-          AND ar.target_emp_id = {int(employee_id)}
-          AND ar.status IN ('pending', 'rejected')
-          AND ar.payload->>'action' = 'add'
-          AND (ar.payload->>'skill_id')::int NOT IN (
-              SELECT skill_id FROM employee_skill
-              WHERE employee_id = {int(employee_id)}
-          )
-
-        ORDER BY proficiency_level DESC, skill_name
+        ORDER BY es.proficiency_level DESC
         """
     )
-    return rows
 
 
 def upsert_employee_skill(employee_id, payload, actor):

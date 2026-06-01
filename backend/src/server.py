@@ -492,7 +492,12 @@ class ApiHandler(BaseHTTPRequestHandler):
                 eid = query.get("employee_id", [None])[0]
                 if eid:
                     return self._send(200, ok(attrition_service.compute_risk(int(eid))))
-                return self._send(200, ok(attrition_service.compute_risk_all()))
+                # If no page/page_size params, return all data (backwards compat)
+                if "page" not in query and "page_size" not in query:
+                    return self._send(200, ok(attrition_service.compute_risk_all()))
+                page_no, page_size = _parse_page(query)
+                rows, total = attrition_service.compute_risk_all_paginated(page_no, page_size)
+                return self._send(200, page(rows, total, page_no, page_size))
             if path == "/api/attrition/summary" and method == "GET":
                 self._require_permission(user, "analytics.view")
                 return self._send(200, ok(attrition_service.get_risk_summary()))

@@ -11,6 +11,7 @@ export default function SkillsPage() {
   const [allSkills, setAllSkills] = useState<any[]>([])
   const [jobHistory, setJobHistory] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [skillsLoading, setSkillsLoading] = useState(false)
   const [error, setError] = useState('')
   const [addOpen, setAddOpen] = useState(false)
   const [addSkillId, setAddSkillId] = useState<number | null>(null)
@@ -20,38 +21,80 @@ export default function SkillsPage() {
   const [inferring, setInferring] = useState(false)
   const [feedback, setFeedback] = useState('')
 
+  // Department → Position → Skill flow state
+  const [departments, setDepartments] = useState<any[]>([])
+  const [positions, setPositions] = useState<any[]>([])
+  const [requiredSkills, setRequiredSkills] = useState<any[]>([])
+  const [selectedDeptId, setSelectedDeptId] = useState<number | ''>('')
+  const [selectedPosId, setSelectedPosId] = useState<number | ''>('')
+
   useEffect(() => { setTitle('Skills Management') }, [])
 
   useEffect(() => {
     (async () => {
       try {
-        const [, emps, sk] = await Promise.all([
-          api.profile(),
+        const [emps, sk, depts] = await Promise.all([
           api.employees('page=1&page_size=50'),
           api.allSkills(),
+          api.departments(),
         ])
         const filtered = (emps.data?.list || []).filter((e: any) => e.employment_status === 'active')
         setEmployees(filtered)
         setAllSkills(sk.data || [])
-        setSelectedEmp(filtered[0]?.employee_id || null)
-      } catch { setError('Failed to load employees') }
+        setDepartments(depts.data || [])
+        if (filtered.length > 0 && !selectedEmp) {
+          setSelectedEmp(filtered[0].employee_id)
+        }
+      } catch { setError('Failed to load data') }
       finally { setLoading(false) }
     })()
   }, [])
 
   useEffect(() => {
-    if (!selectedEmp) return
-    (async () => {
-      setLoading(true)
+    if (!selectedEmp) {
+      setSkills([])
+      setJobHistory([])
+      return
+    }
+    let cancelled = false
+    setSkillsLoading(true)
+    ;(async () => {
       try {
         const [sk, pr] = await Promise.all([api.employeeSkills(selectedEmp), api.employeeProjects(selectedEmp)])
-        setSkills(sk.data || [])
-        setJobHistory(pr.data || [])
-        setError('')
-      } catch { setSkills([]); setJobHistory([]) }
-      finally { setLoading(false) }
+        if (!cancelled) {
+          setSkills(sk.data || [])
+          setJobHistory(pr.data || [])
+          setError('')
+        }
+      } catch {
+        if (!cancelled) { setSkills([]); setJobHistory([]) }
+      }
+      finally { if (!cancelled) setSkillsLoading(false) }
     })()
+    return () => { cancelled = true }
   }, [selectedEmp])
+
+  // Load positions when department changes
+  useEffect(() => {
+    if (!selectedDeptId) { setPositions([]); setSelectedPosId(''); return }
+    ;(async () => {
+      try {
+        const res = await api.positions(selectedDeptId as number)
+        setPositions(res.data || [])
+      } catch { setPositions([]) }
+    })()
+  }, [selectedDeptId])
+
+  // Load required skills when position changes
+  useEffect(() => {
+    if (!selectedPosId) { setRequiredSkills([]); return }
+    ;(async () => {
+      try {
+        const res = await api.skillsRequired(selectedPosId as number)
+        setRequiredSkills(res.data || [])
+      } catch { setRequiredSkills([]) }
+    })()
+  }, [selectedPosId])
 
   const empName = employees.find(e => e.employee_id === selectedEmp)?.full_name || ''
 
@@ -132,6 +175,7 @@ export default function SkillsPage() {
   }
 
   const availableSkills = allSkills.filter(s => !skills.some(es => es.skill_id === s.skill_id))
+  const filteredRequiredSkills = requiredSkills.filter(rs => !skills.some(s => s.skill_id === rs.skill_id))
 
   return (
     <div className="space-y-6 max-w-6xl">
@@ -173,38 +217,97 @@ export default function SkillsPage() {
             </button>
           </div>
 
-          {/* Add skill form */}
+          {/* Add skill form — Department → Position → Skill flow */}
           {addOpen && (
             <div className="mb-4 p-4 bg-stone-50 rounded-lg border border-stone-200 space-y-3">
+              {/* Step 1: Select Department */}
               <div>
-                <label className="text-xs text-stone-500 mb-1 block">Skill</label>
-                <select id="skills-add-select" name="addSkillId" value={addSkillId || ''} onChange={e => setAddSkillId(Number(e.target.value))}
+                <label className="text-xs text-stone-500 mb-1 block">Step 1: Select Department</label>
+                <select id="skills-add-dept" value={selectedDeptId} onChange={e => { setSelectedDeptId(e.target.value ? Number(e.target.value) : ''); setSelectedPosId(''); setAddSkillId(null) }}
                   className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 bg-white">
-                  <option value="">Select a skill...</option>
-                  {availableSkills.map(s => (
-                    <option key={s.skill_id} value={s.skill_id}>{s.skill_name}</option>
+                  <option value="">Select a department...</option>
+                  {departments.map(d => (
+                    <option key={d.id || d.department_id} value={d.id || d.department_id}>{d.name || d.department_name}</option>
                   ))}
                 </select>
               </div>
-              <div>
-                <label className="text-xs text-stone-500 mb-1 block">Proficiency (1-5)</label>
-                <input id="skills-add-level" name="addLevel" type="range" min="1" max="5" value={addLevel} onChange={e => setAddLevel(Number(e.target.value))}
-                  className="w-full accent-stone-900" />
-                <div className="flex justify-between text-xs text-stone-400 mt-0.5">
-                  <span>1</span><span className={`font-semibold ${addLevel >= 4 ? 'text-green-600' : addLevel >= 2 ? 'text-amber-600' : 'text-stone-400'}`}>{addLevel}/5</span><span>5</span>
+
+              {/* Step 2: Select Position (filtered by department) */}
+              {selectedDeptId && (
+                <div>
+                  <label className="text-xs text-stone-500 mb-1 block">Step 2: Select Position</label>
+                  <select id="skills-add-pos" value={selectedPosId} onChange={e => { setSelectedPosId(e.target.value ? Number(e.target.value) : ''); setAddSkillId(null) }}
+                    className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 bg-white">
+                    <option value="">Select a position...</option>
+                    {positions.map(p => (
+                      <option key={p.id || p.position_id} value={p.id || p.position_id}>{p.name || p.position_name}</option>
+                    ))}
+                  </select>
                 </div>
-              </div>
+              )}
+
+              {/* Step 3: Required Skills for the selected position */}
+              {selectedPosId && (
+                <div>
+                  <label className="text-xs text-stone-500 mb-1 block">Step 3: Choose a Required Skill</label>
+                  <select id="skills-add-select" value={addSkillId || ''} onChange={e => setAddSkillId(Number(e.target.value))}
+                    className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 bg-white">
+                    <option value="">Select a required skill...</option>
+                    {filteredRequiredSkills.map(rs => (
+                      <option key={rs.skill_id} value={rs.skill_id}>
+                        {rs.skill_name} {rs.target_level ? `(target: ${rs.target_level})` : ''}
+                      </option>
+                    ))}
+                    {filteredRequiredSkills.length === 0 && (
+                      <option value="" disabled>No missing required skills for this position</option>
+                    )}
+                  </select>
+                  {requiredSkills.length > 0 && (
+                    <div className="mt-2 bg-white rounded p-2 border border-stone-100">
+                      <p className="text-[10px] text-stone-400 mb-1">Skills required for this position:</p>
+                      <div className="flex flex-wrap gap-1">
+                        {requiredSkills.map(rs => {
+                          const hasSkill = skills.some(s => s.skill_id === rs.skill_id)
+                          return (
+                            <span key={rs.skill_id}
+                              className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
+                                hasSkill ? 'bg-green-100 text-green-700' : 'bg-stone-100 text-stone-500'
+                              }`}>
+                              {rs.skill_name} {hasSkill ? '(done)' : ''}
+                            </span>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Step 4: Proficiency */}
+              {addSkillId && (
+                <div>
+                  <label className="text-xs text-stone-500 mb-1 block">Step 4: Proficiency (1-5)</label>
+                  <input id="skills-add-level" type="range" min="1" max="5" value={addLevel} onChange={e => setAddLevel(Number(e.target.value))}
+                    className="w-full accent-stone-900" />
+                  <div className="flex justify-between text-xs text-stone-400 mt-0.5">
+                    <span>1</span>
+                    <span className={`font-semibold ${addLevel >= 4 ? 'text-green-600' : addLevel >= 2 ? 'text-amber-600' : 'text-stone-400'}`}>{addLevel}/5</span>
+                    <span>5</span>
+                  </div>
+                </div>
+              )}
+
               <div className="flex gap-2">
                 <button onClick={handleAddSkill} disabled={!addSkillId}
                   className="flex-1 text-xs px-3 py-2 rounded-lg bg-stone-900 text-white hover:bg-stone-800 transition disabled:opacity-50">Confirm</button>
-                <button onClick={() => setAddOpen(false)}
+                <button onClick={() => { setAddOpen(false); setSelectedDeptId(''); setSelectedPosId(''); setAddSkillId(null) }}
                   className="text-xs px-3 py-2 rounded-lg bg-stone-100 text-stone-600 hover:bg-stone-200 transition">Cancel</button>
               </div>
             </div>
           )}
 
           {/* Skills list */}
-          {loading ? (
+          {skillsLoading ? (
             <div className="text-sm text-stone-400 py-8 text-center">Loading skills...</div>
           ) : skills.length === 0 ? (
             <div className="text-sm text-stone-400 py-8 text-center">

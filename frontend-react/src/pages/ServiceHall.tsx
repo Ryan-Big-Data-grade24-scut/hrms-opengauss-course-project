@@ -12,6 +12,8 @@ import {
   Clock as ClockIcon,
   AlertCircle,
   Loader2,
+  ChevronRight,
+  Info,
 } from 'lucide-react'
 
 const BASE = '/api'
@@ -66,10 +68,29 @@ interface ApprovalRequest {
   status: string
   current_node: number
   payload?: any
+  chain_snapshot?: { role: string; status: string; step_order: number }[]
   created_at: string
 }
 
-type FormMode = 'SKILL_CHANGE' | 'LEAVE_APPLY' | 'ATTENDANCE_RETRO' | 'INFO_UPDATE'
+type FormMode = 'SKILL_CHANGE' | 'LEAVE_REQUEST' | 'ATTENDANCE_CORRECTION' | 'PROFILE_UPDATE'
+
+interface SkillItem {
+  skill_id: number
+  skill_name: string
+  category_name: string
+}
+
+interface LeaveTypeItem {
+  leave_type_id: number
+  type_name: string
+}
+
+interface ProfileData {
+  employee_id: number
+  full_name: string
+  phone?: string
+  email?: string
+}
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
@@ -77,9 +98,9 @@ type FormMode = 'SKILL_CHANGE' | 'LEAVE_APPLY' | 'ATTENDANCE_RETRO' | 'INFO_UPDA
 
 const CARD_CONFIG: { mode: FormMode; label: string; desc: string; icon: any }[] = [
   { mode: 'SKILL_CHANGE', label: '技能变更', desc: '新增、修改或移除技能及等级', icon: FileEdit },
-  { mode: 'LEAVE_APPLY', label: '请假申请', desc: '提交请假或调休申请', icon: CalendarDays },
-  { mode: 'ATTENDANCE_RETRO', label: '考勤补卡', desc: '补打卡或修正出勤记录', icon: Clock },
-  { mode: 'INFO_UPDATE', label: '信息修改', desc: '修改联系方式等个人信息', icon: UserCog },
+  { mode: 'LEAVE_REQUEST', label: '请假申请', desc: '提交请假或调休申请', icon: CalendarDays },
+  { mode: 'ATTENDANCE_CORRECTION', label: '考勤补卡', desc: '补打卡或修正出勤记录', icon: Clock },
+  { mode: 'PROFILE_UPDATE', label: '信息修改', desc: '修改联系方式等个人信息', icon: UserCog },
 ]
 
 const STATUS_BADGES: Record<string, { label: string; color: string }> = {
@@ -92,9 +113,9 @@ const STATUS_BADGES: Record<string, { label: string; color: string }> = {
 
 const OPERATION_LABELS: Record<string, string> = {
   SKILL_CHANGE: '技能变更',
-  LEAVE_APPLY: '请假申请',
-  ATTENDANCE_RETRO: '考勤补卡',
-  INFO_UPDATE: '信息修改',
+  LEAVE_REQUEST: '请假申请',
+  ATTENDANCE_CORRECTION: '考勤补卡',
+  PROFILE_UPDATE: '信息修改',
 }
 
 function getOperationLabel(op: string) {
@@ -104,6 +125,13 @@ function getOperationLabel(op: string) {
 function formatTime(ts: string | undefined) {
   if (!ts) return ''
   return ts.slice(0, 16).replace('T', ' ')
+}
+
+function calcDays(start: string, end: string): number {
+  if (!start || !end) return 0
+  const s = new Date(start)
+  const e = new Date(end)
+  return Math.ceil((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24)) + 1
 }
 
 /* ------------------------------------------------------------------ */
@@ -155,6 +183,69 @@ function StatusBadge({ status }: { status: string }) {
   )
 }
 
+/** Display approval step progress: current step / total steps */
+function StepIndicator({ chain_snapshot, current_node }: { chain_snapshot?: any[]; current_node?: number }) {
+  if (!chain_snapshot || chain_snapshot.length === 0) {
+    if (!current_node) return null
+    return (
+      <span className="text-xs text-stone-400">
+        第 {current_node} 步
+      </span>
+    )
+  }
+
+  const total = chain_snapshot.length
+  const current = current_node || 1
+
+  return (
+    <div className="flex items-center gap-1.5 flex-wrap">
+      {chain_snapshot.map((node, idx) => {
+        const isCurrent = idx + 1 === current
+        const isDone = node.status === 'approved' || node.status === 'completed'
+        const isRejected = node.status === 'rejected'
+        return (
+          <div key={idx} className="flex items-center gap-1.5">
+            {idx > 0 && <ChevronRight className="w-3 h-3 text-stone-300" />}
+            <span
+              className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
+                isRejected
+                  ? 'bg-red-100 text-red-600'
+                  : isCurrent
+                  ? 'bg-blue-100 text-blue-700 ring-1 ring-blue-300'
+                  : isDone
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-stone-100 text-stone-400'
+              }`}
+            >
+              {node.role || `第${idx + 1}步`}
+              {isCurrent && !isDone && ' (进行中)'}
+              {isDone && ' (已完成)'}
+              {isRejected && ' (已驳回)'}
+            </span>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+/** Build a human-readable summary from payload */
+function getPayloadSummary(op: string, payload: any): string {
+  if (!payload) return ''
+  switch (op) {
+    case 'SKILL_CHANGE':
+      return `技能${payload.operation === 'add' ? '新增' : payload.operation === 'remove' ? '移除' : '更新'}: ${payload.skill_name || `ID:${payload.skill_id}`}${payload.proficiency ? `, 等级 ${payload.proficiency}` : ''}`
+    case 'LEAVE_REQUEST':
+      return `${payload.leave_type_name || `类型:${payload.leave_type_id}`}, ${payload.start_date} ~ ${payload.end_date}, 共 ${calcDays(payload.start_date, payload.end_date)} 天`
+    case 'ATTENDANCE_CORRECTION':
+      return `${payload.date}, 时段: ${payload.period === 'morning' ? '上午' : payload.period === 'afternoon' ? '下午' : '全天'}`
+    case 'PROFILE_UPDATE':
+      return `修改: ${Object.keys(payload.fields || {}).join(', ') || payload.field || '个人信息'}`
+    default:
+      return JSON.stringify(payload).slice(0, 60)
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /*  Apply Form (shared across all card types)                          */
 /* ------------------------------------------------------------------ */
@@ -170,37 +261,142 @@ function ApplyForm({
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
 
+  // Data lists loaded from API
+  const [skillsList, setSkillsList] = useState<SkillItem[]>([])
+  const [skillsLoading, setSkillsLoading] = useState(false)
+  const [leaveTypesList, setLeaveTypesList] = useState<LeaveTypeItem[]>([])
+  const [profileData, setProfileData] = useState<ProfileData | null>(null)
+
+  // Department → Position → Skill flow state (用于 SKILL_CHANGE)
+  const [depts, setDepts] = useState<any[]>([])
+  const [posList, setPosList] = useState<any[]>([])
+  const [reqSkills, setReqSkills] = useState<any[]>([])
+  const [selDeptId, setSelDeptId] = useState<number | ''>('')
+  const [selPosId, setSelPosId] = useState<number | ''>('')
+
   // Common fields
   const [reason, setReason] = useState('')
 
   // Skill change
-  const [skillName, setSkillName] = useState('')
   const [skillAction, setSkillAction] = useState<'add' | 'update' | 'remove'>('add')
+  const [selectedSkillId, setSelectedSkillId] = useState<number | ''>('')
   const [proficiency, setProficiency] = useState('')
 
   // Leave
-  const [leaveType, setLeaveType] = useState('')
+  const [leaveTypeId, setLeaveTypeId] = useState<number | ''>('')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
+  const leaveDays = calcDays(startDate, endDate)
 
-  // Attendance retro
-  const [retroDate, setRetroDate] = useState('')
-  const [retroTime, setRetroTime] = useState('')
+  // Attendance correction
+  const [corrDate, setCorrDate] = useState('')
+  const [corrPeriod, setCorrPeriod] = useState<'morning' | 'afternoon' | 'full'>('morning')
+  const [corrClockIn, setCorrClockIn] = useState('')
+  const [corrClockOut, setCorrClockOut] = useState('')
 
-  // Info update
-  const [infoField, setInfoField] = useState('')
-  const [infoValue, setInfoValue] = useState('')
+  // Profile update
+  const [phoneValue, setPhoneValue] = useState('')
+  const [emailValue, setEmailValue] = useState('')
+
+  // Load data on mount
+  useEffect(() => {
+    if (mode === 'SKILL_CHANGE') {
+      setSkillsLoading(true)
+      Promise.all([
+        get('/skills').then(r => r.data || r || []),
+        get('/departments').then(r => r.data || r || []),
+      ]).then(([skills, deptsData]) => {
+        setSkillsList(skills)
+        setDepts(deptsData)
+      }).catch(() => {}).finally(() => setSkillsLoading(false))
+      // Reset department→position selection
+      setSelDeptId('')
+      setSelPosId('')
+      setPosList([])
+      setReqSkills([])
+    }
+    if (mode === 'LEAVE_REQUEST') {
+      get('/leave-types')
+        .then(res => setLeaveTypesList(res.data || res || []))
+        .catch(() => {})
+    }
+    if (mode === 'PROFILE_UPDATE') {
+      get('/profile/self')
+        .then(res => {
+          const p = res.data || res
+          setProfileData(p)
+          setPhoneValue(p.phone || '')
+          setEmailValue(p.email || '')
+        })
+        .catch(() => {})
+    }
+  }, [mode])
+
+  // Load positions when department changes (SKILL_CHANGE)
+  useEffect(() => {
+    if (mode !== 'SKILL_CHANGE') return
+    if (!selDeptId) { setPosList([]); setSelPosId(''); return }
+    get(`/positions?department_id=${selDeptId}`)
+      .then(res => setPosList(res.data || res || []))
+      .catch(() => setPosList([]))
+  }, [selDeptId, mode])
+
+  // Load required skills when position changes (SKILL_CHANGE)
+  useEffect(() => {
+    if (mode !== 'SKILL_CHANGE') return
+    if (!selPosId) { setReqSkills([]); return }
+    get(`/skills/required?position_id=${selPosId}`)
+      .then(res => setReqSkills(res.data || res || []))
+      .catch(() => setReqSkills([]))
+  }, [selPosId, mode])
+
+  // Group skills by category
+  const groupedSkills: Record<string, SkillItem[]> = {}
+  skillsList.forEach(s => {
+    const cat = s.category_name || '未分类'
+    if (!groupedSkills[cat]) groupedSkills[cat] = []
+    groupedSkills[cat].push(s)
+  })
+
+  const getTodayStr = () => new Date().toISOString().slice(0, 10)
 
   const buildPayload = () => {
     switch (mode) {
-      case 'SKILL_CHANGE':
-        return { action: skillAction, skill_name: skillName, proficiency, reason }
-      case 'LEAVE_APPLY':
-        return { leave_type_id: leaveType, start_date: startDate, end_date: endDate, reason }
-      case 'ATTENDANCE_RETRO':
-        return { date: retroDate, time: retroTime, reason }
-      case 'INFO_UPDATE':
-        return { field: infoField, value: infoValue, reason }
+      case 'SKILL_CHANGE': {
+        const skill = skillsList.find(s => s.skill_id === selectedSkillId)
+        return {
+          skill_id: selectedSkillId,
+          operation: skillAction,
+          proficiency: skillAction !== 'remove' ? Number(proficiency) : undefined,
+          skill_name: skill?.skill_name || '',
+          reason,
+        }
+      }
+      case 'LEAVE_REQUEST': {
+        const lt = leaveTypesList.find(l => l.leave_type_id === leaveTypeId)
+        return {
+          leave_type_id: leaveTypeId,
+          start_date: startDate,
+          end_date: endDate,
+          days: leaveDays,
+          leave_type_name: lt?.type_name || '',
+          reason,
+        }
+      }
+      case 'ATTENDANCE_CORRECTION':
+        return {
+          date: corrDate,
+          period: corrPeriod,
+          clock_in: (corrPeriod === 'morning' || corrPeriod === 'full') ? corrClockIn || null : null,
+          clock_out: (corrPeriod === 'afternoon' || corrPeriod === 'full') ? corrClockOut || null : null,
+          reason,
+        }
+      case 'PROFILE_UPDATE': {
+        const fields: Record<string, string> = {}
+        if (phoneValue !== profileData?.phone) fields.phone = phoneValue
+        if (emailValue !== profileData?.email) fields.email = emailValue
+        return { fields, reason }
+      }
     }
   }
 
@@ -255,19 +451,84 @@ function ApplyForm({
                 <option value="remove">移除技能</option>
               </select>
             </div>
+            {/* Step 1: Select Department */}
             <div>
-              <label className="block text-xs font-medium text-stone-600 mb-1">技能名称</label>
-              <input
-                value={skillName}
-                onChange={e => setSkillName(e.target.value)}
-                placeholder="如: Python"
+              <label className="block text-xs font-medium text-stone-600 mb-1">部门选择</label>
+              <select
+                value={selDeptId}
+                onChange={e => { setSelDeptId(e.target.value ? Number(e.target.value) : ''); setSelPosId(''); setSelectedSkillId('') }}
                 className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition"
-              />
+                disabled={skillsLoading}
+              >
+                <option value="">请选择部门</option>
+                {depts.map((d: any) => (
+                  <option key={d.id || d.department_id} value={d.id || d.department_id}>
+                    {d.name || d.department_name}
+                  </option>
+                ))}
+              </select>
             </div>
+
+            {/* Step 2: Select Position (filtered by department) */}
+            {selDeptId && (
+              <div>
+                <label className="block text-xs font-medium text-stone-600 mb-1">岗位选择</label>
+                <select
+                  value={selPosId}
+                  onChange={e => { setSelPosId(e.target.value ? Number(e.target.value) : ''); setSelectedSkillId('') }}
+                  className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition"
+                >
+                  <option value="">请选择岗位</option>
+                  {posList.map((p: any) => (
+                    <option key={p.id || p.position_id} value={p.id || p.position_id}>
+                      {p.name || p.position_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Step 3: Select Required Skill for this position */}
+            {selPosId && (
+              <div>
+                <label className="block text-xs font-medium text-stone-600 mb-1">该岗位要求的技能</label>
+                {reqSkills.length === 0 ? (
+                  <p className="text-xs text-stone-400">暂无岗位技能要求数据</p>
+                ) : (
+                  <>
+                    <select
+                      value={selectedSkillId}
+                      onChange={e => setSelectedSkillId(e.target.value ? Number(e.target.value) : '')}
+                      className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition mb-2"
+                    >
+                      <option value="">请选择技能</option>
+                      {reqSkills.map((rs: any) => (
+                        <option key={rs.skill_id} value={rs.skill_id}>
+                          {rs.skill_name} {rs.target_level ? `(目标: ${rs.target_level})` : ''}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="flex flex-wrap gap-1">
+                      {reqSkills.map((rs: any) => (
+                        <span key={rs.skill_id}
+                          className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
+                            selectedSkillId === rs.skill_id ? 'bg-stone-800 text-white' : 'bg-stone-100 text-stone-500'
+                          }`}>
+                          {rs.skill_name}{rs.target_level ? ` Lv${rs.target_level}` : ''}
+                        </span>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
             {skillAction !== 'remove' && (
               <div>
-                <label className="block text-xs font-medium text-stone-600 mb-1">熟练度</label>
+                <label className="block text-xs font-medium text-stone-600 mb-1">熟练度 (1-5)</label>
                 <input
+                  type="number"
+                  min={1}
+                  max={5}
                   value={proficiency}
                   onChange={e => setProficiency(e.target.value)}
                   placeholder="1-5"
@@ -278,22 +539,22 @@ function ApplyForm({
           </>
         )}
 
-        {/* ========== LEAVE_APPLY ========== */}
-        {mode === 'LEAVE_APPLY' && (
+        {/* ========== LEAVE_REQUEST ========== */}
+        {mode === 'LEAVE_REQUEST' && (
           <>
             <div>
               <label className="block text-xs font-medium text-stone-600 mb-1">请假类型</label>
               <select
-                value={leaveType}
-                onChange={e => setLeaveType(e.target.value)}
+                value={leaveTypeId}
+                onChange={e => setLeaveTypeId(e.target.value ? Number(e.target.value) : '')}
                 className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition"
               >
                 <option value="">请选择</option>
-                <option value="ANNUAL">年假</option>
-                <option value="SICK">病假</option>
-                <option value="PERSONAL">事假</option>
-                <option value="MARRIAGE">婚假</option>
-                <option value="MATERNITY">产假</option>
+                {leaveTypesList.map(lt => (
+                  <option key={lt.leave_type_id} value={lt.leave_type_id}>
+                    {lt.type_name}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
@@ -314,56 +575,99 @@ function ApplyForm({
                 className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition"
               />
             </div>
+            {startDate && endDate && (
+              <div className="bg-stone-50 rounded-lg px-3 py-2 text-sm">
+                <span className="text-stone-500">共 </span>
+                <span className="font-semibold text-stone-700">{leaveDays}</span>
+                <span className="text-stone-500"> 天</span>
+              </div>
+            )}
           </>
         )}
 
-        {/* ========== ATTENDANCE_RETRO ========== */}
-        {mode === 'ATTENDANCE_RETRO' && (
+        {/* ========== ATTENDANCE_CORRECTION ========== */}
+        {mode === 'ATTENDANCE_CORRECTION' && (
           <>
             <div>
               <label className="block text-xs font-medium text-stone-600 mb-1">补卡日期</label>
               <input
                 type="date"
-                value={retroDate}
-                onChange={e => setRetroDate(e.target.value)}
+                value={corrDate}
+                onChange={e => setCorrDate(e.target.value)}
+                max={getTodayStr()}
                 className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-stone-600 mb-1">补卡时间</label>
-              <input
-                type="time"
-                value={retroTime}
-                onChange={e => setRetroTime(e.target.value)}
-                className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition"
-              />
+              <label className="block text-xs font-medium text-stone-600 mb-1">时段</label>
+              <div className="flex gap-2">
+                {(['morning', 'afternoon', 'full'] as const).map(p => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setCorrPeriod(p)}
+                    className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg border transition ${
+                      corrPeriod === p
+                        ? 'bg-stone-800 text-white border-stone-800'
+                        : 'bg-white text-stone-600 border-stone-200 hover:border-stone-300'
+                    }`}
+                  >
+                    {p === 'morning' ? '上午' : p === 'afternoon' ? '下午' : '全天'}
+                  </button>
+                ))}
+              </div>
             </div>
+            {(corrPeriod === 'morning' || corrPeriod === 'full') && (
+              <div>
+                <label className="block text-xs font-medium text-stone-600 mb-1">签到时间</label>
+                <input
+                  type="time"
+                  value={corrClockIn}
+                  onChange={e => setCorrClockIn(e.target.value)}
+                  className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition"
+                />
+              </div>
+            )}
+            {(corrPeriod === 'afternoon' || corrPeriod === 'full') && (
+              <div>
+                <label className="block text-xs font-medium text-stone-600 mb-1">签退时间</label>
+                <input
+                  type="time"
+                  value={corrClockOut}
+                  onChange={e => setCorrClockOut(e.target.value)}
+                  className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition"
+                />
+              </div>
+            )}
           </>
         )}
 
-        {/* ========== INFO_UPDATE ========== */}
-        {mode === 'INFO_UPDATE' && (
+        {/* ========== PROFILE_UPDATE ========== */}
+        {mode === 'PROFILE_UPDATE' && (
           <>
+            {profileData && (
+              <div className="bg-stone-50 rounded-lg px-3 py-2 text-xs text-stone-500 space-y-1">
+                <Info className="w-3 h-3 inline mr-1" />
+                当前信息: {profileData.full_name}
+                {profileData.phone && <span className="ml-2">电话: {profileData.phone}</span>}
+                {profileData.email && <span className="ml-2">邮箱: {profileData.email}</span>}
+              </div>
+            )}
             <div>
-              <label className="block text-xs font-medium text-stone-600 mb-1">修改字段</label>
-              <select
-                value={infoField}
-                onChange={e => setInfoField(e.target.value)}
+              <label className="block text-xs font-medium text-stone-600 mb-1">电话</label>
+              <input
+                value={phoneValue}
+                onChange={e => setPhoneValue(e.target.value)}
+                placeholder={profileData?.phone || '请输入新电话号码'}
                 className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition"
-              >
-                <option value="">请选择</option>
-                <option value="phone">手机号码</option>
-                <option value="email">电子邮箱</option>
-                <option value="address">家庭地址</option>
-                <option value="emergency_contact">紧急联系人</option>
-              </select>
+              />
             </div>
             <div>
-              <label className="block text-xs font-medium text-stone-600 mb-1">新值</label>
+              <label className="block text-xs font-medium text-stone-600 mb-1">邮箱</label>
               <input
-                value={infoValue}
-                onChange={e => setInfoValue(e.target.value)}
-                placeholder="请输入新值"
+                value={emailValue}
+                onChange={e => setEmailValue(e.target.value)}
+                placeholder={profileData?.email || '请输入新邮箱'}
                 className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition"
               />
             </div>
@@ -405,6 +709,73 @@ function ApplyForm({
 }
 
 /* ------------------------------------------------------------------ */
+/*  Detail Modal                                                       */
+/* ------------------------------------------------------------------ */
+
+function DetailModal({
+  request,
+  onClose,
+}: {
+  request: ApprovalRequest
+  onClose: () => void
+}) {
+  const payload = request.payload
+  return (
+    <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white rounded-xl shadow-xl border border-stone-200 p-6 max-w-lg w-full" onClick={e => e.stopPropagation()}>
+        <h3 className="font-semibold text-stone-800 mb-4">申请详情</h3>
+        <div className="space-y-3 text-sm">
+          <div className="flex justify-between">
+            <span className="text-stone-400">操作类型</span>
+            <span className="font-medium text-stone-700">{getOperationLabel(request.operation_type)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-stone-400">申请人</span>
+            <span className="font-medium text-stone-700">{request.applicant_name || request.applicant_id}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-stone-400">状态</span>
+            <StatusBadge status={request.status} />
+          </div>
+          <div className="flex justify-between">
+            <span className="text-stone-400">提交时间</span>
+            <span className="text-stone-600">{formatTime(request.created_at)}</span>
+          </div>
+          {request.current_node && (
+            <div className="flex justify-between">
+              <span className="text-stone-400">当前步骤</span>
+              <span className="text-stone-600">第 {request.current_node} 步</span>
+            </div>
+          )}
+          {payload && (
+            <div>
+              <span className="text-stone-400 block mb-1">申请内容</span>
+              <pre className="bg-stone-50 rounded-lg p-3 text-xs text-stone-600 whitespace-pre-wrap break-all">
+                {JSON.stringify(payload, null, 2)}
+              </pre>
+            </div>
+          )}
+          {request.chain_snapshot && request.chain_snapshot.length > 0 && (
+            <div>
+              <span className="text-stone-400 block mb-1">审批进度</span>
+              <StepIndicator chain_snapshot={request.chain_snapshot} current_node={request.current_node} />
+            </div>
+          )}
+        </div>
+        <div className="flex justify-end mt-5">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm bg-stone-800 text-white rounded-lg hover:bg-stone-700 transition"
+          >
+            关闭
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ */
 /*  Main Component                                                     */
 /* ------------------------------------------------------------------ */
 
@@ -420,6 +791,9 @@ export default function ServiceHall() {
   const [requests, setRequests] = useState<ApprovalRequest[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
+  /* ---- Detail modal ---- */
+  const [detailRequest, setDetailRequest] = useState<ApprovalRequest | null>(null)
 
   /* ---- Action confirm ---- */
   const [actionTarget, setActionTarget] = useState<ApprovalRequest | null>(null)
@@ -559,23 +933,41 @@ export default function ServiceHall() {
               className="bg-white rounded-xl shadow-sm border border-stone-200 p-4 hover:shadow-md transition"
             >
               <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 mb-1">
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  <div className="flex items-center gap-2">
                     <span className="text-sm font-medium text-stone-700">
                       {getOperationLabel(req.operation_type)}
                     </span>
                     <StatusBadge status={req.status} />
                   </div>
-                  <p className="text-xs text-stone-400 mb-1">
+                  <p className="text-xs text-stone-400">
                     {req.applicant_name || req.applicant_id}
                     {req.target_name && req.target_name !== req.applicant_name && (
                       <> &middot; {req.target_name}</>
                     )}
                   </p>
                   <p className="text-xs text-stone-400">{formatTime(req.created_at)}</p>
+                  {/* Payload summary */}
+                  {req.payload && (
+                    <p className="text-xs text-stone-500 bg-stone-50 rounded px-2 py-1 inline-block">
+                      {getPayloadSummary(req.operation_type, req.payload)}
+                    </p>
+                  )}
+                  {/* Step progress for "我的申请" */}
+                  {activeTab === 'mine' && (
+                    <StepIndicator chain_snapshot={req.chain_snapshot} current_node={req.current_node} />
+                  )}
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
+                  {/* 查看详情 */}
+                  <button
+                    onClick={() => setDetailRequest(req)}
+                    className="text-xs px-3 py-1.5 bg-stone-100 text-stone-600 rounded-lg hover:bg-stone-200 transition font-medium"
+                    title="查看详情"
+                  >
+                    详情
+                  </button>
                   {activeTab === 'pending' && req.status === 'pending' && (
                     <>
                       <button
@@ -612,10 +1004,17 @@ export default function ServiceHall() {
       {/* ================================================================ */}
       {formMode && (
         <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center p-4" onClick={() => setFormMode(null)}>
-          <div className="bg-white rounded-xl shadow-xl border border-stone-200 p-6 max-w-md w-full" onClick={e => e.stopPropagation()}>
+          <div className="bg-white rounded-xl shadow-xl border border-stone-200 p-6 max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <ApplyForm mode={formMode} onClose={() => setFormMode(null)} />
           </div>
         </div>
+      )}
+
+      {/* ================================================================ */}
+      {/* Detail modal                                                    */}
+      {/* ================================================================ */}
+      {detailRequest && (
+        <DetailModal request={detailRequest} onClose={() => setDetailRequest(null)} />
       )}
 
       {/* ================================================================ */}

@@ -12,12 +12,12 @@
     pending -> approved（所有节点通过）
     pending -> rejected（任一节点拒绝）
 
-审批链从 approval_chain_config 表动态读取，并在提交时快照到
-approval_requests.chain_snapshot 字段，避免审批单创建后配置变更影响进行中的流程。
+审批链从 approval_config 表动态读取，并在提交时快照到
+approval_request.chain_snapshot 字段，避免审批单创建后配置变更影响进行中的流程。
 
 依赖表（需先通过迁移创建）：
-  - approval_chain_config    审批链模板配置
-  - approval_requests        审批单实例
+  - approval_config    审批链模板配置
+  - approval_request        审批单实例
   - employee                 员工表（审批人查找）
   - audit_log                审计日志
 """
@@ -28,6 +28,24 @@ from src.common.db import (execute, json_array_query, json_object_query,
                             query_scalar, sql_literal)
 from src.services.audit_service import write_audit
 
+# ===================================================================
+# 操作类型中文名映射
+# ===================================================================
+ACTION_TYPE_NAMES = {
+    "SKILL_CHANGE": "技能变更",
+    "LEAVE_REQUEST": "请假申请",
+    "ATTENDANCE_CORRECTION": "考勤补卡",
+    "PROFILE_UPDATE": "信息修改",
+    "SKILL_ADD": "添加技能",
+    "SKILL_REMOVE": "移除技能",
+    "SKILL_UPDATE": "修改技能熟练度",
+    "LEAVE_CREATE": "提交请假",
+    "ATTENDANCE_RETRO": "考勤补卡",
+    "CONTACT_UPDATE": "修改联系方式",
+    "PERFORMANCE_REVIEW": "绩效评分",
+    "POSITION_CHANGE": "岗位调动",
+}
+
 
 # ===================================================================
 # 公开 API
@@ -37,7 +55,7 @@ def submit_approval(employee_id, action_type, target_id, payload, actor):
     """提交审批申请。
 
     创建审批单并立即进入 PENDING 状态。
-    从 approval_chain_config 读取该操作类型的审批链模板，
+    从 approval_config 读取该操作类型的审批链模板，
     解析每个节点的审批人，将快照写入 chain_snapshot 字段。
 
     Args:
@@ -57,7 +75,7 @@ def submit_approval(employee_id, action_type, target_id, payload, actor):
     config_nodes = json_array_query(f"""
         SELECT node_order, approver_role, approver_resolver,
                fallback_strategy, required, node_label
-        FROM approval_chain_config
+        FROM approval_config
         WHERE operation_type = {sql_literal(action_type)}
         ORDER BY node_order
     """)
@@ -87,7 +105,7 @@ def submit_approval(employee_id, action_type, target_id, payload, actor):
 
     # 4. 创建审批单
     request_id = int(query_scalar(f"""
-        INSERT INTO approval_requests
+        INSERT INTO approval_request
             (operation_type, applicant_id, target_emp_id, payload,
              status, current_node, chain_snapshot, version)
         VALUES (
@@ -163,7 +181,7 @@ def approve(request_id, actor, comment):
 
     # 4. 乐观锁更新
     updated = int(query_scalar(f"""
-        UPDATE approval_requests
+        UPDATE approval_request
         SET status = {sql_literal(new_status)},
             current_node = {new_node},
             chain_snapshot = {sql_literal(json.dumps(chain, ensure_ascii=False))},
@@ -233,7 +251,7 @@ def reject(request_id, actor, comment):
 
     # 4. 乐观锁更新
     updated = int(query_scalar(f"""
-        UPDATE approval_requests
+        UPDATE approval_request
         SET status = 'rejected',
             current_node = {request["current_node"]},
             chain_snapshot = {sql_literal(json.dumps(chain, ensure_ascii=False))},
@@ -284,7 +302,7 @@ def recall(request_id, actor):
     chain = _parse_chain_snapshot(request["chain_snapshot"])
 
     updated = int(query_scalar(f"""
-        UPDATE approval_requests
+        UPDATE approval_request
         SET status = 'recalled',
             chain_snapshot = {sql_literal(json.dumps(chain, ensure_ascii=False))},
             version = version + 1,
@@ -320,14 +338,14 @@ def get_pending_approvals(actor):
 
     rows = json_array_query(f"""
         SELECT id, operation_type, applicant_id, target_emp_id,
-               status, current_node, created_at
-        FROM approval_requests
+               status, current_node, created_at, payload
+        FROM approval_request
         WHERE status = 'pending'
           AND chain_snapshot -> 'nodes' -> (current_node - 1)
               -> 'approvers' @> {sql_literal(json.dumps([emp_id]))}::jsonb
         ORDER BY created_at DESC
     """)
-    return rows
+    return _enrich_payload_summary(_enrich_action_names(rows))
 
 
 def get_my_requests(employee_id):
@@ -341,12 +359,12 @@ def get_my_requests(employee_id):
     """
     rows = json_array_query(f"""
         SELECT id, operation_type, target_emp_id,
-               status, current_node, created_at
-        FROM approval_requests
+               status, current_node, created_at, payload
+        FROM approval_request
         WHERE applicant_id = {int(employee_id)}
         ORDER BY created_at DESC
     """)
-    return rows
+    return _enrich_payload_summary(_enrich_action_names(rows))
 
 
 def get_processed_requests(employee_id):
@@ -361,8 +379,8 @@ def get_processed_requests(employee_id):
     emp_id = int(employee_id)
     rows = json_array_query(f"""
         SELECT DISTINCT ar.id, ar.operation_type, ar.target_emp_id,
-               ar.status, ar.current_node, ar.created_at
-        FROM approval_requests ar
+               ar.status, ar.current_node, ar.created_at, ar.payload
+        FROM approval_request ar
         JOIN audit_log al ON al.target_type = 'approval_request'
             AND al.target_id = CAST(ar.id AS TEXT)
         WHERE al.action_type IN ('approve', 'reject')
@@ -375,7 +393,7 @@ def get_processed_requests(employee_id):
           )
         ORDER BY ar.created_at DESC
     """)
-    return rows
+    return _enrich_payload_summary(_enrich_action_names(rows))
 
 
 def get_request_detail(request_id):
@@ -416,6 +434,58 @@ def get_request_detail(request_id):
 # ===================================================================
 # 内部辅助函数
 # ===================================================================
+
+def _enrich_action_names(rows):
+    """为审批单列表追加 action_name（操作类型中文名）。"""
+    if not rows:
+        return rows
+    for row in rows:
+        code = row.get("operation_type") or row.get("action_code", "")
+        row["action_name"] = ACTION_TYPE_NAMES.get(code, code)
+    return rows
+
+
+def _enrich_payload_summary(rows):
+    """为审批单列表追加 payload_summary（人类可读的申请内容摘要）。"""
+    if not rows:
+        return rows
+    for row in rows:
+        payload = row.get("payload")
+        if isinstance(payload, str):
+            try:
+                payload = json.loads(payload)
+            except (json.JSONDecodeError, TypeError):
+                payload = {}
+        if not isinstance(payload, dict):
+            payload = {}
+
+        action_type = row.get("operation_type", "")
+        if action_type == "SKILL_CHANGE":
+            action = payload.get("action", "add")
+            sid = payload.get("skill_id")
+            level = payload.get("proficiency_level")
+            parts = ["新增" if action == "add" else "删除" if action == "delete" else "更新"]
+            if sid:
+                parts.append(f"技能#{sid}")
+            if level:
+                parts.append(f"等级{level}")
+            row["payload_summary"] = " ".join(parts)
+        elif action_type in ("LEAVE_REQUEST", "LEAVE_CREATE"):
+            ltid = payload.get("leave_type_id", "")
+            sd = payload.get("start_date", "")
+            ed = payload.get("end_date", "")
+            row["payload_summary"] = f"请假类型#{ltid} {sd}~{ed}"
+        elif action_type in ("ATTENDANCE_CORRECTION", "ATTENDANCE_RETRO"):
+            dt = payload.get("date", "")
+            period = payload.get("period", "full")
+            row["payload_summary"] = f"补卡 {dt} ({period})"
+        elif action_type in ("PROFILE_UPDATE", "CONTACT_UPDATE"):
+            fields = payload.get("fields", payload)
+            changed = ", ".join(str(k) for k in fields.keys() if k != "employee_id")
+            row["payload_summary"] = f"修改字段: {changed}" if changed else "信息修改"
+        else:
+            row["payload_summary"] = json.dumps(payload, ensure_ascii=False)[:100]
+    return rows
 
 def _execute_payload(payload, action_type):
     """审批通过后执行业务逻辑。
@@ -462,6 +532,73 @@ def _execute_payload(payload, action_type):
                     VALUES ({employee_id}, {skill_id}, {level},
                             {sql_literal(source)}, {str(is_core).upper()})
                 """)
+    elif action_type == "LEAVE_REQUEST":
+        employee_id = int(payload.get("employee_id", 0))
+        leave_type_id = int(payload.get("leave_type_id", 1))
+        start_date = payload.get("start_date")
+        end_date = payload.get("end_date")
+        reason = payload.get("reason", "")
+        execute(f"""
+            INSERT INTO leave_request
+                (employee_id, leave_type_id, start_date, end_date,
+                 reason, approval_status, status, created_at)
+            VALUES (
+                {employee_id}, {leave_type_id},
+                {sql_literal(start_date)}, {sql_literal(end_date)},
+                {sql_literal(reason)}, 'approved', 'approved', CURRENT_TIMESTAMP
+            )
+        """)
+
+    elif action_type == "ATTENDANCE_CORRECTION":
+        employee_id = int(payload.get("employee_id", 0))
+        correction_date = payload.get("date")
+        period = payload.get("period", "full")
+        clock_in = payload.get("clock_in")
+        clock_out = payload.get("clock_out")
+        reason = payload.get("reason", "")
+
+        # Determine status and time values based on period
+        status_val = "present"
+        clock_in_val = sql_literal(clock_in) if clock_in else "NULL"
+        clock_out_val = sql_literal(clock_out) if clock_out else "NULL"
+
+        if period == "morning":
+            status_val = "present"
+        elif period == "afternoon":
+            status_val = "present"
+            clock_in_val = "NULL"
+        else:  # full day
+            status_val = "present"
+
+        existing = query_scalar(f"""
+            SELECT attendance_id FROM attendance_record
+            WHERE employee_id = {employee_id}
+              AND work_date = {sql_literal(correction_date)}::date
+        """)
+        if existing:
+            execute(f"""
+                UPDATE attendance_record
+                SET status = {sql_literal(status_val)},
+                    clock_in = COALESCE({clock_in_val}, clock_in),
+                    clock_out = COALESCE({clock_out_val}, clock_out),
+                    remarks = {sql_literal(reason)},
+                    overtime_approved = TRUE
+                WHERE attendance_id = {int(existing)}
+            """)
+        else:
+            execute(f"""
+                INSERT INTO attendance_record
+                    (employee_id, work_date, clock_in, clock_out,
+                     status, remarks, overtime_approved)
+                VALUES (
+                    {employee_id},
+                    {sql_literal(correction_date)}::date,
+                    {clock_in_val}, {clock_out_val},
+                    {sql_literal(status_val)},
+                    {sql_literal(reason)}, TRUE
+                )
+            """)
+
     elif action_type == "PROFILE_UPDATE":
         fields = payload.get("fields", {})
         set_clauses = [
@@ -469,7 +606,7 @@ def _execute_payload(payload, action_type):
         ]
         if set_clauses:
             execute(f"""
-                UPDATE employee_profile
+                UPDATE employee
                 SET {', '.join(set_clauses)}
                 WHERE employee_id = {int(payload.get("employee_id", 0))}
             """)
@@ -486,7 +623,7 @@ def resolve_employee_id(actor):
 def _get_request(request_id):
     """根据 ID 查询审批单原始记录。"""
     return json_object_query(f"""
-        SELECT * FROM approval_requests WHERE id = {int(request_id)}
+        SELECT * FROM approval_request WHERE id = {int(request_id)}
     """)
 
 
