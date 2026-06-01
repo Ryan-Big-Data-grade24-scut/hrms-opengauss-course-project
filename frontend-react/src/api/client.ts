@@ -6,6 +6,11 @@ async function request(path: string, opts?: RequestInit) {
     ...opts,
     headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...opts?.headers },
   })
+  if (res.status === 401) {
+    localStorage.clear()
+    window.location.href = '/login?expired=1'
+    throw new Error('会话已过期，请重新登录')
+  }
   const data = await res.json()
   if (!res.ok) throw new Error(data.message || 'Request failed')
   return data

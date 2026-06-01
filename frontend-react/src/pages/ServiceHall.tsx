@@ -451,6 +451,26 @@ function ApplyForm({
                 <option value="remove">移除技能</option>
               </select>
             </div>
+            {/* Update mode: select from existing skills */}
+            {skillAction === 'update' && (
+              <div>
+                <label className="block text-xs font-medium text-stone-600 mb-1">选择现有技能</label>
+                <select
+                  value={selectedSkillId}
+                  onChange={e => setSelectedSkillId(e.target.value ? Number(e.target.value) : '')}
+                  className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition"
+                >
+                  <option value="">请选择技能</option>
+                  {mySkills.map((s: any) => (
+                    <option key={s.skill_id} value={s.skill_id}>
+                      {s.skill_name}（当前 {s.proficiency_level}/5）
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {/* Add/remove mode: department + position + required skills */}
+            {skillAction !== 'update' && (<>
             {/* Step 1: Select Department */}
             <div>
               <label className="block text-xs font-medium text-stone-600 mb-1">部门选择</label>
@@ -522,6 +542,7 @@ function ApplyForm({
                 )}
               </div>
             )}
+            </>)}
             {skillAction !== 'remove' && (
               <div>
                 <label className="block text-xs font-medium text-stone-600 mb-1">熟练度 (1-5)</label>

@@ -388,6 +388,10 @@ class ApiHandler(BaseHTTPRequestHandler):
                 self._require_permission(user, "skill.manage")
                 return self._send(200, ok(skill_service.delete_skill_category(int(match.group(1)), user["username"])))
 
+            if path == "/api/skills/required" and method == "GET":
+                pid = query.get("position_id", [None])[0]
+                if pid: return self._send(200, ok(skill_service.get_skills_by_position(int(pid))))
+                return self._send(200, ok([]))
             if path == "/api/skills/recommend" and method == "GET":
                 sid = query.get("skill_id",[None])[0]
                 if sid: return self._send(200, ok(skill_service.skill_recommendations(int(sid))))

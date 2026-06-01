@@ -263,6 +263,20 @@ def infer_skills_from_history(employee_id, actor):
     return {"employee_id": employee_id, "inferred": inserted, "count": len(inserted)}
 
 
+def get_skills_by_position(position_id):
+    """获取某岗位要求的技能列表（含熟练度要求）。"""
+    return json_array_query(
+        f"""
+        SELECT prs.*, s.skill_name, sc.category_name
+        FROM position_required_skill prs
+        JOIN skill s ON s.skill_id = prs.skill_id
+        JOIN skill_category sc ON sc.category_id = s.category_id
+        WHERE prs.position_id = {int(position_id)}
+        ORDER BY prs.importance_weight DESC, prs.required_level DESC
+        """
+    )
+
+
 # ===================================================================
 # 岗位匹配（ProPer 加权点积算法）
 # ===================================================================
