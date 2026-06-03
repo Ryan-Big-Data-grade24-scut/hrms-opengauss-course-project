@@ -16,7 +16,7 @@ export default function LoginPage() {
       const res = await api.login(username, password)
       localStorage.setItem('token', res.data.token)
       localStorage.setItem('profile', JSON.stringify(res.data.profile))
-      navigate('/profile')
+      navigate('/service-hall')
     } catch (err: any) {
       setError(err.message || 'Login failed')
     } finally { setLoading(false) }
