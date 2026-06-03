@@ -376,14 +376,15 @@ function ApplyForm({
     switch (mode) {
       case 'SKILL_CHANGE': {
         const skill = skillsList.find(s => s.skill_id === selectedSkillId)
-        return {
-          skill_id: selectedSkillId,
-          custom_skill_name: customSkillName.trim() || undefined,
-          operation: skillAction,
-          proficiency: skillAction !== 'remove' ? Number(proficiency) : undefined,
+        const p: any = {
+          action: skillAction,
+          skill_id: selectedSkillId || undefined,
           skill_name: skill?.skill_name || customSkillName.trim() || '',
           reason,
         }
+        if (skillAction !== 'remove') p.proficiency_level = Number(proficiency) || undefined
+        if (customSkillName.trim() && !selectedSkillId) p.custom_skill_name = customSkillName.trim()
+        return p
       }
       case 'LEAVE_REQUEST': {
         const lt = leaveTypesList.find(l => l.leave_type_id === leaveTypeId)
@@ -421,9 +422,22 @@ function ApplyForm({
       setError('请填写申请说明')
       return
     }
-    if (mode === 'SKILL_CHANGE' && !selectedSkillId && !customSkillName.trim()) {
-      setError('请选择或输入技能')
-      return
+    if (mode === 'SKILL_CHANGE') {
+      if (skillAction === 'remove' || skillAction === 'update') {
+        if (!selectedSkillId) {
+          setError('请从列表中选择现有技能')
+          return
+        }
+      } else if (skillAction === 'add') {
+        if (!selectedSkillId && !customSkillName.trim()) {
+          setError('请选择或输入技能名称')
+          return
+        }
+        if (customSkillName.trim() && customSkillName.trim().length < 2) {
+          setError('技能名称至少 2 个字符')
+          return
+        }
+      }
     }
     if (mode === 'LEAVE_REQUEST') {
       if (!leaveTypeId) {

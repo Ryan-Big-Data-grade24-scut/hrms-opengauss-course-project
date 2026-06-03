@@ -11,6 +11,7 @@ def _profile_sql(username):
         u.phone,
         u.email,
         u.status,
+        (SELECT e.employee_id FROM employee e WHERE e.full_name = u.full_name LIMIT 1) AS employee_id,
         COALESCE((
             SELECT json_agg(role_code)
             FROM (

@@ -37,17 +37,25 @@ export default function SkillsPage() {
   useEffect(() => {
     (async () => {
       try {
-        const [emps, sk, depts] = await Promise.all([
-          api.employees('page=1&page_size=50'),
-          api.allSkills(),
-          api.departments(),
-        ])
-        const filtered = (emps.data?.list || []).filter((e: any) => e.employment_status === 'active')
-        setEmployees(filtered)
+        let profile: any = {}
+        try { profile = JSON.parse(localStorage.getItem('profile') || '{}') } catch {}
+        const isAdmin = (profile.permissions || []).some((p: string) => p === 'employee.manage')
+        const [sk, depts] = await Promise.all([api.allSkills(), api.departments()])
         setAllSkills(sk.data || [])
         setDepartments(depts.data || [])
-        if (filtered.length > 0 && !selectedEmp) {
-          setSelectedEmp(filtered[0].employee_id)
+
+        if (isAdmin) {
+          const emps = await api.employees('page=1&page_size=50')
+          const filtered = (emps.data?.list || []).filter((e: any) => e.employment_status === 'active')
+          setEmployees(filtered)
+          if (filtered.length > 0 && !selectedEmp) setSelectedEmp(filtered[0].employee_id)
+        } else {
+          // Non-admin users can only see their own skills
+          const ownEmpId = profile.employee_id
+          if (ownEmpId) {
+            setEmployees([{employee_id: ownEmpId, full_name: profile.full_name || 'Me', position_name: ''}])
+            setSelectedEmp(ownEmpId)
+          }
         }
       } catch { setError('Failed to load data') }
       finally { setLoading(false) }

@@ -767,12 +767,9 @@ export default function StrategicAnalytics() {
                         category_name: r.category_name,
                         avg_level: r.avg_level,
                         staff_count: r.staff_count,
-                        coverage_pct: r.staff_count && rows.length > 0
-                          ? Math.round((r.staff_count / Math.max(...rows.map(x => x.staff_count))) * 100)
-                          : 0
                       }))
                     }))
-                    // All unique category names for column headers
+                    // All unique category names ordered by first appearance
                     const allCategories = [...new Set(heatmap.map((h: any) => h.category_name).filter(Boolean))]
 
                     return (
@@ -791,17 +788,18 @@ export default function StrategicAnalytics() {
                               <td className="px-4 py-2 text-stone-700 font-medium text-xs">{dept.department_name}</td>
                               {allCategories.map((catName, ci) => {
                                 const match = dept.categories.find((c: any) => c.category_name === catName)
-                                const coverage = match ? match.coverage_pct : 0
-                                const intensity = coverage / 100
+                                const avg = match?.avg_level ?? 0
+                                const intensity = avg / 5  // avg_level is 1-5 scale
                                 return (
                                   <td key={ci} className="px-4 py-2">
                                     <div className="w-8 h-8 rounded flex items-center justify-center text-[9px] font-medium"
                                       style={{
-                                        backgroundColor: intensity > 0.7 ? '#1e3a5f' : intensity > 0.4 ? '#5b8fc9' : intensity > 0.1 ? '#b3cde3' : '#f0f0f0',
-                                        color: intensity > 0.4 ? 'white' : '#666'
+                                        backgroundColor: intensity > 0.7 ? '#1e3a5f' : intensity > 0.5 ? '#5b8fc9' : intensity > 0.3 ? '#b3cde3' : '#f0f0f0',
+                                        color: intensity > 0.5 ? 'white' : '#666'
                                       }}
-                                      title={`${dept.department_name}: ${catName} - avg ${match?.avg_level || '-'}/5`}>
+                                      title={`${dept.department_name}: ${catName} - avg ${avg.toFixed(1)}/5`}>
                                       {match?.avg_level || '-'}
+                                      {avg > 0 ? avg.toFixed(1) : '-'}
                                     </div>
                                   </td>
                                 )

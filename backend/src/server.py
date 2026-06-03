@@ -401,20 +401,31 @@ class ApiHandler(BaseHTTPRequestHandler):
                 if eid: return self._send(200, ok(skill_service.get_employee_skills(int(eid))))
                 return self._send(200, ok([]))
             if path == "/api/employees/skills" and method == "POST":
-                # 任何用户可通过审批流提交技能变更申请
                 applicant_id = approval_service.resolve_employee_id(user["username"])
                 if not applicant_id:
                     return self._send(400, error("无法解析当前用户的员工 ID"))
+                target_emp_id = int(body["employee_id"])
+                # 部门域权限校验：只能管理本部门或下级的技能
+                is_admin = any(p.endswith('.all') or p == 'admin' for p in (user.get("permissions") or []))
+                if not is_admin:
+                    from src.common.db import query_scalar
+                    dept_check = query_scalar(f"""
+                        SELECT CASE WHEN e1.department_id = e2.department_id THEN 1 ELSE 0 END
+                        FROM employee e1, employee e2
+                        WHERE e1.employee_id = {applicant_id} AND e2.employee_id = {target_emp_id}
+                    """)
+                    if dept_check != "1":
+                        return self._send(403, error(4003, "只能管理本部门员工的技能"))
                 action = body.get("action", "add")
                 action_type_map = {"add": "SKILL_ADD", "delete": "SKILL_REMOVE", "update": "SKILL_UPDATE"}
                 action_type = action_type_map.get(action, "SKILL_ADD")
                 result = approval_service.submit_approval(
                     employee_id=applicant_id,
                     action_type=action_type,
-                    target_id=int(body["employee_id"]),
+                    target_id=target_emp_id,
                     payload={
                         "action": action,
-                        "employee_id": body["employee_id"],
+                        "employee_id": target_emp_id,
                         "skill_id": body["skill_id"],
                         "proficiency_level": body.get("proficiency_level", 1),
                     },
