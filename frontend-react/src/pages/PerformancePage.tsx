@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { BarChart3, Star, AlertCircle, CheckCircle2, Loader2, X } from 'lucide-react'
 
@@ -47,6 +47,9 @@ export default function PerformancePage() {
   const [comment, setComment] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitResult, setSubmitResult] = useState<'idle' | 'success' | 'error'>('idle')
+  const feedbackTimer = useRef<ReturnType<typeof setTimeout>>()
+
+  useEffect(() => { return () => { if (feedbackTimer.current) clearTimeout(feedbackTimer.current) } }, [])
 
   const profile = JSON.parse(localStorage.getItem('profile') || '{}')
   const employeeId = profile.employee_id
@@ -83,9 +86,10 @@ export default function PerformancePage() {
     setSubmitting(true)
     try {
       await post('/approval-requests', {
-        action_type: 'PERFORMANCE_REVIEW',
+        operation_type: 'PERFORMANCE_REVIEW',
         target_id: selectedReview.employee_id,
         payload: {
+          employee_id: selectedReview.employee_id,
           review_id: selectedReview.review_id,
           review_period: selectedReview.review_period,
           rating,
@@ -95,7 +99,7 @@ export default function PerformancePage() {
       })
       setSubmitResult('success')
       setFeedback('绩效评分已提交审批')
-      setTimeout(() => { setFeedback(''); setRatingOpen(false) }, 1500)
+      feedbackTimer.current = setTimeout(() => { setFeedback(''); setRatingOpen(false) }, 1500)
     } catch (e: any) {
       setSubmitResult('error')
       setFeedback(e.message || '提交失败')
@@ -170,12 +174,14 @@ export default function PerformancePage() {
                     <td className="px-4 py-3 text-stone-600">{r.reviewer_name || '-'}</td>
                     <td className="px-4 py-3 text-stone-400 text-xs">{r.submitted_at?.slice(0, 10) || '-'}</td>
                     <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() => openRating(r)}
-                        className="text-xs px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 transition font-medium"
-                      >
-                        评分
-                      </button>
+                      {r.status === 'draft' || r.status === 'pending' ? (
+                        <button onClick={() => openRating(r)}
+                          className="text-xs px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 transition font-medium">
+                          评分
+                        </button>
+                      ) : (
+                        <span className="text-xs text-stone-400">-</span>
+                      )}
                     </td>
                   </tr>
                 )

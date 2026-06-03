@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import {
   AlertTriangle,
@@ -196,6 +196,10 @@ export default function StrategicAnalytics() {
   const [criticalPersons, setCriticalPersons] = useState<any[]>([])
   const [healthLoading, setHealthLoading] = useState(false)
   const [healthError, setHealthError] = useState('')
+  const [drillDeptId, setDrillDeptId] = useState('')
+  const [drillData, setDrillData] = useState<any[]>([])
+  const [expandedEmpId, setExpandedEmpId] = useState<number | null>(null)
+  const [expandedData, setExpandedData] = useState<{attendance: any; performance: any} | null>(null)
 
   // ---- Pagination state ----
   const PAGE_SIZE = 20
@@ -275,6 +279,21 @@ export default function StrategicAnalytics() {
     }).finally(() => setAttPerfLoading(false))
   }, [activeTab])
 
+  /* ---- Risk drill-down expand ---- */
+  const loadExpandedData = async (empId: number) => {
+    setExpandedData(null)
+    try {
+      const [att, perf] = await Promise.allSettled([
+        get(`/attendance/records?employee_id=${empId}&page_size=10`),
+        get(`/performance/reviews?employee_id=${empId}&page_size=5`),
+      ])
+      setExpandedData({
+        attendance: att.status === 'fulfilled' ? (att.value.data || att.value) : null,
+        performance: perf.status === 'fulfilled' ? ((perf.value.data?.rows || perf.value.data || [])[0] ?? null) : null,
+      })
+    } catch { setExpandedData({ attendance: null, performance: null }) }
+  }
+
   /* ---- Lazy load health data ---- */
   useEffect(() => {
     if (activeTab !== 'health') return
@@ -296,7 +315,7 @@ export default function StrategicAnalytics() {
     let list = [...attrition]
     // Department filter
     if (deptFilter !== '') {
-      list = list.filter((a: any) => a.department_id === deptFilter || a.department_name === departments.find(d => d.id === deptFilter)?.name)
+      list = list.filter((a: any) => a.department_id === deptFilter || a.department_name === departments.find((d: any) => (d.department_id || d.id) === deptFilter)?.department_name)
     }
     // Sort
     list.sort((a: any, b: any) => {
@@ -449,8 +468,8 @@ export default function StrategicAnalytics() {
                       className="text-xs border border-stone-200 rounded-lg px-2 py-1.5 outline-none focus:border-stone-400 transition"
                     >
                       <option value="">全部部门</option>
-                      {departments.map(d => (
-                        <option key={d.id} value={d.id}>{d.name}</option>
+                      {departments.map((d: any) => (
+                        <option key={d.department_id || d.id} value={d.department_id || d.id}>{d.department_name || d.name}</option>
                       ))}
                     </select>
                   </div>
@@ -484,9 +503,18 @@ export default function StrategicAnalytics() {
                           {pagedAttrition.map((a: any) => {
                             const score = a.risk_score_pct ?? (a.risk_score * 100)
                             const level = riskLevel(score)
+                            const isExpanded = expandedEmpId === a.employee_id
                             return (
-                              <tr key={a.employee_id} className="border-b border-stone-50 last:border-0 hover:bg-stone-50 transition">
-                                <td className="px-5 py-3 text-stone-700 font-medium">{a.full_name}</td>
+                              <React.Fragment key={a.employee_id}>
+                              <tr className="border-b border-stone-50 last:border-0 hover:bg-stone-50 transition cursor-pointer"
+                                onClick={() => {
+                                  if (isExpanded) { setExpandedEmpId(null); setExpandedData(null) }
+                                  else { setExpandedEmpId(a.employee_id); loadExpandedData(a.employee_id, a.full_name) }
+                                }}>
+                                <td className="px-5 py-3 text-stone-700 font-medium flex items-center gap-2">
+                                  <ChevronRight className={`w-3.5 h-3.5 text-stone-300 transition ${isExpanded ? 'rotate-90' : ''}`} />
+                                  {a.full_name}
+                                </td>
                                 <td className="px-5 py-3 text-stone-500">{a.department_name}</td>
                                 <td className="px-5 py-3">
                                   <div className="flex items-center gap-3">
@@ -534,8 +562,41 @@ export default function StrategicAnalytics() {
                                   </div>
                                 </td>
                               </tr>
-                            )
-                          })}
+                              {isExpanded && expandedData && (
+                                <tr key={`${a.employee_id}-detail`}>
+                                  <td colSpan={5} className="px-5 py-4 bg-stone-50 border-b border-stone-100">
+                                    <div className="grid grid-cols-2 gap-4">
+                                      <div>
+                                        <p className="text-xs font-medium text-stone-500 mb-2">出勤摘要</p>
+                                        {expandedData.attendance ? (
+                                          <div className="space-y-1 text-xs text-stone-600">
+                                            <p>出勤率: {(expandedData.attendance.attendance_rate ?? 0).toFixed(1)}%</p>
+                                            <p>迟到次数: {expandedData.attendance.late_count ?? 0}</p>
+                                            <p>缺勤次数: {expandedData.attendance.absent_count ?? 0}</p>
+                                          </div>
+                                        ) : (
+                                          <p className="text-xs text-stone-400">加载中...</p>
+                                        )}
+                                      </div>
+                                      <div>
+                                        <p className="text-xs font-medium text-stone-500 mb-2">绩效摘要</p>
+                                        {expandedData.performance ? (
+                                          <div className="space-y-1 text-xs text-stone-600">
+                                            <p>平均分: {expandedData.performance.avg_score ?? '-'}</p>
+                                            <p>评级: {expandedData.performance.rating ?? '-'}</p>
+                                            <p>评估周期: {expandedData.performance.review_period ?? '-'}</p>
+                                          </div>
+                                        ) : (
+                                          <p className="text-xs text-stone-400">加载中...</p>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </td>
+                                </tr>
+                              )}
+                            </React.Fragment>
+                          )
+                        })}
                         </tbody>
                       </table>
                       <Pagination current={page} total={totalFiltered} pageSize={PAGE_SIZE} onChange={setPage} />
@@ -620,20 +681,61 @@ export default function StrategicAnalytics() {
                 )}
               </div>
 
-              {/* Department drill-down placeholder */}
+              {/* Department Skill Gaps */}
               <div className="bg-white rounded-xl p-5 shadow-sm border border-stone-200">
-                <h3 className="font-semibold text-sm text-stone-700 mb-4">Department Drill-down</h3>
-                <p className="text-xs text-stone-400 mb-3">Select a department to see skill gaps at the department level.</p>
-                <select className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 mb-4">
-                  <option value="">Choose department...</option>
-                  {departments.map(d => (
-                    <option key={d.id} value={d.id}>{d.name}</option>
+                <h3 className="font-semibold text-sm text-stone-700 mb-4">部门技能缺口</h3>
+                <p className="text-xs text-stone-400 mb-3">选择部门查看具体哪些技能未达到岗位要求。</p>
+                <select
+                  value={drillDeptId}
+                  onChange={e => {
+                    const val = e.target.value
+                    setDrillDeptId(val)
+                    if (val) {
+                      get(`/skills/gap/department/${val}`).then(r => setDrillData(r.data || [])).catch(() => setDrillData([]))
+                    } else {
+                      setDrillData([])
+                    }
+                  }}
+                  className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 mb-4">
+                  <option value="">选择部门...</option>
+                  {departments.map((d: any) => (
+                    <option key={d.department_id || d.id} value={d.department_id || d.id}>{d.department_name || d.name}</option>
                   ))}
                 </select>
-                <div className="bg-stone-50 rounded-lg p-4 text-center">
-                  <Target className="w-8 h-8 text-stone-300 mx-auto mb-2" />
-                  <p className="text-xs text-stone-400">Select a department above to view detailed skill gap analysis.</p>
-                </div>
+                {drillDeptId && drillData.length > 0 ? (
+                  <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                    {drillData.sort((a:any,b:any) => Math.abs(b.gap) - Math.abs(a.gap)).map((item: any, i: number) => {
+                      const gapAbs = Math.abs(item.gap)
+                      const gapWidth = Math.min(gapAbs / 5 * 100, 100)
+                      return (
+                        <div key={i} className="px-3 py-2 bg-stone-50 rounded-lg">
+                          <div className="flex justify-between items-center text-xs mb-1">
+                            <span className="font-medium text-stone-700">{item.skill_name}</span>
+                            <span className={`font-semibold ${item.gap < -1 ? 'text-red-500' : item.gap < 0 ? 'text-amber-500' : 'text-green-600'}`}>
+                              {item.current_avg?.toFixed(1) || '-'}/{item.target_level || '?'}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 h-1.5 bg-stone-200 rounded-full overflow-hidden">
+                              <div className="h-full rounded-full bg-current"
+                                style={{ width: `${Math.min((item.current_avg || 0) / (item.target_level || 5) * 100, 100)}%`, backgroundColor: item.gap < -1 ? '#ef4444' : item.gap < 0 ? '#f59e0b' : '#22c55e' }} />
+                            </div>
+                            <span className="text-[10px] text-stone-400 w-8 text-right">{item.staff_with_skill}/{item.dept_size}人</span>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : drillDeptId ? (
+                  <div className="bg-stone-50 rounded-lg p-4 text-center">
+                    <p className="text-xs text-stone-400">该部门暂无缺口数据。</p>
+                  </div>
+                ) : (
+                  <div className="bg-stone-50 rounded-lg p-4 text-center">
+                    <Target className="w-8 h-8 text-stone-300 mx-auto mb-2" />
+                    <p className="text-xs text-stone-400">选择部门查看技能缺口详情。</p>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -651,50 +753,65 @@ export default function StrategicAnalytics() {
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="text-left text-stone-400 border-b border-stone-100">
-                        <th className="px-4 py-2 font-medium">Department</th>
-                        {(() => {
-                          // Extract unique skill categories from heatmap data
-                          const categories = [...new Set(heatmap.flatMap((h: any) => {
-                            if (h.categories) return h.categories.map((c: any) => c.category_name || c.name)
-                            if (h.skill_categories) return h.skill_categories.map((c: any) => c.category_name || c.name)
-                            return []
-                          }))]
-                          return categories.map(cat => (
-                            <th key={cat} className="px-4 py-2 font-medium text-xs">{cat}</th>
-                          ))
-                        })()}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {heatmap.map((row: any, idx: number) => {
-                        const deptName = row.department_name || row.name || `Dept ${idx}`
-                        const categories = row.categories || row.skill_categories || []
-                        return (
-                          <tr key={idx} className="border-b border-stone-50 last:border-0 hover:bg-stone-50 transition">
-                            <td className="px-4 py-2 text-stone-700 font-medium text-xs">{deptName}</td>
-                            {categories.map((cat: any, ci: number) => {
-                              const coverage = cat.coverage_pct ?? cat.coverage ?? 0
-                              const intensity = coverage / 100
-                              return (
-                                <td key={ci} className="px-4 py-2">
-                                  <div
-                                    className="w-8 h-8 rounded"
-                                    style={{
-                                      backgroundColor: intensity > 0.7 ? '#1e3a5f' : intensity > 0.4 ? '#5b8fc9' : intensity > 0.1 ? '#b3cde3' : '#f0f0f0'
-                                    }}
-                                    title={`${deptName}: ${cat.category_name || cat.name} - ${coverage.toFixed(1)}% coverage`}
-                                  />
-                                </td>
-                              )
-                            })}
+                  {(() => {
+                    // Group flat heatmap rows by department
+                    const deptMap: Record<string, any[]> = {}
+                    heatmap.forEach((h: any) => {
+                      const dn = h.department_name
+                      if (!deptMap[dn]) deptMap[dn] = []
+                      deptMap[dn].push(h)
+                    })
+                    const groupedDepts = Object.entries(deptMap).map(([name, rows]) => ({
+                      department_name: name,
+                      categories: rows.map(r => ({
+                        category_name: r.category_name,
+                        avg_level: r.avg_level,
+                        staff_count: r.staff_count,
+                        coverage_pct: r.staff_count && rows.length > 0
+                          ? Math.round((r.staff_count / Math.max(...rows.map(x => x.staff_count))) * 100)
+                          : 0
+                      }))
+                    }))
+                    // All unique category names for column headers
+                    const allCategories = [...new Set(heatmap.map((h: any) => h.category_name).filter(Boolean))]
+
+                    return (
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="text-left text-stone-400 border-b border-stone-100">
+                            <th className="px-4 py-2 font-medium">Department</th>
+                            {allCategories.map(cat => (
+                              <th key={cat} className="px-4 py-2 font-medium text-xs">{cat}</th>
+                            ))}
                           </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
+                        </thead>
+                        <tbody>
+                          {groupedDepts.map((dept: any, idx: number) => (
+                            <tr key={idx} className="border-b border-stone-50 last:border-0 hover:bg-stone-50 transition">
+                              <td className="px-4 py-2 text-stone-700 font-medium text-xs">{dept.department_name}</td>
+                              {allCategories.map((catName, ci) => {
+                                const match = dept.categories.find((c: any) => c.category_name === catName)
+                                const coverage = match ? match.coverage_pct : 0
+                                const intensity = coverage / 100
+                                return (
+                                  <td key={ci} className="px-4 py-2">
+                                    <div className="w-8 h-8 rounded flex items-center justify-center text-[9px] font-medium"
+                                      style={{
+                                        backgroundColor: intensity > 0.7 ? '#1e3a5f' : intensity > 0.4 ? '#5b8fc9' : intensity > 0.1 ? '#b3cde3' : '#f0f0f0',
+                                        color: intensity > 0.4 ? 'white' : '#666'
+                                      }}
+                                      title={`${dept.department_name}: ${catName} - avg ${match?.avg_level || '-'}/5`}>
+                                      {match?.avg_level || '-'}
+                                    </div>
+                                  </td>
+                                )
+                              })}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )
+                  })()}
                 </div>
               )}
             </div>
@@ -719,62 +836,60 @@ export default function StrategicAnalytics() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  {/* Attendance Summary Card */}
+                  {/* C7: Attendance by Department */}
                   <div className="bg-white rounded-xl p-5 shadow-sm border border-stone-200">
-                    <h3 className="font-semibold text-sm text-stone-700 mb-3">Attendance Summary</h3>
+                    <h3 className="font-semibold text-sm text-stone-700 mb-3">出勤率（按部门）</h3>
                     {attendanceSummary ? (
                       <div className="space-y-3">
-                        <div className="flex justify-between text-xs">
-                          <span className="text-stone-500">Attendance Rate</span>
-                          <span className="font-medium text-stone-700">{(attendanceSummary.attendance_rate ?? attendanceSummary.rate ?? 0).toFixed(1)}%</span>
-                        </div>
-                        <div className="h-2 bg-stone-100 rounded-full overflow-hidden">
-                          <div className="h-full rounded-full bg-green-500" style={{ width: `${attendanceSummary.attendance_rate ?? attendanceSummary.rate ?? 0}%` }} />
-                        </div>
-                        <div className="flex justify-between text-xs">
-                          <span className="text-stone-500">Late Rate</span>
-                          <span className="font-medium text-amber-600">{(attendanceSummary.late_rate ?? 0).toFixed(1)}%</span>
-                        </div>
-                        <div className="h-2 bg-stone-100 rounded-full overflow-hidden">
-                          <div className="h-full rounded-full bg-amber-500" style={{ width: `${attendanceSummary.late_rate ?? 0}%` }} />
-                        </div>
-                        <div className="flex justify-between text-xs">
-                          <span className="text-stone-500">Absence Rate</span>
-                          <span className="font-medium text-red-600">{(attendanceSummary.absence_rate ?? 0).toFixed(1)}%</span>
-                        </div>
-                        <div className="h-2 bg-stone-100 rounded-full overflow-hidden">
-                          <div className="h-full rounded-full bg-red-500" style={{ width: `${attendanceSummary.absence_rate ?? 0}%` }} />
-                        </div>
+                        {(Array.isArray(attendanceSummary) ? attendanceSummary : [attendanceSummary]).map((dept: any, i: number) => (
+                          <div key={i}>
+                            <div className="flex justify-between text-xs mb-1">
+                              <span className="text-stone-500">{dept.department_name || 'Total'}</span>
+                              <span className="font-medium text-stone-700">{(dept.attendance_rate ?? dept.rate ?? 0).toFixed(1)}%</span>
+                            </div>
+                            <div className="h-2 bg-stone-100 rounded-full overflow-hidden">
+                              <div className="h-full rounded-full bg-green-500" style={{ width: `${dept.attendance_rate ?? dept.rate ?? 0}%` }} />
+                            </div>
+                            <div className="flex gap-3 text-[10px] text-stone-400 mt-0.5">
+                              <span>迟到: {(dept.late_count ?? 0)}</span>
+                              <span>缺勤: {(dept.absent_count ?? 0)}</span>
+                              <span>人数: {(dept.total_headcount ?? 0)}</span>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     ) : (
-                      <p className="text-xs text-stone-400">No attendance data</p>
+                      <p className="text-xs text-stone-400">暂无出勤数据</p>
                     )}
                   </div>
 
-                  {/* Performance Summary Card */}
+                  {/* C8: Performance by Department */}
                   <div className="bg-white rounded-xl p-5 shadow-sm border border-stone-200">
-                    <h3 className="font-semibold text-sm text-stone-700 mb-3">Performance Summary</h3>
+                    <h3 className="font-semibold text-sm text-stone-700 mb-3">绩效评分（按部门）</h3>
                     {perfSummary ? (
                       <div className="space-y-3">
-                        <div className="flex justify-between text-xs">
-                          <span className="text-stone-500">Average Score</span>
-                          <span className="font-medium text-stone-700">{(perfSummary.avg_score ?? perfSummary.average ?? 0).toFixed(1)}</span>
-                        </div>
-                        <div className="flex justify-between text-xs">
-                          <span className="text-stone-500">Min Score</span>
-                          <span className="font-medium text-stone-700">{perfSummary.min_score ?? perfSummary.min ?? 0}</span>
-                        </div>
-                        <div className="flex justify-between text-xs">
-                          <span className="text-stone-500">Max Score</span>
-                          <span className="font-medium text-stone-700">{perfSummary.max_score ?? perfSummary.max ?? 0}</span>
-                        </div>
-                        <div className="flex justify-between text-xs">
-                          <span className="text-stone-500">Total Reviews</span>
-                          <span className="font-medium text-stone-700">{perfSummary.total_reviews ?? perfSummary.count ?? 0}</span>
-                        </div>
+                        {(Array.isArray(perfSummary) ? perfSummary : [perfSummary]).map((dept: any, i: number) => (
+                          <div key={i}>
+                            <div className="flex justify-between text-xs mb-1">
+                              <span className="text-stone-500">{dept.department_name || 'Total'}</span>
+                              <div className="flex gap-2">
+                                <span className="font-medium text-stone-700">{dept.avg_score ? dept.avg_score.toFixed(1) : '-'}</span>
+                                <span className="text-stone-400">评分</span>
+                              </div>
+                            </div>
+                            <div className="h-2 bg-stone-100 rounded-full overflow-hidden">
+                              <div className="h-full rounded-full bg-blue-500" style={{ width: `${(dept.avg_score || 0) / 100 * 100}%` }} />
+                            </div>
+                            <div className="flex gap-3 text-[10px] text-stone-400 mt-0.5">
+                              <span>优秀(4+): {dept.high_performers ?? 0}</span>
+                              <span>中等(3): {dept.mid_performers ?? 0}</span>
+                              <span>待提升({'<='}2): {dept.low_performers ?? 0}</span>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     ) : (
-                      <p className="text-xs text-stone-400">No performance data</p>
+                      <p className="text-xs text-stone-400">暂无绩效数据</p>
                     )}
                   </div>
                 </div>
@@ -810,14 +925,14 @@ export default function StrategicAnalytics() {
                           <div key={i}>
                             <div className="flex justify-between text-xs mb-1">
                               <span className="font-medium text-stone-600">{d.department_name || d.name || `Dept ${i}`}</span>
-                              <span className={`font-semibold ${(d.health_score ?? d.score ?? 0) >= 70 ? 'text-green-600' : (d.health_score ?? d.score ?? 0) >= 50 ? 'text-amber-600' : 'text-red-600'}`}>
-                                {(d.health_score ?? d.score ?? 0).toFixed(1)}
+                              <span className={`font-semibold ${(d.composite_health_score ?? d.health_score ?? d.score ?? 0) >= 70 ? 'text-green-600' : (d.composite_health_score ?? d.health_score ?? d.score ?? 0) >= 50 ? 'text-amber-600' : 'text-red-600'}`}>
+                                {(d.composite_health_score ?? d.health_score ?? d.score ?? 0).toFixed(1)}
                               </span>
                             </div>
                             <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
                               <div
-                                className={`h-full rounded-full ${(d.health_score ?? d.score ?? 0) >= 70 ? 'bg-green-500' : (d.health_score ?? d.score ?? 0) >= 50 ? 'bg-amber-500' : 'bg-red-500'}`}
-                                style={{ width: `${Math.min(d.health_score ?? d.score ?? 0, 100)}%` }}
+                                className={`h-full rounded-full ${(d.composite_health_score ?? d.health_score ?? d.score ?? 0) >= 70 ? 'bg-green-500' : (d.composite_health_score ?? d.health_score ?? d.score ?? 0) >= 50 ? 'bg-amber-500' : 'bg-red-500'}`}
+                                style={{ width: `${Math.min(d.composite_health_score ?? d.health_score ?? d.score ?? 0, 100)}%` }}
                               />
                             </div>
                           </div>
@@ -840,7 +955,7 @@ export default function StrategicAnalytics() {
                               <p className="text-[10px] text-stone-400">{p.position_name || p.position || ''}</p>
                             </div>
                             <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${(p.risk_score ?? 0) > 60 ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>
-                              {(p.risk_score ?? 0).toFixed(0)}%
+                              {Number(p.risk_score ?? 0).toFixed(0)}%
                             </span>
                           </div>
                         ))}

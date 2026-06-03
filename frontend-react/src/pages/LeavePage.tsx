@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { CalendarDays, AlertCircle, CheckCircle2, Loader2, X } from 'lucide-react'
 
@@ -59,6 +59,9 @@ export default function LeavePage() {
   const [endDate, setEndDate] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitResult, setSubmitResult] = useState<'idle' | 'success' | 'error'>('idle')
+  const feedbackTimer = useRef<ReturnType<typeof setTimeout>>()
+
+  useEffect(() => { return () => { if (feedbackTimer.current) clearTimeout(feedbackTimer.current) } }, [])
 
   const profile = JSON.parse(localStorage.getItem('profile') || '{}')
   const employeeId = profile.employee_id
@@ -83,13 +86,15 @@ export default function LeavePage() {
 
   function openApply(leave: any) {
     setSelectedLeave(leave)
+    setStartDate(leave.start_date?.slice(0, 10) || '')
+    setEndDate(leave.end_date?.slice(0, 10) || '')
     setLeaveReason('')
     setSubmitResult('idle')
     setApplyOpen(true)
   }
 
   function openNewApply() {
-    const today = new Date().toISOString().slice(0, 10)
+    const d = new Date(); const today = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
     setSelectedLeave(null)
     setLeaveType('ANNUAL')
     setStartDate(today)
@@ -101,14 +106,16 @@ export default function LeavePage() {
 
   async function handleSubmitApply() {
     if (!leaveReason || !startDate || !endDate) return
+    if (endDate < startDate) { setError('结束日期不能早于开始日期'); return }
     setSubmitting(true)
     try {
+      const ltId = ({ANNUAL:1,SICK:2,PERSONAL:3,MARRIAGE:4,MATERNITY:5,PATERNITY:6,COMPASSIONATE:7} as any)[leaveType] || 1
       await post('/approval-requests', {
-        action_type: 'LEAVE_REQUEST',
+        operation_type: 'LEAVE_REQUEST',
         target_id: selectedLeave?.employee_id || employeeId,
         payload: {
-          leave_id: selectedLeave?.leave_id,
-          leave_type: selectedLeave?.leave_type || leaveType,
+          employee_id: selectedLeave?.employee_id || employeeId,
+          leave_type_id: ltId,
           start_date: startDate,
           end_date: endDate,
           reason: leaveReason,
@@ -116,7 +123,7 @@ export default function LeavePage() {
       })
       setSubmitResult('success')
       setFeedback('请假申请已提交')
-      setTimeout(() => { setFeedback(''); setApplyOpen(false) }, 1500)
+      feedbackTimer.current = setTimeout(() => { setFeedback(''); setApplyOpen(false) }, 1500)
     } catch (e: any) {
       setSubmitResult('error')
       setFeedback(e.message || '提交失败')

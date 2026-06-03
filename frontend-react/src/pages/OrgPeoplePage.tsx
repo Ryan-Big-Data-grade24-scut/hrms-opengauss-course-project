@@ -190,6 +190,7 @@ export default function OrgPeoplePage() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [searchResults, setSearchResults] = useState<EmployeeSummary[]>([])
   const [searchLoading, setSearchLoading] = useState(false)
+  const [searchError, setSearchError] = useState('')
 
   /* ---- Profile panel ---- */
   const [selectedEmpId, setSelectedEmpId] = useState<number | null>(null)
@@ -206,6 +207,7 @@ export default function OrgPeoplePage() {
   const [contactEditOpen, setContactEditOpen] = useState(false)
   const [contactForm, setContactForm] = useState({ phone: '', email: '' })
   const [contactSubmitting, setContactSubmitting] = useState(false)
+  const [contactFormError, setContactFormError] = useState('')
 
   /* ---- Derived state ---- */
   const isSearching = debouncedQuery.trim().length > 0
@@ -301,11 +303,13 @@ export default function OrgPeoplePage() {
     if (!isSearching) { setSearchResults([]); return }
     ;(async () => {
       setSearchLoading(true)
+      setSearchError('')
       try {
         const res = await get(`/org-people/search?q=${encodeURIComponent(debouncedQuery)}`)
         setSearchResults(res.data || [])
-      } catch {
+      } catch (e: any) {
         setSearchResults([])
+        setSearchError(e.message || 'Search failed')
       } finally {
         setSearchLoading(false)
       }
@@ -356,7 +360,7 @@ export default function OrgPeoplePage() {
 
   const selectEmployee = (empId: number) => {
     setSelectedEmpId(empId)
-    setSearchParams(prev => { prev.set('empId', String(empId)); return prev })
+    setSearchParams(prev => { const p = new URLSearchParams(prev); p.set('empId', String(empId)); return p })
   }
 
   const clearSearch = () => {
@@ -376,20 +380,25 @@ export default function OrgPeoplePage() {
   const submitContactEdit = async () => {
     if (!selectedEmpId) return
     setContactSubmitting(true)
+    setContactFormError('')
     try {
       await post('/approval-requests', {
-        target_type: 'PROFILE_UPDATE',
+        operation_type: 'PROFILE_UPDATE',
         target_id: selectedEmpId,
-        payload: JSON.stringify({
+        payload: {
           employee_id: selectedEmpId,
-          phone: contactForm.phone,
-          email: contactForm.email,
-        }),
-        reason: 'Contact info update requested',
+          fields: {
+            phone: contactForm.phone,
+            email: contactForm.email,
+          },
+          reason: '联系方式更新',
+        },
       })
       setContactEditOpen(false)
-    } catch {
-      // error is surfaced via the modal's inline error; keep modal open
+      setFeedback('联系方式修改申请已提交')
+      setTimeout(() => setFeedback(''), 3000)
+    } catch (e: any) {
+      setContactFormError(e.message || '提交失败')
     } finally {
       setContactSubmitting(false)
     }
@@ -398,7 +407,7 @@ export default function OrgPeoplePage() {
   const closeProfile = () => {
     setSelectedEmpId(null)
     setProfile(null)
-    setSearchParams(prev => { prev.delete('empId'); return prev })
+    setSearchParams(prev => { const p = new URLSearchParams(prev); p.delete('empId'); return p })
   }
 
   /* ---- Render tree node recursively ---- */
@@ -445,7 +454,7 @@ export default function OrgPeoplePage() {
   /* ---- Display employees (search or browse) ---- */
   const displayEmployees = isSearching ? searchResults : employees
   const displayLoading = isSearching ? searchLoading : employeesLoading
-  const displayError = isSearching ? '' : employeesError
+  const displayError = isSearching ? searchError : employeesError
 
   return (
     <div className="flex gap-5 h-full max-w-7xl relative">
@@ -709,7 +718,10 @@ export default function OrgPeoplePage() {
                             />
                           </div>
                         </div>
-                        <div className="flex items-center justify-end gap-2 mt-5">
+                        {contactFormError && (
+                          <p className="text-xs text-red-600 mt-3">{contactFormError}</p>
+                        )}
+                        <div className="flex items-center justify-end gap-2 mt-3">
                           <button
                             onClick={() => setContactEditOpen(false)}
                             className="text-xs px-3 py-1.5 rounded-lg border border-stone-200 text-stone-500 hover:bg-stone-50 transition"

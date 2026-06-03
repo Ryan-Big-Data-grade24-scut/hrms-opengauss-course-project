@@ -8,7 +8,7 @@ async function request(path: string, opts?: RequestInit) {
   })
   if (res.status === 401) {
     localStorage.clear()
-    window.location.href = '/login?expired=1'
+    window.location.href = '/?expired=1'
     throw new Error('会话已过期，请重新登录')
   }
   const data = await res.json()
@@ -32,10 +32,16 @@ export const api = {
   employeeSkills: (empId: number) => request('/employees/skills?employee_id=' + empId),
   allSkills: () => request('/skills'),
   addEmployeeSkill: (empId: number, skillId: number, level: number) =>
-    request('/employees/skills', { method: 'POST', body: JSON.stringify({ employee_id: empId, skill_id: skillId, proficiency_level: level }) }),
+    request('/employees/skills', { method: 'POST', body: JSON.stringify({ action: 'add', employee_id: empId, skill_id: skillId, proficiency_level: level }) }),
+  updateEmployeeSkill: (empId: number, skillId: number, level: number) =>
+    request('/employees/skills', { method: 'POST', body: JSON.stringify({ action: 'update', employee_id: empId, skill_id: skillId, proficiency_level: level }) }),
   deleteEmployeeSkill: (empId: number, skillId: number) =>
     request(`/employees/skills?employee_id=${empId}&skill_id=${skillId}`, { method: 'DELETE' }),
   employeeProjects: (empId: number) => request(`/employees/${empId}/projects`),
   addEmployeeProject: (empId: number, data: any) =>
     request(`/employees/${empId}/projects`, { method: 'POST', body: JSON.stringify(data) }),
+  updateEmployeeProject: (empId: number, projectId: number, data: any) =>
+    request(`/employees/${empId}/projects/${projectId}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteEmployeeProject: (empId: number, projectId: number) =>
+    request(`/employees/${empId}/projects/${projectId}`, { method: 'DELETE' }),
 }

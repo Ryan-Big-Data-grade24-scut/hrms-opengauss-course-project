@@ -188,10 +188,14 @@ export default function ApprovalCenter() {
   const [actionSubmitting, setActionSubmitting] = useState(false)
   const [actionError, setActionError] = useState('')
 
+  /* ---- Feedback ---- */
+  const [feedback, setFeedback] = useState('')
+
   /* ---- Detail drawer ---- */
   const [detailTarget, setDetailTarget] = useState<ApprovalRequestSummary | null>(null)
   const [detailLogs, setDetailLogs] = useState<ApprovalLogEntry[]>([])
   const [detailLoading, setDetailLoading] = useState(false)
+  const [detailError, setDetailError] = useState('')
 
   useEffect(() => { setTitle('Approval Center') }, [])
 
@@ -219,18 +223,20 @@ export default function ApprovalCenter() {
 
   /* ---- Switch tab ---- */
   const switchTab = (tab: TabKey) => {
-    setSearchParams(prev => { prev.set('tab', tab); return prev })
+    setSearchParams(prev => { const p = new URLSearchParams(prev); p.set('tab', tab); return p })
   }
 
   /* ---- Fetch detail logs ---- */
   const openDetail = async (req: ApprovalRequestSummary) => {
     setDetailTarget(req)
     setDetailLoading(true)
+    setDetailError('')
     try {
       const res = await get(`/approval-requests/${req.id}/logs`)
       setDetailLogs(res.data || [])
-    } catch {
+    } catch (e: any) {
       setDetailLogs([])
+      setDetailError(e.message || '加载失败')
     } finally {
       setDetailLoading(false)
     }
@@ -247,11 +253,12 @@ export default function ApprovalCenter() {
       const endpoint = `/approval-requests/${actionTarget.id}/${actionType}`
       const body = actionType === 'reject' ? { comment: rejectReason.trim() } : { comment: '' }
       await put(endpoint, body)
-      // Remove from list
       setRequests(prev => prev.filter(r => r.id !== actionTarget.id))
       setActionTarget(null)
       setActionType(null)
       setRejectReason('')
+      setFeedback(actionType === 'approve' ? '已批准' : '已驳回')
+      setTimeout(() => setFeedback(''), 3000)
     } catch (e: any) {
       setActionError(e.message || 'Action failed')
     } finally {
@@ -260,13 +267,17 @@ export default function ApprovalCenter() {
   }
 
   /* ---- Recall ---- */
+  const [recallError, setRecallError] = useState('')
   const handleRecall = async (req: ApprovalRequestSummary) => {
-    if (!confirm('Recall this request?')) return
+    if (!confirm('确认撤回此申请？')) return
+    setRecallError('')
     try {
       await put(`/approval-requests/${req.id}/recall`)
       setRequests(prev => prev.filter(r => r.id !== req.id))
+      setFeedback('申请已撤回')
+      setTimeout(() => setFeedback(''), 3000)
     } catch (e: any) {
-      alert(e.message || 'Recall failed')
+      setRecallError(e.message || '撤回失败')
     }
   }
 
@@ -278,6 +289,13 @@ export default function ApprovalCenter() {
 
   return (
     <div className="max-w-4xl mx-auto">
+      {/* Feedback banner */}
+      {feedback && (
+        <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 mb-4 text-sm text-emerald-700 flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4" />
+          {feedback}
+        </div>
+      )}
       {/* Tabs */}
       <div className="bg-white rounded-xl shadow-sm border border-stone-200 mb-5">
         <div className="flex border-b border-stone-100">

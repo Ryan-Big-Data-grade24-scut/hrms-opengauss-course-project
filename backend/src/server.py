@@ -401,16 +401,19 @@ class ApiHandler(BaseHTTPRequestHandler):
                 if eid: return self._send(200, ok(skill_service.get_employee_skills(int(eid))))
                 return self._send(200, ok([]))
             if path == "/api/employees/skills" and method == "POST":
-                self._require_permission(user, "skill.manage")
+                # 任何用户可通过审批流提交技能变更申请
                 applicant_id = approval_service.resolve_employee_id(user["username"])
                 if not applicant_id:
                     return self._send(400, error("无法解析当前用户的员工 ID"))
+                action = body.get("action", "add")
+                action_type_map = {"add": "SKILL_ADD", "delete": "SKILL_REMOVE", "update": "SKILL_UPDATE"}
+                action_type = action_type_map.get(action, "SKILL_ADD")
                 result = approval_service.submit_approval(
                     employee_id=applicant_id,
-                    action_type="SKILL_CHANGE",
+                    action_type=action_type,
                     target_id=int(body["employee_id"]),
                     payload={
-                        "action": "add",
+                        "action": action,
                         "employee_id": body["employee_id"],
                         "skill_id": body["skill_id"],
                         "proficiency_level": body.get("proficiency_level", 1),
@@ -419,7 +422,6 @@ class ApiHandler(BaseHTTPRequestHandler):
                 )
                 return self._send(200, ok(result))
             if path == "/api/employees/skills" and method == "DELETE":
-                self._require_permission(user, "skill.manage")
                 eid = int(query.get("employee_id", ["0"])[0])
                 sid = int(query.get("skill_id", ["0"])[0])
                 applicant_id = approval_service.resolve_employee_id(user["username"])
@@ -427,7 +429,7 @@ class ApiHandler(BaseHTTPRequestHandler):
                     return self._send(400, error("无法解析当前用户的员工 ID"))
                 result = approval_service.submit_approval(
                     employee_id=applicant_id,
-                    action_type="SKILL_CHANGE",
+                    action_type="SKILL_REMOVE",
                     target_id=eid,
                     payload={
                         "action": "delete",
@@ -452,7 +454,6 @@ class ApiHandler(BaseHTTPRequestHandler):
 
             match = re.fullmatch(r"/api/skills/infer/(\d+)", path)
             if match and method == "POST":
-                self._require_permission(user, "skill.manage")
                 return self._send(200, ok(skill_service.infer_skills_from_history(int(match.group(1)), user["username"])))
 
             match = re.fullmatch(r"/api/employees/(\d+)/projects", path)
@@ -462,6 +463,15 @@ class ApiHandler(BaseHTTPRequestHandler):
             if match and method == "POST":
                 self._require_permission(user, "employee.manage")
                 return self._send(200, ok(skill_service.create_employee_project(int(match.group(1)), body, user["username"])))
+
+            match = re.fullmatch(r"/api/employees/(\d+)/projects/(\d+)", path)
+            if match and method == "PUT":
+                self._require_permission(user, "employee.manage")
+                return self._send(200, ok(skill_service.update_employee_project(int(match.group(1)), int(match.group(2)), body, user["username"])))
+            if match and method == "DELETE":
+                self._require_permission(user, "employee.manage")
+                skill_service.delete_employee_project(int(match.group(1)), int(match.group(2)), user["username"])
+                return self._send(200, ok())
             if path == "/api/predict/attrition" and method == "GET":
                 return self._send(200, ok(predict_service.predict_attrition()))
             if path == "/api/predict/attrition/train" and method == "POST":
@@ -775,10 +785,14 @@ class ApiHandler(BaseHTTPRequestHandler):
                 emp_id = _get_employee_id(user["username"])
                 if not emp_id:
                     return self._send(*error(4001, "无法解析当前用户对应的员工", 400))
+                action_type = body.get("action_type") or body.get("operation_type")
+                target_id = body.get("target_id") or body.get("employee_id", emp_id)
+                if not action_type:
+                    return self._send(*error(4001, "缺少 action_type 或 operation_type", 400))
                 data = approval_service.submit_approval(
                     employee_id=emp_id,
-                    action_type=body.get("action_type"),
-                    target_id=body.get("target_id"),
+                    action_type=action_type,
+                    target_id=target_id,
                     payload=body.get("payload", {}),
                     actor=user["username"],
                 )

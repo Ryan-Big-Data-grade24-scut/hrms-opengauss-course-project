@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { CalendarDays, Clock, AlertCircle, CheckCircle2, Loader2, X } from 'lucide-react'
 
@@ -49,6 +49,9 @@ export default function AttendancePage() {
   const [retroReason, setRetroReason] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitResult, setSubmitResult] = useState<'idle' | 'success' | 'error'>('idle')
+  const feedbackTimer = useRef<ReturnType<typeof setTimeout>>()
+
+  useEffect(() => { return () => { if (feedbackTimer.current) clearTimeout(feedbackTimer.current) } }, [])
 
   const profile = JSON.parse(localStorage.getItem('profile') || '{}')
   const employeeId = profile.employee_id
@@ -90,18 +93,18 @@ export default function AttendancePage() {
     setSubmitting(true)
     try {
       await post('/approval-requests', {
-        action_type: 'ATTENDANCE_CORRECTION',
+        operation_type: 'ATTENDANCE_CORRECTION',
         target_id: selectedRecord.employee_id,
         payload: {
-          attendance_id: selectedRecord.attendance_id,
-          work_date: retroDate,
-          correct_time: retroTime,
+          employee_id: selectedRecord.employee_id,
+          date: retroDate,
+          period: 'full',
           reason: retroReason,
         },
       })
       setSubmitResult('success')
       setFeedback('补卡申请已提交')
-      setTimeout(() => { setFeedback(''); setCorrectionOpen(false) }, 1500)
+      feedbackTimer.current = setTimeout(() => { setFeedback(''); setCorrectionOpen(false) }, 1500)
     } catch (e: any) {
       setSubmitResult('error')
       setFeedback(e.message || '提交失败')

@@ -313,10 +313,6 @@ def performance_summary(department_id=None, review_period=None):
                COUNT(DISTINCT pr.employee_id) AS employees_reviewed,
                ROUND(AVG(pr.score), 1) AS avg_score,
                ROUND(AVG(pr.rating), 2) AS avg_rating,
-               ROUND(AVG(pr.score_technical), 1) AS avg_score_technical,
-               ROUND(AVG(pr.score_communication), 1) AS avg_score_communication,
-               ROUND(AVG(pr.score_leadership), 1) AS avg_score_leadership,
-               ROUND(AVG(pr.score_collaboration), 1) AS avg_score_collaboration,
                COUNT(*) FILTER (WHERE pr.rating >= 4) AS high_performers,
                COUNT(*) FILTER (WHERE pr.rating = 3) AS mid_performers,
                COUNT(*) FILTER (WHERE pr.rating <= 2) AS low_performers

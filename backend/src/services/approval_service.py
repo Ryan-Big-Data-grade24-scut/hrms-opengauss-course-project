@@ -106,18 +106,20 @@ def submit_approval(employee_id, action_type, target_id, payload, actor):
     # 4. 创建审批单
     request_id = int(query_scalar(f"""
         INSERT INTO approval_request
-            (operation_type, applicant_id, target_emp_id, payload,
+            (operation_type, action_code, applicant_id, target_emp_id, target_id, payload,
              status, current_node, chain_snapshot, version)
         VALUES (
             {sql_literal(action_type)},
+            {sql_literal(action_type)},
             {int(employee_id)},
+            {int(target_id)},
             {int(target_id)},
             {sql_literal(json.dumps(payload, ensure_ascii=False))},
             'pending', 1,
             {sql_literal(json.dumps(chain_snapshot, ensure_ascii=False))},
             1
         )
-        RETURNING id
+        RETURNING request_id
     """))
 
     # 5. 审计日志
@@ -187,7 +189,7 @@ def approve(request_id, actor, comment):
             chain_snapshot = {sql_literal(json.dumps(chain, ensure_ascii=False))},
             version = version + 1,
             updated_at = CURRENT_TIMESTAMP
-        WHERE id = {int(request_id)}
+        WHERE request_id = {int(request_id)}
           AND version = {request["version"]}
         RETURNING version
     """) or "0")
@@ -257,7 +259,7 @@ def reject(request_id, actor, comment):
             chain_snapshot = {sql_literal(json.dumps(chain, ensure_ascii=False))},
             version = version + 1,
             updated_at = CURRENT_TIMESTAMP
-        WHERE id = {int(request_id)}
+        WHERE request_id = {int(request_id)}
           AND version = {request["version"]}
         RETURNING version
     """) or "0")
@@ -307,7 +309,7 @@ def recall(request_id, actor):
             chain_snapshot = {sql_literal(json.dumps(chain, ensure_ascii=False))},
             version = version + 1,
             updated_at = CURRENT_TIMESTAMP
-        WHERE id = {int(request_id)}
+        WHERE request_id = {int(request_id)}
           AND version = {request["version"]}
         RETURNING version
     """) or "0")
@@ -337,12 +339,12 @@ def get_pending_approvals(actor):
         return []
 
     rows = json_array_query(f"""
-        SELECT id, operation_type, applicant_id, target_emp_id,
+        SELECT request_id AS id, operation_type, applicant_id, target_emp_id,
                status, current_node, created_at, payload
         FROM approval_request
         WHERE status = 'pending'
-          AND chain_snapshot -> 'nodes' -> (current_node - 1)
-              -> 'approvers' @> {sql_literal(json.dumps([emp_id]))}::jsonb
+          AND CAST(chain_snapshot AS JSONB) -> 'nodes' -> (current_node - 1)
+              -> 'approvers' @> CAST({sql_literal(json.dumps([emp_id]))} AS JSONB)
         ORDER BY created_at DESC
     """)
     return _enrich_payload_summary(_enrich_action_names(rows))
@@ -358,7 +360,7 @@ def get_my_requests(employee_id):
         list[dict]: 该员工发起的审批单列表（按创建时间倒序）
     """
     rows = json_array_query(f"""
-        SELECT id, operation_type, target_emp_id,
+        SELECT request_id AS id, operation_type, target_emp_id,
                status, current_node, created_at, payload
         FROM approval_request
         WHERE applicant_id = {int(employee_id)}
@@ -378,11 +380,11 @@ def get_processed_requests(employee_id):
     """
     emp_id = int(employee_id)
     rows = json_array_query(f"""
-        SELECT DISTINCT ar.id, ar.operation_type, ar.target_emp_id,
-               ar.status, ar.current_node, ar.created_at, ar.payload
+        SELECT DISTINCT ar.request_id AS id, ar.operation_type, ar.target_emp_id,
+               ar.status, ar.current_node, ar.created_at, CAST(ar.payload AS TEXT) AS payload
         FROM approval_request ar
         JOIN audit_log al ON al.target_type = 'approval_request'
-            AND al.target_id = CAST(ar.id AS TEXT)
+            AND al.target_id = CAST(ar.request_id AS TEXT)
         WHERE al.action_type IN ('approve', 'reject')
           AND ar.status IN ('approved', 'rejected')
           AND EXISTS (
@@ -498,10 +500,11 @@ def _execute_payload(payload, action_type):
         payload:     审批内容（dict）
         action_type: 操作类型
     """
-    if action_type == "SKILL_CHANGE":
-        employee_id = int(payload.get("employee_id", 0))
+    if action_type in ("SKILL_CHANGE", "SKILL_ADD", "SKILL_REMOVE", "SKILL_UPDATE"):
+        # 兼容 ServiceHall 字段名 (operation/proficiency) 和 SkillsPage 字段名 (action/proficiency_level)
+        employee_id = int(payload.get("employee_id") or payload.get("target_id", 0))
         skill_id = int(payload.get("skill_id", 0))
-        action = payload.get("action", "add")
+        action = payload.get("action") or payload.get("operation", "add")
 
         if action == "delete":
             execute(f"""
@@ -509,7 +512,7 @@ def _execute_payload(payload, action_type):
                 WHERE employee_id = {employee_id} AND skill_id = {skill_id}
             """)
         else:
-            level = int(payload.get("proficiency_level", 1))
+            level = int(payload.get("proficiency_level") or payload.get("proficiency", 1))
             source = payload.get("acquired_from", "self")
             is_core = payload.get("is_core", False)
             existing = query_scalar(
@@ -623,7 +626,10 @@ def resolve_employee_id(actor):
 def _get_request(request_id):
     """根据 ID 查询审批单原始记录。"""
     return json_object_query(f"""
-        SELECT * FROM approval_request WHERE id = {int(request_id)}
+        SELECT request_id AS id, applicant_id, target_emp_id, target_id,
+               operation_type, action_code, payload, status, current_node,
+               chain_snapshot, version, created_at, updated_at
+        FROM approval_request WHERE request_id = {int(request_id)}
     """)
 
 
@@ -720,7 +726,7 @@ def _resolve_approver_ids(approver_role, target_emp_id):
         return []
 
     elif approver_role == "hr_specialist":
-        # 查找 HR 部门的在岗员工
+        # 查找 HR 部门或 HR 角色的在岗员工
         rows = json_array_query(f"""
             SELECT e.employee_id
             FROM employee e
@@ -731,7 +737,23 @@ def _resolve_approver_ids(approver_role, target_emp_id):
               AND e.employment_status = 'active'
             LIMIT 1
         """)
-        return [r["employee_id"] for r in rows]
+        if rows:
+            return [r["employee_id"] for r in rows]
+        # 回退：查找 sys_role 中 HR 角色的用户
+        rows = json_array_query(f"""
+            SELECT e.employee_id
+            FROM employee e
+            JOIN sys_user u ON e.full_name = u.full_name
+            JOIN sys_user_role ur ON u.user_id = ur.user_id
+            JOIN sys_role r ON ur.role_id = r.role_id
+            WHERE r.role_code = 'HR'
+              AND e.employment_status = 'active'
+            ORDER BY e.employee_id
+            LIMIT 1
+        """)
+        if rows:
+            return [r["employee_id"] for r in rows]
+        return []
 
     elif approver_role == "hr_director":
         # 查找 HR 部门的管理者
@@ -746,6 +768,20 @@ def _resolve_approver_ids(approver_role, target_emp_id):
         """)
         if row and row.get("manager_employee_id"):
             return [int(row["manager_employee_id"])]
+        # 回退：找 HR 角色中最资深的员工
+        row = json_object_query(f"""
+            SELECT e.employee_id
+            FROM employee e
+            JOIN sys_user u ON e.full_name = u.full_name
+            JOIN sys_user_role ur ON u.user_id = ur.user_id
+            JOIN sys_role r ON ur.role_id = r.role_id
+            WHERE r.role_code = 'HR'
+              AND e.employment_status = 'active'
+            ORDER BY e.hire_date
+            LIMIT 1
+        """)
+        if row and row.get("employee_id"):
+            return [int(row["employee_id"])]
         return []
 
     elif approver_role == "employee_self":

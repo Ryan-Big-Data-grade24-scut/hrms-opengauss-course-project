@@ -6,15 +6,19 @@ export default function Layout() {
   const navigate = useNavigate()
   const location = useLocation()
   const [title, setTitle] = useState('Organisation & People')
-  const profile = JSON.parse(localStorage.getItem('profile') || '{}')
+  let profile: any = {}
+  try { profile = JSON.parse(localStorage.getItem('profile') || '{}') } catch {}
 
   const logout = () => { localStorage.clear(); navigate('/login') }
-  const nav = [
+  const perms = (profile.permissions || []) as string[]
+  const canViewAnalytics = perms.some(p => p.startsWith('analytics.view'))
+  const allNav = [
     { to: '/service-hall', label: '办事大厅', icon: ClipboardList },
     { to: '/org-people', label: '组织人员', icon: Users },
     { to: '/skills', label: '技能管理', icon: BookOpen },
-    { to: '/analytics', label: '数据分析', icon: BarChart3 },
   ]
+  if (canViewAnalytics) allNav.push({ to: '/analytics', label: '数据分析', icon: BarChart3 })
+  const nav = allNav
 
   return (
     <div className="flex h-screen bg-stone-100">

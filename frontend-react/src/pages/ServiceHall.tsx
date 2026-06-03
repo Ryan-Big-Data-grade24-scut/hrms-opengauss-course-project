@@ -280,7 +280,9 @@ function ApplyForm({
   // Skill change
   const [skillAction, setSkillAction] = useState<'add' | 'update' | 'remove'>('add')
   const [selectedSkillId, setSelectedSkillId] = useState<number | ''>('')
+  const [customSkillName, setCustomSkillName] = useState('')
   const [proficiency, setProficiency] = useState('')
+  const [mySkills, setMySkills] = useState<any[]>([])
 
   // Leave
   const [leaveTypeId, setLeaveTypeId] = useState<number | ''>('')
@@ -308,7 +310,17 @@ function ApplyForm({
       ]).then(([skills, deptsData]) => {
         setSkillsList(skills)
         setDepts(deptsData)
-      }).catch(() => {}).finally(() => setSkillsLoading(false))
+      }).catch(() => setError('加载技能或部门数据失败')).finally(() => setSkillsLoading(false))
+      // 获取当前员工已有的技能（用于 update 模式）
+      try {
+        const profile = JSON.parse(localStorage.getItem('profile') || '{}')
+        const empId = profile.employee_id
+        if (empId) {
+          get(`/employees/${empId}/skills`)
+            .then(res => setMySkills(res.data || res || []))
+            .catch(() => setError('加载已有技能失败'))
+        }
+      } catch {}
       // Reset department→position selection
       setSelDeptId('')
       setSelPosId('')
@@ -318,7 +330,7 @@ function ApplyForm({
     if (mode === 'LEAVE_REQUEST') {
       get('/leave-types')
         .then(res => setLeaveTypesList(res.data || res || []))
-        .catch(() => {})
+        .catch(() => setError('加载请假类型失败'))
     }
     if (mode === 'PROFILE_UPDATE') {
       get('/profile/self')
@@ -328,7 +340,7 @@ function ApplyForm({
           setPhoneValue(p.phone || '')
           setEmailValue(p.email || '')
         })
-        .catch(() => {})
+        .catch(() => setError('加载个人信息失败'))
     }
   }, [mode])
 
@@ -358,7 +370,7 @@ function ApplyForm({
     groupedSkills[cat].push(s)
   })
 
-  const getTodayStr = () => new Date().toISOString().slice(0, 10)
+  const getTodayStr = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` }
 
   const buildPayload = () => {
     switch (mode) {
@@ -366,9 +378,10 @@ function ApplyForm({
         const skill = skillsList.find(s => s.skill_id === selectedSkillId)
         return {
           skill_id: selectedSkillId,
+          custom_skill_name: customSkillName.trim() || undefined,
           operation: skillAction,
           proficiency: skillAction !== 'remove' ? Number(proficiency) : undefined,
-          skill_name: skill?.skill_name || '',
+          skill_name: skill?.skill_name || customSkillName.trim() || '',
           reason,
         }
       }
@@ -402,6 +415,45 @@ function ApplyForm({
 
   const handleSubmit = async () => {
     setError('')
+
+    // Form validation
+    if (!reason.trim()) {
+      setError('请填写申请说明')
+      return
+    }
+    if (mode === 'SKILL_CHANGE' && !selectedSkillId && !customSkillName.trim()) {
+      setError('请选择或输入技能')
+      return
+    }
+    if (mode === 'LEAVE_REQUEST') {
+      if (!leaveTypeId) {
+        setError('请选择请假类型')
+        return
+      }
+      if (!startDate) {
+        setError('请选择开始日期')
+        return
+      }
+      if (!endDate) {
+        setError('请选择结束日期')
+        return
+      }
+      if (endDate < startDate) {
+        setError('结束日期不能早于开始日期')
+        return
+      }
+    }
+    if (mode === 'ATTENDANCE_CORRECTION' && !corrDate) {
+      setError('请选择补卡日期')
+      return
+    }
+    if (mode === 'PROFILE_UPDATE') {
+      if (phoneValue === profileData?.phone && emailValue === profileData?.email) {
+        setError('请至少修改电话或邮箱')
+        return
+      }
+    }
+
     setSubmitting(true)
     try {
       await post('/approval-requests', {
@@ -508,38 +560,31 @@ function ApplyForm({
               </div>
             )}
 
-            {/* Step 3: Select Required Skill for this position */}
+            {/* Step 3: Skill selection — dropdown OR text input */}
             {selPosId && (
               <div>
-                <label className="block text-xs font-medium text-stone-600 mb-1">该岗位要求的技能</label>
-                {reqSkills.length === 0 ? (
-                  <p className="text-xs text-stone-400">暂无岗位技能要求数据</p>
-                ) : (
-                  <>
-                    <select
-                      value={selectedSkillId}
-                      onChange={e => setSelectedSkillId(e.target.value ? Number(e.target.value) : '')}
-                      className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition mb-2"
-                    >
-                      <option value="">请选择技能</option>
-                      {reqSkills.map((rs: any) => (
-                        <option key={rs.skill_id} value={rs.skill_id}>
-                          {rs.skill_name} {rs.target_level ? `(目标: ${rs.target_level})` : ''}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="flex flex-wrap gap-1">
-                      {reqSkills.map((rs: any) => (
-                        <span key={rs.skill_id}
-                          className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
-                            selectedSkillId === rs.skill_id ? 'bg-stone-800 text-white' : 'bg-stone-100 text-stone-500'
-                          }`}>
-                          {rs.skill_name}{rs.target_level ? ` Lv${rs.target_level}` : ''}
-                        </span>
-                      ))}
-                    </div>
-                  </>
+                <label className="block text-xs font-medium text-stone-600 mb-1">选择或输入技能名称</label>
+                {reqSkills.length > 0 && (
+                  <select
+                    value={selectedSkillId}
+                    onChange={e => setSelectedSkillId(e.target.value ? Number(e.target.value) : '')}
+                    className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition mb-2"
+                  >
+                    <option value="">从岗位要求中选择...</option>
+                    {reqSkills.map((rs: any) => (
+                      <option key={rs.skill_id} value={rs.skill_id}>
+                        {rs.skill_name} {rs.target_level ? `(目标: ${rs.target_level})` : ''}
+                      </option>
+                    ))}
+                  </select>
                 )}
+                <input
+                  type="text"
+                  value={customSkillName}
+                  onChange={e => { setCustomSkillName(e.target.value); setSelectedSkillId('') }}
+                  placeholder="或直接输入技能名称..."
+                  className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition"
+                />
               </div>
             )}
             </>)}

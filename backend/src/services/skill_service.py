@@ -540,9 +540,35 @@ def create_employee_project(employee_id, payload, actor):
     return {"project_id": project_id, "project_name": project_name}
 
 
-def delete_employee_project(project_id, actor):
+def update_employee_project(employee_id, project_id, payload, actor):
+    """更新员工项目。"""
+    project_name = payload.get("project_name")
+    role = payload.get("role")
+    start_date = payload.get("start_date")
+    end_date = payload.get("end_date")
+    description = payload.get("description")
+
+    set_parts = []
+    if project_name: set_parts.append(f"project_name = {sql_literal(project_name)}")
+    if role is not None: set_parts.append(f"role = {sql_literal(role)}")
+    if start_date: set_parts.append(f"start_date = {sql_literal(start_date)}")
+    if end_date: set_parts.append(f"end_date = {sql_literal(end_date)}")
+    if description: set_parts.append(f"description = {sql_literal(description)}")
+
+    if set_parts:
+        execute(f"""
+            UPDATE employee_project
+            SET {', '.join(set_parts)}
+            WHERE project_id = {int(project_id)} AND employee_id = {int(employee_id)}
+        """)
+    write_audit(actor, "update", "employee_project", str(project_id),
+                f"updated project for employee {employee_id}")
+    return {"project_id": project_id, "project_name": project_name}
+
+
+def delete_employee_project(employee_id, project_id, actor):
     """删除员工项目（级联删除技术栈）。"""
-    execute(f"DELETE FROM employee_project WHERE project_id = {int(project_id)}")
+    execute(f"DELETE FROM employee_project WHERE project_id = {int(project_id)} AND employee_id = {int(employee_id)}")
     write_audit(actor, "delete", "employee_project", str(project_id),
                 "deleted project")
     return {"status": "deleted"}
