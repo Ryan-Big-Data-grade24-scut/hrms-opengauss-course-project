@@ -107,7 +107,8 @@ def _risk_sql(extra_where: str = "") -> str:
                ROUND((PREDICT BY attrition_model (FEATURES
                    tenure, engagement_score,
                    last_promotion_months, manager_changes,
-                   overtime_count
+                   overtime_count, attendance_absent_count,
+                   attendance_late_count, avg_performance_score
                ) * 100)::decimal, 1) AS ml_risk_score
         FROM employee
         WHERE employment_status IN ('active', 'probation')

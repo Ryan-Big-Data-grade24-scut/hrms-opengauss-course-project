@@ -630,9 +630,9 @@ function ApplyForm({
                 className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition"
               >
                 <option value="">请选择</option>
-                {leaveTypesList.map(lt => (
+                {leaveTypesList.map((lt: any) => (
                   <option key={lt.leave_type_id} value={lt.leave_type_id}>
-                    {lt.type_name}
+                    {lt.leave_name || lt.type_name || lt.leave_code}
                   </option>
                 ))}
               </select>
