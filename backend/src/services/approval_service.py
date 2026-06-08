@@ -339,13 +339,16 @@ def get_pending_approvals(actor):
         return []
 
     rows = json_array_query(f"""
-        SELECT request_id AS id, operation_type, applicant_id, target_emp_id,
-               status, current_node, created_at, payload
-        FROM approval_request
-        WHERE status = 'pending'
-          AND CAST(chain_snapshot AS JSONB) -> 'nodes' -> (current_node - 1)
+        SELECT ar.request_id AS id, ar.operation_type,
+               ar.applicant_id, e.full_name AS applicant_name,
+               ar.target_emp_id, ar.status, ar.current_node,
+               ar.created_at, ar.payload
+        FROM approval_request ar
+        LEFT JOIN employee e ON e.employee_id = ar.applicant_id
+        WHERE ar.status = 'pending'
+          AND CAST(ar.chain_snapshot AS JSONB) -> 'nodes' -> (ar.current_node - 1)
               -> 'approvers' @> CAST({sql_literal(json.dumps([emp_id]))} AS JSONB)
-        ORDER BY created_at DESC
+        ORDER BY ar.created_at DESC
     """)
     return _enrich_payload_summary(_enrich_action_names(rows))
 
@@ -360,11 +363,14 @@ def get_my_requests(employee_id):
         list[dict]: 该员工发起的审批单列表（按创建时间倒序）
     """
     rows = json_array_query(f"""
-        SELECT request_id AS id, operation_type, target_emp_id,
-               status, current_node, created_at, payload
-        FROM approval_request
-        WHERE applicant_id = {int(employee_id)}
-        ORDER BY created_at DESC
+        SELECT ar.request_id AS id, ar.operation_type,
+               ar.applicant_id, e.full_name AS applicant_name,
+               ar.target_emp_id, ar.status, ar.current_node,
+               ar.created_at, ar.payload
+        FROM approval_request ar
+        LEFT JOIN employee e ON e.employee_id = ar.applicant_id
+        WHERE ar.applicant_id = {int(employee_id)}
+        ORDER BY ar.created_at DESC
     """)
     return _enrich_payload_summary(_enrich_action_names(rows))
 
@@ -380,9 +386,12 @@ def get_processed_requests(employee_id):
     """
     emp_id = int(employee_id)
     rows = json_array_query(f"""
-        SELECT DISTINCT ar.request_id AS id, ar.operation_type, ar.target_emp_id,
-               ar.status, ar.current_node, ar.created_at, CAST(ar.payload AS TEXT) AS payload
+        SELECT DISTINCT ar.request_id AS id, ar.operation_type,
+               ar.applicant_id, e2.full_name AS applicant_name,
+               ar.target_emp_id, ar.status, ar.current_node,
+               ar.created_at, CAST(ar.payload AS TEXT) AS payload
         FROM approval_request ar
+        LEFT JOIN employee e2 ON e2.employee_id = ar.applicant_id
         JOIN audit_log al ON al.target_type = 'approval_request'
             AND al.target_id = CAST(ar.request_id AS TEXT)
         WHERE al.action_type IN ('approve', 'reject')
@@ -543,12 +552,13 @@ def _execute_payload(payload, action_type):
         reason = payload.get("reason", "")
         execute(f"""
             INSERT INTO leave_request
-                (employee_id, leave_type_id, start_date, end_date,
-                 reason, approval_status, status, created_at)
+                (employee_id, leave_type_id, leave_type, start_date, end_date,
+                 reason, approval_status, created_at)
             VALUES (
                 {employee_id}, {leave_type_id},
+                (SELECT leave_name FROM leave_type WHERE leave_type_id = {leave_type_id}),
                 {sql_literal(start_date)}, {sql_literal(end_date)},
-                {sql_literal(reason)}, 'approved', 'approved', CURRENT_TIMESTAMP
+                {sql_literal(reason)}, 'approved', CURRENT_TIMESTAMP
             )
         """)
 
@@ -574,31 +584,27 @@ def _execute_payload(payload, action_type):
             status_val = "present"
 
         existing = query_scalar(f"""
-            SELECT attendance_id FROM attendance_record
+            SELECT record_id FROM attendance_record
             WHERE employee_id = {employee_id}
-              AND work_date = {sql_literal(correction_date)}::date
+              AND record_date = {sql_literal(correction_date)}::date
         """)
         if existing:
             execute(f"""
                 UPDATE attendance_record
                 SET status = {sql_literal(status_val)},
                     clock_in = COALESCE({clock_in_val}, clock_in),
-                    clock_out = COALESCE({clock_out_val}, clock_out),
-                    remarks = {sql_literal(reason)},
-                    overtime_approved = TRUE
-                WHERE attendance_id = {int(existing)}
+                    clock_out = COALESCE({clock_out_val}, clock_out)
+                WHERE record_id = {int(existing)}
             """)
         else:
             execute(f"""
                 INSERT INTO attendance_record
-                    (employee_id, work_date, clock_in, clock_out,
-                     status, remarks, overtime_approved)
+                    (employee_id, record_date, clock_in, clock_out, status)
                 VALUES (
                     {employee_id},
                     {sql_literal(correction_date)}::date,
                     {clock_in_val}, {clock_out_val},
-                    {sql_literal(status_val)},
-                    {sql_literal(reason)}, TRUE
+                    {sql_literal(status_val)}
                 )
             """)
 

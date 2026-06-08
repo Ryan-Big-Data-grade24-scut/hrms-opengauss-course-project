@@ -287,10 +287,31 @@ export default function StrategicAnalytics() {
         get(`/attendance/records?employee_id=${empId}&page_size=10`),
         get(`/performance/reviews?employee_id=${empId}&page_size=5`),
       ])
-      setExpandedData({
-        attendance: att.status === 'fulfilled' ? (att.value.data || att.value) : null,
-        performance: perf.status === 'fulfilled' ? ((perf.value.data?.rows || perf.value.data || [])[0] ?? null) : null,
-      })
+      // Compute attendance summary from raw records
+      let attendance = null
+      if (att.status === 'fulfilled') {
+        const records = att.value.data || att.value || []
+        const list = Array.isArray(records) ? records : (records.list || records.rows || [])
+        if (list.length > 0) {
+          const total = list.length
+          const present = list.filter((r: any) => r.status === 'present' || r.status === 'half-day').length
+          const late = list.filter((r: any) => r.status === 'late').length
+          const absent = list.filter((r: any) => r.status === 'absent').length
+          attendance = {
+            attendance_rate: total > 0 ? Math.round(present / total * 1000) / 10 : 0,
+            late_count: late,
+            absent_count: absent,
+          }
+        }
+      }
+      // Get latest performance review
+      let performance = null
+      if (perf.status === 'fulfilled') {
+        const pdata = perf.value.data || perf.value
+        const plist = pdata?.rows || pdata?.list || (Array.isArray(pdata) ? pdata : [])
+        if (plist.length > 0) performance = plist[0]
+      }
+      setExpandedData({ attendance, performance })
     } catch { setExpandedData({ attendance: null, performance: null }) }
   }
 

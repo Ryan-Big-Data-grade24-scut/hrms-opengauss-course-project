@@ -275,16 +275,11 @@ def list_attendance_records(page_no=1, page_size=20,
         WHERE {where_clause}
     """
     list_sql = f"""
-        SELECT ar.attendance_id, ar.employee_id,
+        SELECT ar.record_id AS attendance_id, ar.employee_id,
                e.employee_no, e.full_name,
                d.department_name,
                ar.record_date, ar.clock_in, ar.clock_out,
-               ar.clock_type, ar.status, ar.source,
-               ar.late_minutes, ar.early_leave_minutes,
-               ar.overtime_approved, ar.remarks,
-               ar.created_at,
-               ROUND(EXTRACT(EPOCH FROM (COALESCE(ar.clock_out, CURRENT_TIMESTAMP)
-                         - ar.clock_in)) / 3600, 1) AS duration_hours
+               ar.status, ar.created_at
         FROM attendance_record ar
         JOIN employee e ON e.employee_id = ar.employee_id
         JOIN department d ON d.department_id = e.department_id

@@ -558,7 +558,8 @@ class ApiHandler(BaseHTTPRequestHandler):
                 return self._send(200, ok(attendance_service.get_my_attendance(eid, limit)))
 
             if path == "/api/attendance/records" and method == "GET":
-                self._require_permission(user, "attendance.view")
+                if not any(p.startswith("attendance.view") for p in (user.get("permissions") or [])):
+                    raise PermissionError("attendance.view")
                 page_no, page_size = _parse_page(query)
                 filters = {k: v[0] for k, v in query.items()}
                 rows, total = attendance_service.list_attendance_records(
@@ -586,7 +587,8 @@ class ApiHandler(BaseHTTPRequestHandler):
 
             # === Performance Reviews ===
             if path == "/api/performance/reviews" and method == "GET":
-                self._require_permission(user, "performance.view")
+                if not any(p.startswith("performance.view") for p in (user.get("permissions") or [])):
+                    raise PermissionError("performance.view")
                 page_no, page_size = _parse_page(query)
                 filters = {k: v[0] for k, v in query.items()}
                 rows, total = performance_service.list_reviews(
