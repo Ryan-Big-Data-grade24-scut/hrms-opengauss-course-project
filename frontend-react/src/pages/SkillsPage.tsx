@@ -39,13 +39,15 @@ export default function SkillsPage() {
       try {
         let profile: any = {}
         try { profile = JSON.parse(localStorage.getItem('profile') || '{}') } catch {}
-        const isAdmin = (profile.permissions || []).some((p: string) => p === 'employee.manage')
+        const perms: string[] = profile.permissions || []
+        const empId = profile.employee_id
+        const isAdmin = perms.some((p: string) => p === 'employee.manage')
         const [sk, depts] = await Promise.all([api.allSkills(), api.departments()])
         setAllSkills(sk.data || [])
         setDepartments(depts.data || [])
 
         if (isAdmin) {
-          const emps = await api.employees('page=1&page_size=50')
+          const emps = await api.employees(`page=1&page_size=50&subtree_of=${empId}`)
           const filtered = (emps.data?.list || []).filter((e: any) => e.employment_status === 'active')
           setEmployees(filtered)
           if (filtered.length > 0 && !selectedEmp) setSelectedEmp(filtered[0].employee_id)

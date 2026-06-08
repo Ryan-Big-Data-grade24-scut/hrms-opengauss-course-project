@@ -584,7 +584,7 @@ def _execute_payload(payload, action_type):
             status_val = "present"
 
         existing = query_scalar(f"""
-            SELECT record_id FROM attendance_record
+            SELECT attendance_id FROM attendance_record
             WHERE employee_id = {employee_id}
               AND record_date = {sql_literal(correction_date)}::date
         """)
@@ -594,7 +594,7 @@ def _execute_payload(payload, action_type):
                 SET status = {sql_literal(status_val)},
                     clock_in = COALESCE({clock_in_val}, clock_in),
                     clock_out = COALESCE({clock_out_val}, clock_out)
-                WHERE record_id = {int(existing)}
+                WHERE attendance_id = {int(existing)}
             """)
         else:
             execute(f"""

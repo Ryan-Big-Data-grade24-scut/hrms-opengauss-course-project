@@ -263,6 +263,28 @@ def _is_command_status(line):
     return all(part.isdigit() or part.isalpha() for part in parts[1:])
 
 
+def get_subtree_ids(manager_employee_id):
+    """Return list of all employee_ids in the org tree rooted at manager_employee_id (inclusive)."""
+    raw = run_sql(f"""
+        WITH RECURSIVE org_tree AS (
+            SELECT employee_id, manager_employee_id, 0 AS depth
+            FROM employee
+            WHERE employee_id = {int(manager_employee_id)}
+            UNION ALL
+            SELECT e.employee_id, e.manager_employee_id, ot.depth + 1
+            FROM employee e
+            JOIN org_tree ot ON e.manager_employee_id = ot.employee_id
+        )
+        SELECT employee_id FROM org_tree ORDER BY depth
+    """)
+    ids = []
+    for line in raw.strip().split('\n'):
+        line = line.strip()
+        if line and line.isdigit():
+            ids.append(int(line))
+    return ids
+
+
 def bootstrap_rbac():
     statements = [
         """

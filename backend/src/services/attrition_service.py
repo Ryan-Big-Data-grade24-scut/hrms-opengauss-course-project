@@ -95,24 +95,11 @@ def _risk_sql(extra_where: str = "") -> str:
         {_ABSENT_SQ} AS attendance_absent_count,
         {_LATE_SQ} AS attendance_late_count,
         {_AVG_PERF_SQ} AS avg_performance_score,
-        e.employment_status,
-        ml.ml_risk_score
+        e.employment_status
     FROM employee e
     JOIN department d ON d.department_id = e.department_id
     JOIN position p ON p.position_id = e.position_id
     LEFT JOIN employee mgr ON mgr.employee_id = e.manager_employee_id
-    LEFT JOIN (
-        -- ML secondary signal (openGauss DB4AI); NULL if model absent
-        SELECT employee_id,
-               ROUND((PREDICT BY attrition_model (FEATURES
-                   tenure, engagement_score,
-                   last_promotion_months, manager_changes,
-                   overtime_count, attendance_absent_count,
-                   attendance_late_count, avg_performance_score
-               ) * 100)::decimal, 1) AS ml_risk_score
-        FROM employee
-        WHERE employment_status IN ('active', 'probation')
-    ) ml ON ml.employee_id = e.employee_id
     WHERE e.employment_status IN ('active', 'probation') {extra_where}
     ORDER BY risk_score DESC
     """

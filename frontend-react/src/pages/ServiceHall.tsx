@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useOutletContext, useSearchParams } from 'react-router-dom'
-import {
+  import {
   FileEdit,
   CalendarDays,
   Clock,
-  UserCog,
   ClipboardList,
   Send,
   CheckCircle2,
@@ -13,7 +12,7 @@ import {
   AlertCircle,
   Loader2,
   ChevronRight,
-  Info,
+  Fingerprint,
 } from 'lucide-react'
 
 const BASE = '/api'
@@ -72,7 +71,7 @@ interface ApprovalRequest {
   created_at: string
 }
 
-type FormMode = 'SKILL_CHANGE' | 'LEAVE_REQUEST' | 'ATTENDANCE_CORRECTION' | 'PROFILE_UPDATE'
+type FormMode = 'SKILL_CHANGE' | 'LEAVE_REQUEST' | 'ATTENDANCE_CORRECTION' | 'CLOCK_IN_OUT'
 
 interface SkillItem {
   skill_id: number
@@ -85,22 +84,30 @@ interface LeaveTypeItem {
   type_name: string
 }
 
-interface ProfileData {
-  employee_id: number
-  full_name: string
-  phone?: string
-  email?: string
-}
-
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
 /* ------------------------------------------------------------------ */
 
-const CARD_CONFIG: { mode: FormMode; label: string; desc: string; icon: any }[] = [
-  { mode: 'SKILL_CHANGE', label: '技能变更', desc: '新增、修改或移除技能及等级', icon: FileEdit },
-  { mode: 'LEAVE_REQUEST', label: '请假申请', desc: '提交请假或调休申请', icon: CalendarDays },
-  { mode: 'ATTENDANCE_CORRECTION', label: '考勤补卡', desc: '补打卡或修正出勤记录', icon: Clock },
-  { mode: 'PROFILE_UPDATE', label: '信息修改', desc: '修改联系方式等个人信息', icon: UserCog },
+function hasAnyPerm(...patterns: string[]): boolean {
+  let profile: any = {}
+  try { profile = JSON.parse(localStorage.getItem('profile') || '{}') } catch {}
+  const perms: string[] = profile.permissions || []
+  return patterns.length === 0 || patterns.some(p =>
+    perms.some(perm => perm === p || perm === 'admin' || perm.endsWith('.all'))
+  )
+}
+
+function parsePayload(raw: any): any {
+  if (typeof raw === 'string') { try { return JSON.parse(raw) } catch { return {} } }
+  if (raw && typeof raw === 'object') return raw
+  return {}
+}
+
+const CARD_CONFIG: { mode: FormMode; label: string; desc: string; icon: any; perm: string[] }[] = [
+  { mode: 'SKILL_CHANGE', label: '技能变更', desc: '新增、修改或移除技能及等级', icon: FileEdit, perm: ['skill.manage', 'skill.manage.all', 'skill.manage.team'] },
+  { mode: 'LEAVE_REQUEST', label: '请假申请', desc: '提交请假或调休申请', icon: CalendarDays, perm: ['leave.manage'] },
+  { mode: 'ATTENDANCE_CORRECTION', label: '考勤补卡', desc: '补打卡或修正出勤记录', icon: Clock, perm: ['attendance.manage', 'attendance.view', 'attendance.view.self'] },
+  { mode: 'CLOCK_IN_OUT', label: '上下班打卡', desc: '上班签到 / 下班签退', icon: Fingerprint, perm: [] },
 ]
 
 const STATUS_BADGES: Record<string, { label: string; color: string }> = {
@@ -113,9 +120,8 @@ const STATUS_BADGES: Record<string, { label: string; color: string }> = {
 
 const OPERATION_LABELS: Record<string, string> = {
   SKILL_CHANGE: '技能变更',
-  LEAVE_REQUEST: '请假申请',
-  ATTENDANCE_CORRECTION: '考勤补卡',
-  PROFILE_UPDATE: '信息修改',
+    LEAVE_REQUEST: '请假申请',
+    ATTENDANCE_CORRECTION: '考勤补卡',
 }
 
 function getOperationLabel(op: string) {
@@ -230,7 +236,8 @@ function StepIndicator({ chain_snapshot, current_node }: { chain_snapshot?: any[
 }
 
 /** Build a human-readable summary from payload */
-function getPayloadSummary(op: string, payload: any): string {
+function getPayloadSummary(op: string, raw: any): string {
+  const payload = parsePayload(raw)
   if (!payload) return ''
   switch (op) {
     case 'SKILL_CHANGE':
@@ -239,8 +246,6 @@ function getPayloadSummary(op: string, payload: any): string {
       return `${payload.leave_type_name || `类型:${payload.leave_type_id}`}, ${payload.start_date} ~ ${payload.end_date}, 共 ${calcDays(payload.start_date, payload.end_date)} 天`
     case 'ATTENDANCE_CORRECTION':
       return `${payload.date}, 时段: ${payload.period === 'morning' ? '上午' : payload.period === 'afternoon' ? '下午' : '全天'}`
-    case 'PROFILE_UPDATE':
-      return `修改: ${Object.keys(payload.fields || {}).join(', ') || payload.field || '个人信息'}`
     default:
       return JSON.stringify(payload).slice(0, 60)
   }
@@ -265,14 +270,6 @@ function ApplyForm({
   const [skillsList, setSkillsList] = useState<SkillItem[]>([])
   const [skillsLoading, setSkillsLoading] = useState(false)
   const [leaveTypesList, setLeaveTypesList] = useState<LeaveTypeItem[]>([])
-  const [profileData, setProfileData] = useState<ProfileData | null>(null)
-
-  // Department → Position → Skill flow state (用于 SKILL_CHANGE)
-  const [depts, setDepts] = useState<any[]>([])
-  const [posList, setPosList] = useState<any[]>([])
-  const [reqSkills, setReqSkills] = useState<any[]>([])
-  const [selDeptId, setSelDeptId] = useState<number | ''>('')
-  const [selPosId, setSelPosId] = useState<number | ''>('')
 
   // Common fields
   const [reason, setReason] = useState('')
@@ -283,6 +280,13 @@ function ApplyForm({
   const [customSkillName, setCustomSkillName] = useState('')
   const [proficiency, setProficiency] = useState('')
   const [mySkills, setMySkills] = useState<any[]>([])
+
+  // Target employee selector (org-tree scoped)
+  const [targetEmpId, setTargetEmpId] = useState<number | ''>('')
+  const [orgEmployees, setOrgEmployees] = useState<any[]>([])
+  const profile = JSON.parse(localStorage.getItem('profile') || '{}')
+  const perms: string[] = profile.permissions || []
+  const hasMgmt = perms.some(p => p === 'employee.manage' || p === 'skill.manage')
 
   // Leave
   const [leaveTypeId, setLeaveTypeId] = useState<number | ''>('')
@@ -296,71 +300,35 @@ function ApplyForm({
   const [corrClockIn, setCorrClockIn] = useState('')
   const [corrClockOut, setCorrClockOut] = useState('')
 
-  // Profile update
-  const [phoneValue, setPhoneValue] = useState('')
-  const [emailValue, setEmailValue] = useState('')
-
   // Load data on mount
   useEffect(() => {
     if (mode === 'SKILL_CHANGE') {
       setSkillsLoading(true)
-      Promise.all([
-        get('/skills').then(r => r.data || r || []),
-        get('/departments').then(r => r.data || r || []),
-      ]).then(([skills, deptsData]) => {
-        setSkillsList(skills)
-        setDepts(deptsData)
-      }).catch(() => setError('加载技能或部门数据失败')).finally(() => setSkillsLoading(false))
+      get('/skills').then(r => {
+        setSkillsList(r.data || r || [])
+      }).catch(() => setError('加载技能数据失败')).finally(() => setSkillsLoading(false))
+      // Load org-tree scoped employees for managers
+      const empId = profile.employee_id
+      if (hasMgmt && empId) {
+        get(`/employees?page=1&page_size=100&subtree_of=${empId}`)
+          .then(res => setOrgEmployees(res.data?.list || []))
+          .catch(() => {})
+      }
       // 获取当前员工已有的技能（用于 update 模式）
       try {
-        const profile = JSON.parse(localStorage.getItem('profile') || '{}')
-        const empId = profile.employee_id
         if (empId) {
           get(`/employees/${empId}/skills`)
             .then(res => setMySkills(res.data || res || []))
             .catch(() => setError('加载已有技能失败'))
         }
       } catch {}
-      // Reset department→position selection
-      setSelDeptId('')
-      setSelPosId('')
-      setPosList([])
-      setReqSkills([])
     }
     if (mode === 'LEAVE_REQUEST') {
       get('/leave-types')
         .then(res => setLeaveTypesList(res.data || res || []))
         .catch(() => setError('加载请假类型失败'))
     }
-    if (mode === 'PROFILE_UPDATE') {
-      get('/profile/self')
-        .then(res => {
-          const p = res.data || res
-          setProfileData(p)
-          setPhoneValue(p.phone || '')
-          setEmailValue(p.email || '')
-        })
-        .catch(() => setError('加载个人信息失败'))
-    }
   }, [mode])
-
-  // Load positions when department changes (SKILL_CHANGE)
-  useEffect(() => {
-    if (mode !== 'SKILL_CHANGE') return
-    if (!selDeptId) { setPosList([]); setSelPosId(''); return }
-    get(`/positions?department_id=${selDeptId}`)
-      .then(res => setPosList(res.data || res || []))
-      .catch(() => setPosList([]))
-  }, [selDeptId, mode])
-
-  // Load required skills when position changes (SKILL_CHANGE)
-  useEffect(() => {
-    if (mode !== 'SKILL_CHANGE') return
-    if (!selPosId) { setReqSkills([]); return }
-    get(`/skills/required?position_id=${selPosId}`)
-      .then(res => setReqSkills(res.data || res || []))
-      .catch(() => setReqSkills([]))
-  }, [selPosId, mode])
 
   // Group skills by category
   const groupedSkills: Record<string, SkillItem[]> = {}
@@ -405,12 +373,6 @@ function ApplyForm({
           clock_out: (corrPeriod === 'afternoon' || corrPeriod === 'full') ? corrClockOut || null : null,
           reason,
         }
-      case 'PROFILE_UPDATE': {
-        const fields: Record<string, string> = {}
-        if (phoneValue !== profileData?.phone) fields.phone = phoneValue
-        if (emailValue !== profileData?.email) fields.email = emailValue
-        return { fields, reason }
-      }
     }
   }
 
@@ -461,19 +423,14 @@ function ApplyForm({
       setError('请选择补卡日期')
       return
     }
-    if (mode === 'PROFILE_UPDATE') {
-      if (phoneValue === profileData?.phone && emailValue === profileData?.email) {
-        setError('请至少修改电话或邮箱')
-        return
-      }
-    }
-
     setSubmitting(true)
     try {
-      await post('/approval-requests', {
+      const body: any = {
         operation_type: mode,
         payload: buildPayload(),
-      })
+      }
+      if (targetEmpId) body.target_id = targetEmpId
+      await post('/approval-requests', body)
       setSuccess(true)
     } catch (e: any) {
       setError(e.message || '提交失败')
@@ -505,6 +462,22 @@ function ApplyForm({
         {/* ========== SKILL_CHANGE ========== */}
         {mode === 'SKILL_CHANGE' && (
           <>
+            {/* Employee selector for managers */}
+            {hasMgmt && orgEmployees.length > 0 && (
+              <div>
+                <label className="block text-xs font-medium text-stone-600 mb-1">目标员工</label>
+                <select
+                  value={targetEmpId}
+                  onChange={e => setTargetEmpId(e.target.value ? Number(e.target.value) : '')}
+                  className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition"
+                >
+                  <option value="">选择员工（默认为本人）</option>
+                  {orgEmployees.map((e: any) => (
+                    <option key={e.employee_id} value={e.employee_id}>{e.full_name} - {e.position_name || e.department_name || ''}</option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div>
               <label className="block text-xs font-medium text-stone-600 mb-1">操作类型</label>
               <select
@@ -535,72 +508,30 @@ function ApplyForm({
                 </select>
               </div>
             )}
-            {/* Add/remove mode: department + position + required skills */}
+            {/* Add/remove mode: direct skill picker */}
             {skillAction !== 'update' && (<>
-            {/* Step 1: Select Department */}
-            <div>
-              <label className="block text-xs font-medium text-stone-600 mb-1">部门选择</label>
-              <select
-                value={selDeptId}
-                onChange={e => { setSelDeptId(e.target.value ? Number(e.target.value) : ''); setSelPosId(''); setSelectedSkillId('') }}
-                className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition"
-                disabled={skillsLoading}
-              >
-                <option value="">请选择部门</option>
-                {depts.map((d: any) => (
-                  <option key={d.id || d.department_id} value={d.id || d.department_id}>
-                    {d.name || d.department_name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Step 2: Select Position (filtered by department) */}
-            {selDeptId && (
               <div>
-                <label className="block text-xs font-medium text-stone-600 mb-1">岗位选择</label>
+                <label className="block text-xs font-medium text-stone-600 mb-1">选择技能</label>
                 <select
-                  value={selPosId}
-                  onChange={e => { setSelPosId(e.target.value ? Number(e.target.value) : ''); setSelectedSkillId('') }}
+                  value={selectedSkillId}
+                  onChange={e => setSelectedSkillId(e.target.value ? Number(e.target.value) : '')}
                   className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition"
                 >
-                  <option value="">请选择岗位</option>
-                  {posList.map((p: any) => (
-                    <option key={p.id || p.position_id} value={p.id || p.position_id}>
-                      {p.name || p.position_name}
+                  <option value="">从列表中选择...</option>
+                  {skillsList.map((s: any) => (
+                    <option key={s.skill_id} value={s.skill_id}>
+                      {s.skill_name}{s.category_name ? ` (${s.category_name})` : ''}
                     </option>
                   ))}
                 </select>
-              </div>
-            )}
-
-            {/* Step 3: Skill selection — dropdown OR text input */}
-            {selPosId && (
-              <div>
-                <label className="block text-xs font-medium text-stone-600 mb-1">选择或输入技能名称</label>
-                {reqSkills.length > 0 && (
-                  <select
-                    value={selectedSkillId}
-                    onChange={e => setSelectedSkillId(e.target.value ? Number(e.target.value) : '')}
-                    className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition mb-2"
-                  >
-                    <option value="">从岗位要求中选择...</option>
-                    {reqSkills.map((rs: any) => (
-                      <option key={rs.skill_id} value={rs.skill_id}>
-                        {rs.skill_name} {rs.target_level ? `(目标: ${rs.target_level})` : ''}
-                      </option>
-                    ))}
-                  </select>
-                )}
                 <input
                   type="text"
                   value={customSkillName}
                   onChange={e => { setCustomSkillName(e.target.value); setSelectedSkillId('') }}
                   placeholder="或直接输入技能名称..."
-                  className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition"
+                  className="mt-2 w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition"
                 />
               </div>
-            )}
             </>)}
             {skillAction !== 'remove' && (
               <div>
@@ -722,38 +653,6 @@ function ApplyForm({
           </>
         )}
 
-        {/* ========== PROFILE_UPDATE ========== */}
-        {mode === 'PROFILE_UPDATE' && (
-          <>
-            {profileData && (
-              <div className="bg-stone-50 rounded-lg px-3 py-2 text-xs text-stone-500 space-y-1">
-                <Info className="w-3 h-3 inline mr-1" />
-                当前信息: {profileData.full_name}
-                {profileData.phone && <span className="ml-2">电话: {profileData.phone}</span>}
-                {profileData.email && <span className="ml-2">邮箱: {profileData.email}</span>}
-              </div>
-            )}
-            <div>
-              <label className="block text-xs font-medium text-stone-600 mb-1">电话</label>
-              <input
-                value={phoneValue}
-                onChange={e => setPhoneValue(e.target.value)}
-                placeholder={profileData?.phone || '请输入新电话号码'}
-                className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-stone-600 mb-1">邮箱</label>
-              <input
-                value={emailValue}
-                onChange={e => setEmailValue(e.target.value)}
-                placeholder={profileData?.email || '请输入新邮箱'}
-                className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-stone-400 transition"
-              />
-            </div>
-          </>
-        )}
-
         {/* ========== Reason (common) ========== */}
         <div>
           <label className="block text-xs font-medium text-stone-600 mb-1">申请说明</label>
@@ -781,6 +680,146 @@ function ApplyForm({
             className="px-4 py-2 text-sm font-medium bg-stone-800 text-white rounded-lg hover:bg-stone-700 transition disabled:opacity-50"
           >
             {submitting ? '提交中...' : '提交'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Payload Details — structured key-value view                        */
+/* ------------------------------------------------------------------ */
+
+function PayloadView({ op, payload: raw }: { op: string; payload: any }) {
+  const payload = parsePayload(raw)
+  if (!payload) return null
+
+  const rows: { label: string; value: string }[] = []
+
+  switch (op) {
+    case 'SKILL_CHANGE': {
+      const actionMap: Record<string, string> = { add: '新增', update: '更新', remove: '移除', delete: '移除' }
+      rows.push({ label: '操作', value: actionMap[payload.action || payload.operation] || payload.action || payload.operation })
+      if (payload.skill_name) rows.push({ label: '技能名称', value: payload.skill_name })
+      if (payload.proficiency_level) rows.push({ label: '熟练等级', value: `${payload.proficiency_level} / 5` })
+      break
+    }
+    case 'LEAVE_REQUEST': {
+      if (payload.leave_type_name) rows.push({ label: '请假类型', value: payload.leave_type_name })
+      rows.push({ label: '起止时间', value: `${payload.start_date} ~ ${payload.end_date}` })
+      if (payload.days) rows.push({ label: '天数', value: `${payload.days} 天` })
+      break
+    }
+    case 'ATTENDANCE_CORRECTION': {
+      if (payload.date) rows.push({ label: '日期', value: payload.date })
+      const periodMap: Record<string, string> = { morning: '上午', afternoon: '下午', full: '全天' }
+      rows.push({ label: '时段', value: periodMap[payload.period] || payload.period })
+      if (payload.clock_in) rows.push({ label: '上班打卡', value: payload.clock_in })
+      if (payload.clock_out) rows.push({ label: '下班打卡', value: payload.clock_out })
+      break
+    }
+    default:
+      return <pre className="text-xs text-stone-500 whitespace-pre-wrap">{JSON.stringify(payload, null, 2)}</pre>
+  }
+
+  if (payload.reason) rows.push({ label: '申请说明', value: payload.reason })
+
+  return (
+    <div className="space-y-1">
+      {rows.map((r, i) => (
+        <div key={i} className="flex gap-2">
+          <span className="text-stone-400 shrink-0 w-16">{r.label}</span>
+          <span className="text-stone-700">{r.value}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Clock In / Out Modal                                               */
+/* ------------------------------------------------------------------ */
+
+function ClockInOutModal({ onClose }: { onClose: () => void }) {
+  const [loading, setLoading] = useState(false)
+  const [result, setResult] = useState<any>(null)
+  const [error, setError] = useState('')
+
+  const doClock = async (type: 'in' | 'out') => {
+    setLoading(true)
+    setError('')
+    setResult(null)
+    try {
+      let profile: any = {}
+      try { profile = JSON.parse(localStorage.getItem('profile') || '{}') } catch {}
+      const token = localStorage.getItem('token')
+      const res = await fetch('/api/attendance/clock', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({
+          employee_id: profile.employee_id,
+          clock_type: type === 'in' ? 'normal' : 'normal',
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || '打卡失败')
+      setResult(data.data || data)
+    } catch (e: any) {
+      setError(e.message || '打卡失败')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const now = new Date()
+  const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+
+  return (
+    <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white rounded-xl shadow-xl border border-stone-200 p-6 max-w-sm w-full" onClick={e => e.stopPropagation()}>
+        <h3 className="font-semibold text-stone-800 mb-1">上下班打卡</h3>
+        <p className="text-xs text-stone-400 mb-5">当前时间: {now.toLocaleDateString('zh-CN')} {timeStr}</p>
+
+        {result ? (
+          <div className="text-center py-4">
+            <CheckCircle2 className="w-10 h-10 text-green-500 mx-auto mb-2" />
+            <p className="text-sm font-medium text-stone-700">
+              {result.action === 'clock_in' ? `签到成功 — ${new Date(result.clock_in).toLocaleTimeString('zh-CN')}` : `签退成功`}
+            </p>
+            {result.duration_hours && (
+              <p className="text-xs text-stone-400 mt-1">本次工作时长: {result.duration_hours} 小时</p>
+            )}
+            <button onClick={() => { onClose(); window.location.hash = '#/attendance' }}
+              className="mt-3 text-xs px-3 py-1.5 rounded-lg bg-stone-100 text-stone-600 hover:bg-stone-200 transition font-medium">
+              查看考勤记录
+            </button>
+          </div>
+        ) : (
+          <div className="flex gap-3">
+            <button
+              onClick={() => doClock('in')}
+              disabled={loading}
+              className="flex-1 py-3 rounded-xl border-2 border-stone-200 hover:border-green-400 hover:bg-green-50 transition disabled:opacity-50 text-sm font-medium text-stone-700"
+            >
+              上班打卡
+            </button>
+            <button
+              onClick={() => doClock('out')}
+              disabled={loading}
+              className="flex-1 py-3 rounded-xl border-2 border-stone-200 hover:border-blue-400 hover:bg-blue-50 transition disabled:opacity-50 text-sm font-medium text-stone-700"
+            >
+              下班打卡
+            </button>
+          </div>
+        )}
+
+        {loading && <p className="text-xs text-stone-400 text-center mt-3">处理中...</p>}
+        {error && <p className="text-xs text-red-500 text-center mt-3">{error}</p>}
+
+        <div className="flex justify-center mt-5">
+          <button onClick={onClose} className="text-xs text-stone-400 hover:text-stone-600 transition">
+            {result ? '关闭' : '取消'}
           </button>
         </div>
       </div>
@@ -830,9 +869,9 @@ function DetailModal({
           {payload && (
             <div>
               <span className="text-stone-400 block mb-1">申请内容</span>
-              <pre className="bg-stone-50 rounded-lg p-3 text-xs text-stone-600 whitespace-pre-wrap break-all">
-                {JSON.stringify(payload, null, 2)}
-              </pre>
+              <div className="bg-stone-50 rounded-lg p-3 text-xs text-stone-600 space-y-1.5">
+                <PayloadView op={request.operation_type} payload={payload} />
+              </div>
             </div>
           )}
           {request.chain_snapshot && request.chain_snapshot.length > 0 && (
@@ -972,7 +1011,7 @@ export default function ServiceHall() {
       {/* ================================================================ */}
       {activeTab === 'apply' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {CARD_CONFIG.map(card => (
+          {CARD_CONFIG.filter(card => hasAnyPerm(...card.perm)).map(card => (
             <button
               key={card.mode}
               onClick={() => setFormMode(card.mode)}
@@ -1080,14 +1119,21 @@ export default function ServiceHall() {
       )}
 
       {/* ================================================================ */}
-      {/* Apply form modal                                                */}
+      {/* Apply form modal (for approval-based operations)                */}
       {/* ================================================================ */}
-      {formMode && (
+      {formMode && formMode !== 'CLOCK_IN_OUT' && (
         <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center p-4" onClick={() => setFormMode(null)}>
           <div className="bg-white rounded-xl shadow-xl border border-stone-200 p-6 max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <ApplyForm mode={formMode} onClose={() => setFormMode(null)} />
           </div>
         </div>
+      )}
+
+      {/* ================================================================ */}
+      {/* Clock In/Out modal (direct API, no approval flow)               */}
+      {/* ================================================================ */}
+      {formMode === 'CLOCK_IN_OUT' && (
+        <ClockInOutModal onClose={() => setFormMode(null)} />
       )}
 
       {/* ================================================================ */}

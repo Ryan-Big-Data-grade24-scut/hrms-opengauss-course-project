@@ -8,7 +8,7 @@ import OrgPeoplePage from './pages/OrgPeoplePage'
 import ServiceHall from './pages/ServiceHall'
 import AttendancePage from './pages/AttendancePage'
 import PerformancePage from './pages/PerformancePage'
-import LeavePage from './pages/LeavePage'
+import RequirePermission from './components/RequirePermission'
 import NotFound from './components/NotFound'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -32,6 +32,14 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
+function PermissionGuard({ permission, permissions, children }: { permission?: string; permissions?: string[]; children: React.ReactNode }) {
+  return (
+    <RequirePermission permission={permission} permissions={permissions}>
+      {children}
+    </RequirePermission>
+  )
+}
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -40,12 +48,31 @@ export default function App() {
         <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route index element={<Navigate to="/service-hall" replace />} />
           <Route path="service-hall" element={<ServiceHall />} />
-          <Route path="org-people" element={<OrgPeoplePage />} />
-          <Route path="skills" element={<SkillsPage />} />
-          <Route path="analytics" element={<StrategicAnalytics />} />
-          <Route path="attendance" element={<AttendancePage />} />
-          <Route path="performance" element={<PerformancePage />} />
-          <Route path="leaves" element={<LeavePage />} />
+          <Route path="org-people" element={
+            <PermissionGuard permissions={['employee.manage', 'directory.view', 'team.view', 'profile.view.all', 'profile.view.team', 'profile.view.self']}>
+              <OrgPeoplePage />
+            </PermissionGuard>
+          } />
+          <Route path="skills" element={
+            <PermissionGuard permission="skill.manage">
+              <SkillsPage />
+            </PermissionGuard>
+          } />
+          <Route path="analytics" element={
+            <PermissionGuard permission="analytics.view">
+              <StrategicAnalytics />
+            </PermissionGuard>
+          } />
+          <Route path="attendance" element={
+            <PermissionGuard permissions={['attendance.view', 'attendance.view.self', 'attendance.view.team', 'attendance.view.all', 'attendance.manage']}>
+              <AttendancePage />
+            </PermissionGuard>
+          } />
+          <Route path="performance" element={
+            <PermissionGuard permissions={['performance.view', 'performance.view.self', 'performance.view.team', 'performance.manage']}>
+              <PerformancePage />
+            </PermissionGuard>
+          } />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

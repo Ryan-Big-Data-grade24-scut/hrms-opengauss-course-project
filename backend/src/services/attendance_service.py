@@ -18,6 +18,15 @@ from src.common.permission import _require_permission_scope
 from src.services.audit_service import write_audit
 
 
+def _parse_ts(val):
+    """Parse ISO timestamp string to datetime, or return as-is if already datetime."""
+    if isinstance(val, datetime):
+        return val
+    if isinstance(val, str):
+        return datetime.fromisoformat(val.replace('Z', '+00:00').split('+')[0])
+    return val
+
+
 # ===================================================================
 # 签到 / 签退
 # ===================================================================
@@ -53,7 +62,7 @@ def clock_in(employee_id, clock_type="normal", source="manual"):
     if existing:
         # === 签退 ===
         att_id = existing["attendance_id"]
-        clock_in_time = existing["clock_in"]
+        clock_in_time = _parse_ts(existing["clock_in"])
         duration_hours = (now - clock_in_time).total_seconds() / 3600
 
         # 根据时长判定状态
@@ -78,6 +87,20 @@ def clock_in(employee_id, clock_type="normal", source="manual"):
             "status": status,
             "duration_hours": round(duration_hours, 1),
         }
+
+    # 检查今天是否已完成签到+签退（已完整打卡）
+    completed = json_object_query(f"""
+        SELECT attendance_id, clock_in, clock_out
+        FROM attendance_record
+        WHERE employee_id = {int(employee_id)}
+          AND work_date = {sql_literal(today)}::date
+          AND clock_in IS NOT NULL
+          AND clock_out IS NOT NULL
+        ORDER BY clock_in DESC
+        LIMIT 1
+    """)
+    if completed:
+        raise ValueError("今日打卡已完成，请勿重复打卡")
 
     # === 签到 ===
     execute(f"""
@@ -234,7 +257,8 @@ def list_attendance_records(page_no=1, page_size=20,
                             employee_id=None, department_id=None,
                             date_from=None, date_to=None,
                             manager_employee_id=None,
-                            status=None, clock_type=None):
+                            status=None, clock_type=None,
+                            subtree_ids=None):
     """分页列出考勤记录（含筛选）。
 
     参数：
@@ -247,6 +271,7 @@ def list_attendance_records(page_no=1, page_size=20,
         manager_employee_id: 上级 ID（团队视图）
         status:              考勤状态筛选
         clock_type:          考勤类型筛选
+        subtree_ids:         组织树节点 ID 列表（用于权限过滤）
     """
     where_parts = ["1=1"]
 
@@ -264,6 +289,9 @@ def list_attendance_records(page_no=1, page_size=20,
         where_parts.append(f"ar.status = {sql_literal(status)}")
     if clock_type:
         where_parts.append(f"ar.clock_type = {sql_literal(clock_type)}")
+    if subtree_ids:
+        ids_str = ",".join(str(i) for i in subtree_ids)
+        where_parts.append(f"ar.employee_id IN ({ids_str})")
 
     where_clause = " AND ".join(where_parts)
     offset = (page_no - 1) * page_size
@@ -275,7 +303,7 @@ def list_attendance_records(page_no=1, page_size=20,
         WHERE {where_clause}
     """
     list_sql = f"""
-        SELECT ar.record_id AS attendance_id, ar.employee_id,
+        SELECT ar.attendance_id, ar.employee_id,
                e.employee_no, e.full_name,
                d.department_name,
                ar.record_date, ar.clock_in, ar.clock_out,

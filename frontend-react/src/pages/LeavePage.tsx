@@ -75,7 +75,7 @@ export default function LeavePage() {
       setError('')
       try {
         const res = await get(`/leaves?employee_id=${employeeId}&page_size=50`)
-        setLeaves(res.data?.rows || res.data || [])
+        setLeaves(res.data?.list || res.data?.rows || res.data || [])
       } catch (e: any) {
         setError(e.message || '加载请假记录失败')
       } finally {

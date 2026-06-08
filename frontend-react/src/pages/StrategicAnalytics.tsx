@@ -11,6 +11,7 @@ import {
   ArrowUp,
   ArrowDown,
   Search,
+  Info,
 } from 'lucide-react'
 
 const BASE = '/api'
@@ -37,6 +38,15 @@ function riskBarColor(score: number): string {
   if (score >= 50) return 'bg-amber-500'
   if (score >= 30) return 'bg-yellow-500'
   return 'bg-green-500'
+}
+
+function ScoreNote({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex items-start gap-1.5 mt-2 px-3 py-2 bg-stone-50 rounded-lg text-[10px] text-stone-400 leading-relaxed">
+      <Info className="w-3 h-3 shrink-0 mt-0.5" />
+      <span>{children}</span>
+    </div>
+  )
 }
 
 const FACTOR_MAP = [
@@ -170,7 +180,6 @@ export default function StrategicAnalytics() {
   const TABS = [
     { key: 'attrition', label: '离职风险', icon: AlertTriangle },
     { key: 'skillsGap', label: '技能缺口', icon: Target },
-    { key: 'deptMatrix', label: '部门矩阵', icon: Users },
     { key: 'attPerf', label: '出勤绩效', icon: TrendingUp },
     { key: 'health', label: '综合健康', icon: TrendingUp },
   ] as const
@@ -180,7 +189,6 @@ export default function StrategicAnalytics() {
   // Data from main load
   const [attrition, setAttrition] = useState<any[]>([])
   const [gaps, setGaps] = useState<any[]>([])
-  const [heatmap, setHeatmap] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [retraining, setRetraining] = useState(false)
@@ -224,10 +232,9 @@ export default function StrategicAnalytics() {
     setLoading(true)
     setError('')
     try {
-      const [a, g, h, d] = await Promise.allSettled([
+      const [a, g, d] = await Promise.allSettled([
         get('/attrition/risk'),
         get('/skills/analytics/overview'),
-        get('/skills/analytics/department-comparison'),
         get('/departments'),
       ])
       if (a.status === 'fulfilled') {
@@ -235,9 +242,6 @@ export default function StrategicAnalytics() {
       }
       if (g.status === 'fulfilled') {
         setGaps(g.value.data || g.value || [])
-      }
-      if (h.status === 'fulfilled') {
-        setHeatmap(h.value.data || h.value || [])
       }
       if (d.status === 'fulfilled') {
         setDepartments(d.value.data || d.value || [])
@@ -625,13 +629,17 @@ export default function StrategicAnalytics() {
                   )}
                 </div>
               </div>
+
+              <ScoreNote>
+                离职风险评分由 8 项因子加权计算：敬业度(25%) + 任职时长(15%) + 晋升延迟(20%) + 经理变动(15%) + 加班(5%) + 缺勤(5%) + 绩效(10%) + 迟到(5%)。≥70% 为红色(高危), 50–70% 橙色(高), 30–50% 黄色(中), &lt;30% 绿色(低)。
+              </ScoreNote>
             </>
           )}
 
           {/* ============================================================ */}
           {/* Tab 2: Skills Gap                                             */}
           {/* ============================================================ */}
-          {activeTab === 'skillsGap' && (
+          {activeTab === 'skillsGap' && (<>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="bg-white rounded-xl p-5 shadow-sm border border-stone-200">
                 <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
@@ -759,87 +767,19 @@ export default function StrategicAnalytics() {
                 )}
               </div>
             </div>
-          )}
+
+            <ScoreNote>
+              技能缺口 = 岗位要求等级(target_level) − 员工当前平均等级(current_avg)，负值表示不足。右侧 <strong>N/M人</strong> = 拥有该技能人数 / 部门总人数，衡量覆盖率。
+            </ScoreNote>
+          </>)}
 
           {/* ============================================================ */}
-          {/* Tab 3: Department Matrix (heatmap)                            */}
-          {/* ============================================================ */}
-          {activeTab === 'deptMatrix' && (
-            <div className="bg-white rounded-xl p-5 shadow-sm border border-stone-200">
-              <h3 className="font-semibold text-sm text-stone-700 mb-4">Department Skills Matrix</h3>
-              {heatmap.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12">
-                  <AlertTriangle className="w-8 h-8 text-stone-300 mb-2" />
-                  <p className="text-sm text-stone-400">No department comparison data available.</p>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  {(() => {
-                    // Group flat heatmap rows by department
-                    const deptMap: Record<string, any[]> = {}
-                    heatmap.forEach((h: any) => {
-                      const dn = h.department_name
-                      if (!deptMap[dn]) deptMap[dn] = []
-                      deptMap[dn].push(h)
-                    })
-                    const groupedDepts = Object.entries(deptMap).map(([name, rows]) => ({
-                      department_name: name,
-                      categories: rows.map(r => ({
-                        category_name: r.category_name,
-                        avg_level: r.avg_level,
-                        staff_count: r.staff_count,
-                      }))
-                    }))
-                    // All unique category names ordered by first appearance
-                    const allCategories = [...new Set(heatmap.map((h: any) => h.category_name).filter(Boolean))]
-
-                    return (
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="text-left text-stone-400 border-b border-stone-100">
-                            <th className="px-4 py-2 font-medium">Department</th>
-                            {allCategories.map(cat => (
-                              <th key={cat} className="px-4 py-2 font-medium text-xs">{cat}</th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {groupedDepts.map((dept: any, idx: number) => (
-                            <tr key={idx} className="border-b border-stone-50 last:border-0 hover:bg-stone-50 transition">
-                              <td className="px-4 py-2 text-stone-700 font-medium text-xs">{dept.department_name}</td>
-                              {allCategories.map((catName, ci) => {
-                                const match = dept.categories.find((c: any) => c.category_name === catName)
-                                const avg = match?.avg_level ?? 0
-                                const intensity = avg / 5  // avg_level is 1-5 scale
-                                return (
-                                  <td key={ci} className="px-4 py-2">
-                                    <div className="w-8 h-8 rounded flex items-center justify-center text-[9px] font-medium"
-                                      style={{
-                                        backgroundColor: intensity > 0.7 ? '#1e3a5f' : intensity > 0.5 ? '#5b8fc9' : intensity > 0.3 ? '#b3cde3' : '#f0f0f0',
-                                        color: intensity > 0.5 ? 'white' : '#666'
-                                      }}
-                                      title={`${dept.department_name}: ${catName} - avg ${avg.toFixed(1)}/5`}>
-                                      {match?.avg_level || '-'}
-                                      {avg > 0 ? avg.toFixed(1) : '-'}
-                                    </div>
-                                  </td>
-                                )
-                              })}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    )
-                  })()}
-                </div>
-              )}
-            </div>
-          )}
+          {/* Tab 4: Attendance & Performance                               */}
 
           {/* ============================================================ */}
           {/* Tab 4: Attendance & Performance                               */}
           {/* ============================================================ */}
-          {activeTab === 'attPerf' && (
+          {activeTab === 'attPerf' && (<>
             <div className="space-y-5">
               {attPerfError && (
                 <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
@@ -914,7 +854,11 @@ export default function StrategicAnalytics() {
                 </div>
               )}
             </div>
-          )}
+
+            <ScoreNote>
+              出勤率 = (出勤 + 半天)记录数 / 总考勤记录数（近3个月）。绩效均分 = 部门内已提交绩效评分的平均值。
+            </ScoreNote>
+          </>)}
 
           {/* ============================================================ */}
           {/* Tab 5: Health                                                 */}
@@ -973,8 +917,8 @@ export default function StrategicAnalytics() {
                               <p className="text-xs font-medium text-stone-700">{p.full_name || p.name || `Person ${i}`}</p>
                               <p className="text-[10px] text-stone-400">{p.position_name || p.position || ''}</p>
                             </div>
-                            <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${(p.risk_score ?? 0) > 60 ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>
-                              {Number(p.risk_score ?? 0).toFixed(0)}%
+                            <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${(p.risk_score_pct ?? (p.risk_score * 100) ?? 0) > 60 ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>
+                              {Number(p.risk_score_pct ?? (p.risk_score * 100) ?? 0).toFixed(0)}%
                             </span>
                           </div>
                         ))}
@@ -985,6 +929,10 @@ export default function StrategicAnalytics() {
                   </div>
                 </div>
               )}
+
+              <ScoreNote>
+                综合健康 = 技能覆盖率×25% + 出勤率×25% + 绩效均分×25% + (1−离职风险)×25%。Critical Persons 为带团队且离职风险较高的管理者。
+              </ScoreNote>
             </div>
           )}
         </>

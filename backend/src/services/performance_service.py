@@ -193,7 +193,8 @@ def delete_review(review_id, actor):
 def list_reviews(page_no=1, page_size=20,
                  employee_id=None, department_id=None,
                  review_period=None, status=None,
-                 manager_employee_id=None):
+                 manager_employee_id=None,
+                 subtree_ids=None):
     """分页列出绩效评估（含筛选）。
 
     参数：
@@ -204,6 +205,7 @@ def list_reviews(page_no=1, page_size=20,
         review_period:       评估周期（如 "2026-Q1"）
         status:              状态（draft / submitted / acknowledged）
         manager_employee_id: 上级 ID（团队视图）
+        subtree_ids:         组织树节点 ID 列表（用于权限过滤）
     """
     where_parts = ["1=1"]
 
@@ -217,6 +219,9 @@ def list_reviews(page_no=1, page_size=20,
         where_parts.append(f"pr.status = {sql_literal(status)}")
     if manager_employee_id:
         where_parts.append(f"e.manager_employee_id = {int(manager_employee_id)}")
+    if subtree_ids:
+        ids_str = ",".join(str(i) for i in subtree_ids)
+        where_parts.append(f"pr.employee_id IN ({ids_str})")
 
     where_clause = " AND ".join(where_parts)
     offset = (page_no - 1) * page_size

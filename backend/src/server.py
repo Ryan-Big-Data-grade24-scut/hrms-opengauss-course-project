@@ -3,7 +3,7 @@ import re
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
-from src.common.db import DatabaseError
+from src.common.db import DatabaseError, get_subtree_ids
 from src.common.http import error, ok, page, to_json_bytes
 from src.config import APP_HOST, APP_PORT
 from src.services import (
@@ -178,6 +178,10 @@ class ApiHandler(BaseHTTPRequestHandler):
                 # Map ?q= search param to ?keyword= for consistency with directory search
                 if "q" in filters and "keyword" not in filters:
                     filters["keyword"] = filters.pop("q")
+                # Subtree filtering: if subtree_of is set, restrict to org tree
+                if "subtree_of" in filters:
+                    subtree_ids = get_subtree_ids(int(filters["subtree_of"]))
+                    filters["subtree_ids"] = subtree_ids
                 rows, total = employee_service.list_employees(page_no, page_size, filters)
                 return self._send(200, page(rows, total, page_no, page_size))
             if path == "/api/employees" and method == "POST":
@@ -469,8 +473,11 @@ class ApiHandler(BaseHTTPRequestHandler):
 
             match = re.fullmatch(r"/api/employees/(\d+)/projects", path)
             if match and method == "GET":
-                self._require_permission(user, "employee.manage")
-                return self._send(200, ok(skill_service.list_employee_projects(int(match.group(1)))))
+                target_id = int(match.group(1))
+                self_emp = user.get("employee_id", 0)
+                if target_id != self_emp:
+                    self._require_permission(user, "employee.manage")
+                return self._send(200, ok(skill_service.list_employee_projects(target_id)))
             if match and method == "POST":
                 self._require_permission(user, "employee.manage")
                 return self._send(200, ok(skill_service.create_employee_project(int(match.group(1)), body, user["username"])))
@@ -558,8 +565,20 @@ class ApiHandler(BaseHTTPRequestHandler):
                 return self._send(200, ok(attendance_service.get_my_attendance(eid, limit)))
 
             if path == "/api/attendance/records" and method == "GET":
-                if not any(p.startswith("attendance.view") for p in (user.get("permissions") or [])):
+                perms = user.get("permissions") or []
+                if not any(p.startswith("attendance.view") for p in perms):
                     raise PermissionError("attendance.view")
+                eid = user.get("employee_id", 0)
+                has_full_view = any(p == "attendance.view" for p in perms)
+                has_self_view = any(p == "attendance.view.self" for p in perms)
+                # Auto-scope: .view → subtree, .view.self only → self
+                if has_full_view:
+                    subtree_ids = get_subtree_ids(eid) if eid else []
+                elif has_self_view:
+                    subtree_ids = [eid] if eid else []
+                else:
+                    subtree_ids = []
+
                 page_no, page_size = _parse_page(query)
                 filters = {k: v[0] for k, v in query.items()}
                 rows, total = attendance_service.list_attendance_records(
@@ -569,6 +588,7 @@ class ApiHandler(BaseHTTPRequestHandler):
                     date_from=filters.get("date_from"),
                     date_to=filters.get("date_to"),
                     manager_employee_id=filters.get("manager_employee_id") and int(filters["manager_employee_id"]) or None,
+                    subtree_ids=subtree_ids or None,
                 )
                 return self._send(200, page(rows, total, page_no, page_size))
 
@@ -587,8 +607,19 @@ class ApiHandler(BaseHTTPRequestHandler):
 
             # === Performance Reviews ===
             if path == "/api/performance/reviews" and method == "GET":
-                if not any(p.startswith("performance.view") for p in (user.get("permissions") or [])):
+                perms = user.get("permissions") or []
+                if not any(p.startswith("performance.view") for p in perms):
                     raise PermissionError("performance.view")
+                eid = user.get("employee_id", 0)
+                has_full_view = any(p == "performance.view" for p in perms)
+                has_self_view = any(p == "performance.view.self" for p in perms)
+                if has_full_view:
+                    subtree_ids = get_subtree_ids(eid) if eid else []
+                elif has_self_view:
+                    subtree_ids = [eid] if eid else []
+                else:
+                    subtree_ids = []
+
                 page_no, page_size = _parse_page(query)
                 filters = {k: v[0] for k, v in query.items()}
                 rows, total = performance_service.list_reviews(
@@ -598,6 +629,7 @@ class ApiHandler(BaseHTTPRequestHandler):
                     review_period=filters.get("review_period"),
                     status=filters.get("status"),
                     manager_employee_id=filters.get("manager_employee_id") and int(filters["manager_employee_id"]) or None,
+                    subtree_ids=subtree_ids or None,
                 )
                 return self._send(200, page(rows, total, page_no, page_size))
 

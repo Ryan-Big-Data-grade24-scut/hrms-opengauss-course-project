@@ -20,6 +20,9 @@ def list_employees(page_no, page_size, filters):
         where_parts.append(f"e.hire_date >= {sql_literal(filters['hire_date_start'])}")
     if filters.get("hire_date_end"):
         where_parts.append(f"e.hire_date <= {sql_literal(filters['hire_date_end'])}")
+    if filters.get("subtree_ids"):
+        ids_str = ",".join(str(i) for i in filters["subtree_ids"])
+        where_parts.append(f"e.employee_id IN ({ids_str})")
 
     where_clause = " AND ".join(where_parts)
     offset = (page_no - 1) * page_size

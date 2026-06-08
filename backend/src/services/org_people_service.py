@@ -282,9 +282,17 @@ def employee_profile(employee_id):
     profile = {
         "basic": basic,
         "skills": skills or [],
+        "job_history": [],
         "recent_logs": recent_logs or [],
         "attrition_risk": None,
     }
+
+    # 工作履历
+    try:
+        from src.services.employee_job_history_service import list_employee_job_history
+        profile["job_history"] = list_employee_job_history(eid)
+    except Exception:
+        profile["job_history"] = []
 
     # 离职风险（调用 attrition_service 的 compute_risk）
     try:

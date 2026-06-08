@@ -53,6 +53,8 @@ export default function PerformancePage() {
 
   const profile = JSON.parse(localStorage.getItem('profile') || '{}')
   const employeeId = profile.employee_id
+  const perms: string[] = profile.permissions || []
+  const hasFullView = perms.some(p => p === 'performance.view' || p === 'admin' || p.endsWith('.all'))
 
   useEffect(() => { setTitle('绩效评分') }, [])
 
@@ -62,15 +64,16 @@ export default function PerformancePage() {
       setLoading(true)
       setError('')
       try {
-        const res = await get(`/performance/reviews?employee_id=${employeeId}&page_size=50`)
-        setReviews(res.data?.rows || res.data || [])
+        const empFilter = hasFullView ? '' : `&employee_id=${employeeId}`
+        const res = await get(`/performance/reviews?page_size=50${empFilter}`)
+        setReviews(res.data?.list || res.data?.rows || res.data || [])
       } catch (e: any) {
         setError(e.message || '加载绩效记录失败')
       } finally {
         setLoading(false)
       }
     })()
-  }, [employeeId])
+  }, [employeeId, hasFullView])
 
   function openRating(review: any) {
     setSelectedReview(review)

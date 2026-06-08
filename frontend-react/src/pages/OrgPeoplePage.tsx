@@ -773,7 +773,29 @@ export default function OrgPeoplePage() {
                     </div>
                   )}
 
-                  {/* Block 4: Attrition risk */}
+                  {/* Block 4: Work History */}
+                  {profile.job_history && profile.job_history.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-3">
+                        <Briefcase className="w-4 h-4 text-stone-500" />
+                        <h5 className="font-semibold text-sm text-stone-700">Work History</h5>
+                      </div>
+                      <div className="space-y-3">
+                        {profile.job_history.map((h: any) => (
+                          <div key={h.history_id} className="text-xs border-l-2 border-stone-200 pl-3 py-1">
+                            <p className="font-medium text-stone-700">{h.position_name || 'N/A'}</p>
+                            <p className="text-stone-400">{h.department_name}{h.job_title ? ` · ${h.job_title}` : ''}</p>
+                            <p className="text-stone-400">
+                              {h.start_date?.slice(0, 10)} ~ {h.end_date?.slice(0, 10) || '至今'}
+                            </p>
+                            {h.change_reason && <p className="text-stone-400 mt-0.5">{h.change_reason}</p>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Block 5: Attrition risk */}
                   {profile.attrition_risk && (
                     <div className="p-3 rounded-lg bg-stone-50 border border-stone-100">
                       <div className="flex items-center gap-2 mb-2">
