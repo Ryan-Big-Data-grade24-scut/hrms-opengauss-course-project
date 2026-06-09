@@ -54,7 +54,7 @@ export default function PerformancePage() {
   const profile = JSON.parse(localStorage.getItem('profile') || '{}')
   const employeeId = profile.employee_id
   const perms: string[] = profile.permissions || []
-  const hasFullView = perms.some(p => p === 'performance.view' || p === 'admin' || p.endsWith('.all'))
+  const hasFullView = perms.some(p => p === 'performance.view' || p === 'performance.view.all' || p === 'admin' || p.endsWith('.all'))
 
   useEffect(() => { setTitle('绩效评分') }, [])
 

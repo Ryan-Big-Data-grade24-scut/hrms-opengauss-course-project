@@ -75,7 +75,7 @@ export default function AttendancePage() {
   const profile = JSON.parse(localStorage.getItem('profile') || '{}')
   const employeeId = profile.employee_id
   const perms: string[] = profile.permissions || []
-  const hasFullView = perms.some(p => p === 'attendance.view' || p === 'admin' || p.endsWith('.all'))
+  const hasFullView = perms.some(p => p === 'attendance.view' || p === 'attendance.view.all' || p === 'admin' || p.endsWith('.all'))
 
   // Employee tree state
   const [empTree, setEmpTree] = useState<any[]>([])

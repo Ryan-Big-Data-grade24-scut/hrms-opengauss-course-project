@@ -512,7 +512,9 @@ def get_employee_bundle(employee_id):
                 LEFT JOIN employee mgr2 ON mgr2.employee_id = e.manager_employee_id
                 LEFT JOIN (
                     SELECT employee_id, ROUND((PREDICT BY attrition_model (FEATURES
-                        tenure, engagement_score, last_promotion_months, manager_changes, overtime_count
+                        tenure, engagement_score, last_promotion_months, manager_changes,
+                        overtime_count, attendance_absent_count, attendance_late_count,
+                        avg_performance_score
                     ) * 100)::decimal, 1) AS ml_risk_score
                     FROM employee WHERE employment_status IN ({_Q}active{_Q},{_Q}probation{_Q})
                 ) ml ON ml.employee_id = e.employee_id

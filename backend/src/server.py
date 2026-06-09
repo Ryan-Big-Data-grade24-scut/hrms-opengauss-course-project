@@ -569,12 +569,15 @@ class ApiHandler(BaseHTTPRequestHandler):
                 if not any(p.startswith("attendance.view") for p in perms):
                     raise PermissionError("attendance.view")
                 eid = user.get("employee_id", 0)
-                has_full_view = any(p == "attendance.view" for p in perms)
-                has_self_view = any(p == "attendance.view.self" for p in perms)
-                # Auto-scope: .view → subtree, .view.self only → self
-                if has_full_view:
-                    subtree_ids = get_subtree_ids(eid) if eid else []
-                elif has_self_view:
+                has_all = any(p in ("attendance.view", "attendance.view.all") for p in perms)
+                has_team = any(p == "attendance.view.team" for p in perms)
+                has_self = any(p == "attendance.view.self" for p in perms)
+                # Auto-scope: .all → all records, .team → subtree, .self → self only
+                if has_all:
+                    subtree_ids = None  # no filter = all records
+                elif has_team:
+                    subtree_ids = get_subtree_ids(eid) if eid else None
+                elif has_self:
                     subtree_ids = [eid] if eid else []
                 else:
                     subtree_ids = []
@@ -611,11 +614,14 @@ class ApiHandler(BaseHTTPRequestHandler):
                 if not any(p.startswith("performance.view") for p in perms):
                     raise PermissionError("performance.view")
                 eid = user.get("employee_id", 0)
-                has_full_view = any(p == "performance.view" for p in perms)
-                has_self_view = any(p == "performance.view.self" for p in perms)
-                if has_full_view:
-                    subtree_ids = get_subtree_ids(eid) if eid else []
-                elif has_self_view:
+                has_all = any(p in ("performance.view", "performance.view.all") for p in perms)
+                has_team = any(p == "performance.view.team" for p in perms)
+                has_self = any(p == "performance.view.self" for p in perms)
+                if has_all:
+                    subtree_ids = None
+                elif has_team:
+                    subtree_ids = get_subtree_ids(eid) if eid else None
+                elif has_self:
                     subtree_ids = [eid] if eid else []
                 else:
                     subtree_ids = []

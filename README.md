@@ -5,21 +5,49 @@
 
 ---
 
-## 快速启动
+## 前置要求
+
+- **Docker**（运行 openGauss 7.0.0）
+- **Python 3.12+** + pip
+- **Node.js 20+** + npm
+
+> 如果 Docker 拉取镜像慢，配置国内镜像加速：
+> [阿里云](https://cr.console.aliyun.com/) / [华为云](https://console.huaweicloud.com/swr/)
+
+## 快速启动（推荐）
 
 ```bash
-# 1. 后端（port 18080）
-cd backend
-pip install psycopg2-binary  # 首次
-python app.py
+# 一键启动：安装依赖 → 启动数据库 → 初始化 → 后端 → 前端
+# Windows:
+.\start.ps1
 
-# 2. 前端（port 5173）
-cd frontend-react
-npm install      # 首次
-npx vite --host 0.0.0.0 --port 5173
+# Linux / macOS / Git Bash:
+bash start.sh
 ```
 
-打开 `http://localhost:5173`，密码 `123456`。
+等待终端显示"🎉 启动完成"，打开 `http://localhost:5173`。
+**所有账号密码：`123456`**
+
+## 分步启动
+
+```bash
+# 1. 启动数据库
+docker compose up -d
+
+# 2. 安装依赖
+pip install -r backend/requirements.txt
+cd frontend-react && npm install && cd ..
+
+# 3. 初始化数据库（首次）
+#    脚本会自动执行 sql/migrations/ 下 V1~V11 全部迁移
+bash start.sh   # 或使用 .\start.ps1 会自动处理
+
+# 4. 手动启动后端（port 18080）
+cd backend && python app.py
+
+# 5. 手动启动前端（port 5173）
+cd frontend-react && npx vite --host 0.0.0.0 --port 5173
+```
 
 ---
 

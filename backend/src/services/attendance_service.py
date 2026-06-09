@@ -280,9 +280,9 @@ def list_attendance_records(page_no=1, page_size=20,
     if department_id:
         where_parts.append(f"e.department_id = {int(department_id)}")
     if date_from:
-        where_parts.append(f"ar.record_date >= {sql_literal(date_from)}::date")
+        where_parts.append(f"ar.work_date >= {sql_literal(date_from)}::date")
     if date_to:
-        where_parts.append(f"ar.record_date <= {sql_literal(date_to)}::date")
+        where_parts.append(f"ar.work_date <= {sql_literal(date_to)}::date")
     if manager_employee_id:
         where_parts.append(f"e.manager_employee_id = {int(manager_employee_id)}")
     if status:
@@ -306,13 +306,13 @@ def list_attendance_records(page_no=1, page_size=20,
         SELECT ar.attendance_id, ar.employee_id,
                e.employee_no, e.full_name,
                d.department_name,
-               ar.record_date, ar.clock_in, ar.clock_out,
+               ar.work_date, ar.clock_in, ar.clock_out,
                ar.status, ar.created_at
         FROM attendance_record ar
         JOIN employee e ON e.employee_id = ar.employee_id
         JOIN department d ON d.department_id = e.department_id
         WHERE {where_clause}
-        ORDER BY ar.record_date DESC, ar.clock_in DESC
+        ORDER BY ar.work_date DESC, ar.clock_in DESC
         LIMIT {page_size} OFFSET {offset}
     """
 
@@ -358,13 +358,13 @@ def attendance_summary(department_id=None, date_from=None, date_to=None):
     date_filter = ""
     if date_from and date_to:
         date_filter = (
-            f"AND ar.record_date BETWEEN {sql_literal(date_from)}::date "
+            f"AND ar.work_date BETWEEN {sql_literal(date_from)}::date "
             f"AND {sql_literal(date_to)}::date"
         )
     elif date_from:
-        date_filter = f"AND ar.record_date >= {sql_literal(date_from)}::date"
+        date_filter = f"AND ar.work_date >= {sql_literal(date_from)}::date"
     elif date_to:
-        date_filter = f"AND ar.record_date <= {sql_literal(date_to)}::date"
+        date_filter = f"AND ar.work_date <= {sql_literal(date_to)}::date"
 
     return json_array_query(f"""
         SELECT d.department_id, d.department_name,
@@ -402,14 +402,14 @@ def update_absent_late_counts():
                 FROM attendance_record ar
                 WHERE ar.employee_id = e.employee_id
                   AND ar.status = 'absent'
-                  AND ar.record_date >= CURRENT_DATE - INTERVAL '12 months'
+                  AND ar.work_date >= CURRENT_DATE - INTERVAL '12 months'
             ),
             attendance_late_count = (
                 SELECT COUNT(*)
                 FROM attendance_record ar
                 WHERE ar.employee_id = e.employee_id
                   AND ar.status = 'late'
-                  AND ar.record_date >= CURRENT_DATE - INTERVAL '12 months'
+                  AND ar.work_date >= CURRENT_DATE - INTERVAL '12 months'
             )
         WHERE e.employment_status IN ('active', 'probation')
     """)
@@ -458,8 +458,8 @@ def monthly_attendance_report(year, month, department_id=None):
         JOIN department d ON d.department_id = e.department_id
         LEFT JOIN attendance_record ar
             ON ar.employee_id = e.employee_id
-            AND ar.record_date >= {sql_literal(month_start)}::date
-            AND ar.record_date < {sql_literal(month_end)}::date
+            AND ar.work_date >= {sql_literal(month_start)}::date
+            AND ar.work_date < {sql_literal(month_end)}::date
         WHERE e.employment_status IN ('active', 'probation') {where_dept}
         GROUP BY e.employee_id, e.employee_no, e.full_name, d.department_name
         ORDER BY d.department_name, e.full_name

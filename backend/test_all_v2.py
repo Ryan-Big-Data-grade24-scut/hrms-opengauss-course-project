@@ -13,7 +13,7 @@
 
 import json, os, subprocess, sys, time, urllib.request, urllib.error
 
-BASE = "http://127.0.0.1:19199"
+BASE = "http://127.0.0.1:18081"
 PASS = "\033[92mPASS\033[0m"
 FAIL = "\033[91mFAIL\033[0m"
 SKIP_C = "\033[93mSKIP\033[0m"

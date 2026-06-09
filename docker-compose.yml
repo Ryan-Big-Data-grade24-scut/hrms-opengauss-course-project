@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  opengauss:
+    image: opengauss/opengauss:latest
+    container_name: opengauss-hrms
+    privileged: true
+    environment:
+      GS_PASSWORD: OpenGauss123!
+      GS_NODENAME: gaussdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - opengauss-hrms-data:/var/lib/opengauss
+
+volumes:
+  opengauss-hrms-data:
