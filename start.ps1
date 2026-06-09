@@ -132,7 +132,8 @@ $migs = @(
     "V6__company_seed.sql", "V7__attrition_hybrid.sql",
     "V8__analytics_attendance_performance.sql", "V9__schema_enhance.sql",
     "V9__permissions_seed.sql", "V10__approval_workflow.sql",
-    "V11__fix_approval_schema.sql"
+    "V11__fix_approval_schema.sql",
+    "V12__unified_seed_fix.sql"
 )
 foreach ($file in $migs) {
     $ver = $file.Split("__")[0]

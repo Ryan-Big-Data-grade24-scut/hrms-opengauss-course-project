@@ -81,7 +81,7 @@ GS() { GE "/usr/local/opengauss/bin/gsql -d ${2:-postgres} -U omm -W OpenGauss12
     GS "CREATE DATABASE hrms;" postgres 2>/dev/null && echo "  ✅ 创建 hrms" || echo "  ✅ hrms 已存在"
 
 # 应用迁移
-MIGS="V1__baseline.sql V2__org_and_job.sql V3__employee_profile_and_history.sql V4__leave_type_and_leave_upgrade.sql V5__discover.sql V6__company_seed.sql V7__attrition_hybrid.sql V8__analytics_attendance_performance.sql V9__schema_enhance.sql V9__permissions_seed.sql V10__approval_workflow.sql V11__fix_approval_schema.sql"
+MIGS="V1__baseline.sql V2__org_and_job.sql V3__employee_profile_and_history.sql V4__leave_type_and_leave_upgrade.sql V5__discover.sql V6__company_seed.sql V7__attrition_hybrid.sql V8__analytics_attendance_performance.sql V9__schema_enhance.sql V9__permissions_seed.sql V10__approval_workflow.sql V11__fix_approval_schema.sql V12__unified_seed_fix.sql"
 echo "  🔄 应用迁移..."
 for f in $MIGS; do
     v="${f%%__*}"
