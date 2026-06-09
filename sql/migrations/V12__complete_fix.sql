@@ -64,12 +64,14 @@ DELETE FROM skill; DELETE FROM skill_category;
 INSERT INTO department (department_id, department_name, status) VALUES
 (1,'Engineering',1),(2,'Product',1),(3,'Sales & Marketing',1),(4,'Operations',1);
 
-INSERT INTO position (position_id, position_name) VALUES
-(1,'CEO'),(2,'VP Engineering'),(3,'Engineering Manager'),(4,'Senior Backend Engineer'),
-(5,'Backend Engineer'),(6,'Senior Frontend Engineer'),(7,'Frontend Engineer'),
-(8,'DevOps Engineer'),(9,'QA Engineer'),(10,'VP Product'),(11,'Product Manager'),
-(12,'UX Designer'),(13,'Data Analyst'),(14,'VP Sales & Marketing'),(15,'Sales Rep'),
-(16,'Marketing'),(17,'CS Manager'),(18,'VP Operations'),(19,'HR'),(20,'Accountant');
+INSERT INTO position (position_id, position_name, department_id) VALUES
+(1,'CEO',1),(2,'VP Engineering',1),(3,'Engineering Manager',1),
+(4,'Senior Backend Engineer',1),(5,'Backend Engineer',1),
+(6,'Senior Frontend Engineer',1),(7,'Frontend Engineer',1),
+(8,'DevOps Engineer',1),(9,'QA Engineer',1),
+(10,'VP Product',2),(11,'Product Manager',2),(12,'UX Designer',2),(13,'Data Analyst',2),
+(14,'VP Sales & Marketing',3),(15,'Sales Rep',3),(16,'Marketing',3),(17,'CS Manager',3),
+(18,'VP Operations',4),(19,'HR',4),(20,'Accountant',4);
 
     INSERT INTO employee (employee_id,employee_no,full_name,gender,hire_date,employment_status,department_id,position_id,tenure,engagement_score,last_promotion_months,manager_changes,overtime_count,manager_employee_id) VALUES
     (503,'NT0001','Alex Chen','M','2021-01-15','active',1,1,52,95,3,0,0,NULL),
