@@ -37,7 +37,9 @@ def fix():
                     run_sql(f"""
                         INSERT INTO attendance_record (employee_id, work_date, clock_in, clock_out, status)
                         VALUES ({eid}, {sql_literal(d.isoformat())}::date,
-                                CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, {sql_literal(status)})
+                                {sql_literal(d.isoformat())}::date + interval '9 hours',
+                                {sql_literal(d.isoformat())}::date + interval '18 hours',
+                                {sql_literal(status)})
                     """)
                     count += 1
                 except:
