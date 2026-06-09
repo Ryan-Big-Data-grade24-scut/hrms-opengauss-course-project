@@ -81,7 +81,7 @@ GS() { GE "/usr/local/opengauss/bin/gsql -d ${2:-postgres} -U omm -W OpenGauss12
     GS "CREATE DATABASE hrms;" postgres 2>/dev/null && echo "  ✅ 创建 hrms" || echo "  ✅ hrms 已存在"
 
 # 应用迁移
-MIGS="V1__baseline.sql V2__org_and_job.sql V3__employee_profile_and_history.sql V4__leave_type_and_leave_upgrade.sql V5__discover.sql V6__company_seed.sql V7__attrition_hybrid.sql V8__analytics_attendance_performance.sql V9__schema_enhance.sql V9__permissions_seed.sql V10__approval_workflow.sql V11__fix_approval_schema.sql V12__unified_seed_fix.sql"
+MIGS="V1__baseline.sql V2__org_and_job.sql V3__employee_profile_and_history.sql V4__leave_type_and_leave_upgrade.sql V5__discover.sql V6__company_seed.sql V7__attrition_hybrid.sql V8__analytics_attendance_performance.sql V9__schema_enhance.sql V9__permissions_seed.sql V10__approval_workflow.sql V11__fix_approval_schema.sql V12__complete_fix.sql"
 echo "  🔄 应用迁移..."
 for f in $MIGS; do
     v="${f%%__*}"
@@ -93,6 +93,10 @@ for f in $MIGS; do
     GS "INSERT INTO schema_migration_history (version,filename) SELECT '$v','$f' WHERE NOT EXISTS (SELECT 1 FROM schema_migration_history WHERE version='$v')" hrms 2>/dev/null
 done
 echo "  ✅ 数据库初始化完成"
+
+echo "  🔄 修复数据..."
+cd "$REPO_ROOT/backend" && $PY data_fix.py 2>/dev/null && cd "$REPO_ROOT"
+echo "  ✅ 数据修复完成"
 
 # [6/7] 启动后端
 echo ""

@@ -133,7 +133,7 @@ $migs = @(
     "V8__analytics_attendance_performance.sql", "V9__schema_enhance.sql",
     "V9__permissions_seed.sql", "V10__approval_workflow.sql",
     "V11__fix_approval_schema.sql",
-    "V12__unified_seed_fix.sql"
+    "V12__complete_fix.sql"
 )
 foreach ($file in $migs) {
     $ver = $file.Split("__")[0]
@@ -149,6 +149,13 @@ foreach ($file in $migs) {
     }
 }
 Write-Host "  ✅ 数据库初始化完成"
+
+# 数据修复（补全考勤、绩效等）
+Write-Host "  🔄 修复数据..."
+Push-Location "$RepoRoot\backend"
+python data_fix.py 2>$null
+Pop-Location
+Write-Host "  ✅ 数据修复完成"
 
 # ============================================================
 # 5. 启动后端
